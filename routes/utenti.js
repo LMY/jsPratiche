@@ -4,7 +4,7 @@ var tableName = 'Utenti';
 
 var express = require('express');
 var router = express.Router();
-var md5 = require('MD5');
+var md5 = require('md5');
 
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
@@ -19,7 +19,7 @@ router.get('/:id', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT * FROM '+tableName+' WHERE id='+req.params.id, function(err, data) {
             if (err) throw err;
-	    res.json(data);
+			res.json(data.length == 1 ? data[0] : []);
 	});
     });
 });

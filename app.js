@@ -26,7 +26,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 //  next();
 //});
 
-app.use('/', require('./routes/index'));
+//app.use('/', require('./routes/index'));
+app.get("/", express.static(path.join(__dirname, 'public/index.html')));
+
 app.use('/utenti', require('./routes/utenti'));
 app.use('/gestori', require('./routes/gestori'));
 app.use('/comuni', require('./routes/comuni'));
@@ -34,11 +36,13 @@ app.use('/pratiche', require('./routes/pratiche'));
 app.use('/integrazioni', require('./routes/integrazioni'));
 app.use('/statopratiche', require('./routes/statopratiche'));
 
+app.use("/public", express.static(path.join(__dirname, 'public')));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
+//    res.status(404).send("404 Not found");
   next(err);
 });
 

@@ -17,9 +17,9 @@ router.get('/', function(req, res, next) {
 /* GET /pratiche/id */
 router.get('/:id', function(req, res, next) {
     sql(function(err, connection) {
-	connection.query('SELECT * FROM '+tableName+' WHERE id = '+req.params.id, function(err, rows){
+	connection.query('SELECT * FROM '+tableName+' WHERE id = '+req.params.id, function(err, data){
             if (err) throw err;
-	    res.json(rows);
+			res.json(data.length == 1 ? data[0] : []);
         });
     });
 });

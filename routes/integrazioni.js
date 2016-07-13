@@ -27,7 +27,7 @@ router.delete('/:id', function(req, res, next) {
     sql(function (err, connection) {
         connection.query('DELETE FROM '+tableName+' WHERE idPratica = '+req.params.id, function(err, data) {
             if (err) throw err;
-	    res.json(data);
+			res.json(data.length == 1 ? data[0] : []);
         });
     });
 });
