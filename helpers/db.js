@@ -1,14 +1,8 @@
 var express = require('express');
 var mysql = require('mysql');
+var config = require('../helpers/config.js');
 
-var pool = mysql.createPool({
-        connectionLimit : 100,
-        host     : 'localhost',
-        user     : 'ceruser',
-        password : 'cerpass',
-        database : 'jsPratiche',
-        debug    :  false
-});
+var pool = mysql.createPool(config.db);
 
 var getConnection = function(callback) {
     pool.getConnection(function(err, connection) {

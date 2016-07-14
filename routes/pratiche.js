@@ -1,3 +1,4 @@
+var mysql = require('mysql');
 var sql = require('../helpers/db.js');
 var tableName = 'Pratiche';
 
@@ -7,9 +8,10 @@ var router = express.Router();
 /* GET /pratiche listing. */
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
-	connection.query('SELECT * FROM '+tableName, function(err, rows){
+		connection.query('SELECT * FROM '+tableName, function(err, rows){
+			connection.release();			
             if (err) throw err;
-	    res.json(rows);
+			res.json(rows);
         });
     });
 });
@@ -17,7 +19,10 @@ router.get('/', function(req, res, next) {
 /* GET /pratiche/id */
 router.get('/:id', function(req, res, next) {
     sql(function(err, connection) {
-	connection.query('SELECT * FROM '+tableName+' WHERE id = '+req.params.id, function(err, data){
+		var query = mysql.format('SELECT * FROM ?? WHERE id=?', [tableName, req.params.id]);
+		
+		connection.query(query, function(err, data){
+			connection.release();			
             if (err) throw err;
 			res.json(data.length == 1 ? data[0] : []);
         });
@@ -32,8 +37,9 @@ router.post('/', function(req, res, next) {
         var data = inputToData(input);
 	
         connection.query('INSERT INTO '+tableName+' set ? ', data, function(err, rows) {
+			connection.release();
             if (err) console.log("Error inserting : %s ", err);
-	    res.json(rows);
+			res.json(rows);
         });
     });
 });
@@ -44,11 +50,12 @@ router.put('/:id', function(req, res, next) {
     var id = req.params.id;
 
     sql(function (err, connection) {
-        var data = inputToData(input);
+        var query = mysql.format('UPDATE ?? set ? WHERE id = ?', [tableName, data, id]);
 
-        connection.query('UPDATE '+tableName+' set ? WHERE id = ? ', [data, id], function(err, rows) {
+        connection.query(query, function(err, rows) {
+			connection.release();
             if (err) console.log("Error Updating : %s ", err);
-	    res.json(rows);
+			res.json(rows);
         });
     });
 });
@@ -56,9 +63,12 @@ router.put('/:id', function(req, res, next) {
 /* DELETE /pratiche/:id */
 router.delete('/:id', function(req, res, next) {
     sql(function (err, connection) {
-        connection.query('DELETE FROM '+tableName+' WHERE id = ? ', req.params.id, function(err, rows) {
-            if (err) console.log("Error deleting : %s ", err);
-	    res.json(rows);
+		var query = mysql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
+		
+        connection.query(query, function(err, rows) {
+            connection.release();
+			if (err) console.log("Error deleting : %s ", err);
+			res.json(rows);
         });
     });
 });

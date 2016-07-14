@@ -1,0 +1,163 @@
+<html ng-app="app"> <head>
+	<title>jsPratiche!</title> </head> <body> <ng-view></ng-view> <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script> 
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.min.js"></script> <script 
+src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.min.js"></script> <script 
+src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> <script type="text/ng-template" id="/main.html">
+	<div>
+		<a href="#gestori">Gestori</a>: {{gestori.length}}
+		 <select ng-model="selectedGestore" ng-options="x.name for x in gestori"></select>
+	</div>
+	<div>Comuni: {{comuni.length}}</div>
+	<div>
+		Utenti: {{utenti.length}}
+		 <select ng-model="selectedUser" ng-options="x.username for x in utenti"></select>
+	</div>
+	<div>Pratiche: {{pratiche.length}}</div>
+	<div>Integrazioni: {{integrazioni.length}}</div>
+	
+	<div>
+		Conststatipratiche: {{conststatipratiche.length}}
+		 <select ng-model="selectedConstStato" ng-options="x.descrizione for x in conststatipratiche"></select>
+	</div>
+	
+</script> <script type="text/ng-template" id="/gestori.html">
+	Search: <input type="text" ng-model="search.name">
+	<ul>
+		<li ng-repeat="gestore in gestori | filter: search">
+			<a ng-show="!editing[$index]" href="#/gestori/{{gestore.id}}">{{gestore.name}}</a>
+			<button ng-show="!editing[$index]" ng-click="edit($index)">edit</button>
+			<button ng-show="!editing[$index]" ng-click="remove($index)">remove</button>
+			<input ng-show="editing[$index]" type="text" ng-model="gestore.name">
+			<input ng-show="editing[$index]" type="text" ng-model="gestore.pec">
+			<button ng-show="editing[$index]" ng-click="update($index)">Update</button>
+			<button ng-show="editing[$index]" ng-click="cancel($index)">Cancel</button>
+		</li>
+	</ul>
+	Nuovo Gestore: <input type="text" ng-model="newGestore"><input type="text" ng-model="newPec"><button ng-click="save()">Create</button> </script> <script 
+type="text/ng-template" id="/gestoreDetails.html">
+	<div>id: {{ egestore.id }}</div>
+	<div>name: <textarea ng-model="egestore.name"></textarea></div>
+	<div>pec: <textarea ng-model="egestore.pec"></textarea></div>
+	<button ng-click="update()">Update</button>
+	<button ng-click="remove()">Remove</button>
+	<button ng-click="cancel()">Cancel</button> </script> <script> angular.module('app', ['ngRoute', 'ngResource'])
+	.factory('Gestori', ['$resource', function($resource){
+		return $resource('/gestori/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	.factory('Comuni', ['$resource', function($resource){
+		return $resource('/comuni/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	.factory('Utenti', ['$resource', function($resource){
+		return $resource('/utenti/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	.factory('Pratiche', ['$resource', function($resource){
+		return $resource('/pratiche/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	.factory('Integrazioni', ['$resource', function($resource){
+		return $resource('/integrazioni/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	.factory('ConstStatiPratiche', ['$resource', function($resource){
+		return $resource('/statopratiche/stati', null);
+	}])
+	.factory('StatoPratiche', ['$resource', function($resource){
+		return $resource('/statopratiche/current/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	.factory('StoricoStatoPratiche', ['$resource', function($resource){
+		return $resource('/statopratiche/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	
+	.controller('MainController', ['$scope', 'Gestori', 'Utenti', 'Comuni', 'Pratiche', 'Integrazioni', 'ConstStatiPratiche', function($scope, Gestori, Utenti, 
+Comuni, Pratiche, Integrazioni, ConstStatiPratiche) {
+		$scope.gestori = Gestori.query();
+		$scope.utenti = Utenti.query();
+		$scope.comuni = Comuni.query();
+		$scope.integrazioni = Integrazioni.query();
+		$scope.pratiche = Pratiche.query();
+		$scope.conststatipratiche = ConstStatiPratiche.query();
+		
+	}])
+	
+	.controller('GestoriController', ['$scope', 'Gestori', function($scope, Gestori) {
+		$scope.editing = [];
+		$scope.gestori = Gestori.query();
+		$scope.save = function() {
+			if (!$scope.newGestore || $scope.newGestore.length < 1) return;
+			var gestore = new Gestori({ name: $scope.newGestore, pec: $scope.newPec });
+			gestore.$save(function(){
+				$scope.gestori.push(gestore);
+				$scope.newGestore = '';
+				$scope.newPec = '';
+			});
+		}
+		$scope.update = function(index){
+			var gestore = $scope.gestori[index];
+			console.log("updating with: {"+ gestore.name+" "+gestore.id+"}");
+			Gestori.update({id: gestore.id}, gestore);
+			$scope.editing[index] = false;
+		}
+		$scope.edit = function(index){
+			$scope.editing[index] = angular.copy($scope.gestori[index]);
+		}
+		$scope.cancel = function(index){
+			$scope.gestori[index] = angular.copy($scope.editing[index]);
+			$scope.editing[index] = false;
+		}
+		$scope.remove = function(index){
+			var gestore = $scope.gestori[index];
+			Gestori.remove({id: gestore.id}, function(){
+				$scope.gestori.splice(index, 1);
+			});
+		}
+	}])
+  
+	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Gestori', '$location', function($scope, $routeParams, Gestori, $location) {
+		$scope.egestore = Gestori.get({id: $routeParams.id });
+		
+		$scope.update = function( ){
+			Gestori.update({id: $scope.egestore.id}, $scope.egestore, function() {
+				$location.url('/');
+			});
+		}
+		
+		$scope.remove = function() {
+			Gestori.remove({id: $scope.egestore.id}, function() {
+				$location.url('/');
+			});
+		}
+		
+		$scope.cancel = function() {
+			$location.url('/');
+		}
+	}])
+	
+	.config(['$routeProvider', function($routeProvider) {
+		$routeProvider
+			.when('/', {
+				templateUrl: '/main.html',
+				controller: 'MainController'
+			})
+			.when('/gestori', {
+				templateUrl: '/gestori.html',
+				controller: 'GestoriController'
+			})
+			.when('/gestori/:id', {
+				templateUrl: '/gestoreDetails.html',
+				controller: 'GestoreDetailCtrl'
+			});
+	}]);
+</script> </body>
+</html>

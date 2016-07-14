@@ -1,74 +1,25 @@
-<html ng-app="app">
+<!doctype html>
+<html>
 <head>
-  <title>jsPratiche!</title>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <style>
+        body        { padding-top:80px; }
+    </style>
 </head>
 <body>
+<div class="container">
 
-<ng-view></ng-view>
+    <div class="jumbotron text-center">
+        <h1><span class="fa fa-lock"></span>Authentication Reqyured</h1>
 
-<!-- Libraries -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.min.js"></script>
+        <p>Login or Register with:</p>
 
-<!-- Template -->
-<script type="text/ng-template" id="/todos.html">
-  Search: <input type="text" ng-model="search.name">
-  <ul>
-    <li ng-repeat="todo in todos | filter: search">
-      <input type="checkbox" ng-model="todo.completed">
-      <a href="#/{{$index}}">{{todo.name}}</a>
-    </li>
-  </ul>
-</script>
+        <a href="/login" class="btn btn-default"><span class="fa fa-user"></span> Local Login</a>
+        <a href="/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
+    </div>
 
-<script type="text/ng-template" id="/todoDetails.html">
-  <h1>{{ todo.name }}</h1>
-  completed: <input type="checkbox" ng-model="todo.completed">
-  note: <textarea>{{ todo.note }}</textarea>
-</script>
-
-<script>
-  angular.module('app', ['ngRoute'])
-    //---------------
-    // Services
-    //---------------
-    .factory('Todos', function(){
-      return [
-        { name: 'AngularJS Directives', completed: true, note: 'add notes...' },
-        { name: 'Data binding', completed: true, note: 'add notes...' },
-        { name: '$scope', completed: true, note: 'add notes...' },
-        { name: 'Controllers and Modules', completed: true, note: 'add notes...' },
-        { name: 'Templates and routes', completed: true, note: 'add notes...' },
-        { name: 'Filters and Services', completed: false, note: 'add notes...' },
-        { name: 'Get started with Node/ExpressJS', completed: false, note: 'add notes...' },
-        { name: 'Setup MongoDB database', completed: false, note: 'add notes...' },
-        { name: 'Be awesome!', completed: false, note: 'add notes...' },
-      ];
-    })
-    //---------------
-    // Controllers
-    //---------------
-    .controller('TodoController', ['$scope', 'Todos', function ($scope, Todos) {
-      $scope.todos = Todos;
-    }])
-    .controller('TodoDetailCtrl', ['$scope', '$routeParams', 'Todos', function ($scope, $routeParams, Todos) {
-      $scope.todo = Todos[$routeParams.id];
-    }])
-    //---------------
-    // Routes
-    //---------------
-    .config(['$routeProvider', function ($routeProvider) {
-      $routeProvider
-        .when('/', {
-          templateUrl: '/todos.html',
-          controller: 'TodoController'
-        })
-        .when('/:id', {
-          templateUrl: '/todoDetails.html',
-          controller: 'TodoDetailCtrl'
-       });
-    }]);
-</script>
-
+</div>
 </body>
 </html>
