@@ -1,8 +1,15 @@
-<html ng-app="app"> <head>
-	<title>jsPratiche!</title> </head> <body> <ng-view></ng-view> <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script> 
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.min.js"></script> <script 
-src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.min.js"></script> <script 
-src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> <script type="text/ng-template" id="/main.html">
+<html ng-app="app">
+<head>
+	<title>jsPratiche!</title>
+</head>
+<body>
+<ng-view></ng-view>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script> 
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script type="text/ng-template" id="/main.html">
 	<div>
 		<a href="#gestori">Gestori</a>: {{gestori.length}}
 		 <select ng-model="selectedGestore" ng-options="x.name for x in gestori"></select>
@@ -19,8 +26,9 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 		Conststatipratiche: {{conststatipratiche.length}}
 		 <select ng-model="selectedConstStato" ng-options="x.descrizione for x in conststatipratiche"></select>
 	</div>
-	
-</script> <script type="text/ng-template" id="/gestori.html">
+</script>
+
+<script type="text/ng-template" id="/gestori.html">
 	Search: <input type="text" ng-model="search.name">
 	<ul>
 		<li ng-repeat="gestore in gestori | filter: search">
@@ -33,14 +41,20 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 			<button ng-show="editing[$index]" ng-click="cancel($index)">Cancel</button>
 		</li>
 	</ul>
-	Nuovo Gestore: <input type="text" ng-model="newGestore"><input type="text" ng-model="newPec"><button ng-click="save()">Create</button> </script> <script 
-type="text/ng-template" id="/gestoreDetails.html">
+	Nuovo Gestore: <input type="text" ng-model="newGestore"><input type="text" ng-model="newPec"><button ng-click="save()">Create</button>
+</script>
+
+<script type="text/ng-template" id="/gestoreDetails.html">
 	<div>id: {{ egestore.id }}</div>
 	<div>name: <textarea ng-model="egestore.name"></textarea></div>
 	<div>pec: <textarea ng-model="egestore.pec"></textarea></div>
 	<button ng-click="update()">Update</button>
 	<button ng-click="remove()">Remove</button>
-	<button ng-click="cancel()">Cancel</button> </script> <script> angular.module('app', ['ngRoute', 'ngResource'])
+	<button ng-click="cancel()">Cancel</button> 
+</script>
+	
+	
+<script> angular.module('app', ['ngRoute', 'ngResource'])
 	.factory('Gestori', ['$resource', function($resource){
 		return $resource('/gestori/:id', null, {
 			'update': { method:'PUT' }
@@ -105,7 +119,6 @@ Comuni, Pratiche, Integrazioni, ConstStatiPratiche) {
 		}
 		$scope.update = function(index){
 			var gestore = $scope.gestori[index];
-			console.log("updating with: {"+ gestore.name+" "+gestore.id+"}");
 			Gestori.update({id: gestore.id}, gestore);
 			$scope.editing[index] = false;
 		}
@@ -159,5 +172,6 @@ Comuni, Pratiche, Integrazioni, ConstStatiPratiche) {
 				controller: 'GestoreDetailCtrl'
 			});
 	}]);
-</script> </body>
+</script>
+</body>
 </html>

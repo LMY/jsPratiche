@@ -12,9 +12,8 @@ module.exports = function(app, passport) {
 	}
 		
 	//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));	// public/favicon.ico
-	app.use(express.static(path.join(__dirname, 'public')));
-	app.use("/public", express.static(path.join(__dirname, 'public')));
-
+	//app.use(express.static(path.join(__dirname, 'public')));
+	app.use("/public", isAuthenticated, express.static(path.join(__dirname, '../public')));
 
 	app.get('/', function(req, res) {
 		res.render('index', { message: req.flash('message') });
