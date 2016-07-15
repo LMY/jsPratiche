@@ -8,8 +8,7 @@ var router = express.Router();
 /* GET /pratiche listing. */
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
-		connection.query('SELECT * FROM '+tableName, function(err, rows){
-			connection.release();			
+		connection.query('SELECT * FROM '+tableName, function(err, rows){		
             if (err) throw err;
 			res.json(rows);
         });
@@ -21,8 +20,7 @@ router.get('/:id', function(req, res, next) {
     sql(function(err, connection) {
 		var query = mysql.format('SELECT * FROM ?? WHERE id=?', [tableName, req.params.id]);
 		
-		connection.query(query, function(err, data){
-			connection.release();			
+		connection.query(query, function(err, data){			
             if (err) throw err;
 			res.json(data.length == 1 ? data[0] : []);
         });
@@ -37,7 +35,6 @@ router.post('/', function(req, res, next) {
         var data = inputToData(input);
 	
         connection.query('INSERT INTO '+tableName+' set ? ', data, function(err, rows) {
-			connection.release();
             if (err) console.log("Error inserting : %s ", err);
 			res.json(rows);
         });
@@ -53,7 +50,6 @@ router.put('/:id', function(req, res, next) {
         var query = mysql.format('UPDATE ?? set ? WHERE id = ?', [tableName, data, id]);
 
         connection.query(query, function(err, rows) {
-			connection.release();
             if (err) console.log("Error Updating : %s ", err);
 			res.json(rows);
         });
@@ -66,7 +62,6 @@ router.delete('/:id', function(req, res, next) {
 		var query = mysql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
 		
         connection.query(query, function(err, rows) {
-            connection.release();
 			if (err) console.log("Error deleting : %s ", err);
 			res.json(rows);
         });

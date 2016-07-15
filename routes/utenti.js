@@ -9,7 +9,6 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT * FROM '+tableName, function(err, data) {
-            connection.release();
             if (err) throw err;
 			res.json(data);
 		});
@@ -21,7 +20,6 @@ router.get('/:id', function(req, res, next) {
 		var query = mysql.format('SELECT * FROM ?? WHERE id=?', [tableName, req.params.id]);
 		
         connection.query(query, function(err, data) {
-            connection.release();
             if (err) throw err;
 			res.json(data.length == 1 ? data[0] : []);
 		});
@@ -33,7 +31,6 @@ router.delete('/:id', function(req, res, next) {
 		var query = mysql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
 		
         connection.query(query, function(err, data) {
-            connection.release();
             if (err) throw err;
 			res.json(data);
         });
@@ -44,7 +41,7 @@ router.post('/', function(req, res, next) {
     sql(function (err, connection) {
 		//
 		var reqhash = "";
-		bcrypt.genSalt(10, function (err, salt) {
+		bcrypt.genSalt(8, function (err, salt) {
 			if (err)
 				return next(err);
 
@@ -61,7 +58,6 @@ router.post('/', function(req, res, next) {
         query = mysql.format(query, table);
 	
         connection.query(query, function(err, data) {
-            connection.release();
             if (err) throw err;
 			res.json(data);
         });
@@ -75,7 +71,6 @@ router.put('/:id', function(req, res, next) {
         query = mysql.format(query, table);
 	
         connection.query(query, function(err, data) {
-            connection.release();
 			if (err) throw err;
             res.json(data);
         });

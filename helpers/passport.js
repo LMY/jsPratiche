@@ -14,7 +14,6 @@ module.exports = function(passport) {
 			var query = mysql.format('SELECT * FROM ?? WHERE id=?', ["Utenti", id]);
 			
 			connection.query(query, function(err, user) {
-				connection.release();
 				done(err, user);
 			});
 		});
@@ -24,7 +23,6 @@ module.exports = function(passport) {
 		sql(function(err, connection) {
 			var query = mysql.format('SELECT * FROM ?? WHERE username=?', ["Utenti", username]);
 			connection.query(query, function(err, data) {
-				connection.release();
 
 				if (err)
 					return done(err);

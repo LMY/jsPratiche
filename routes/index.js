@@ -8,11 +8,10 @@ module.exports = function(app, passport) {
 		if (req.isAuthenticated())
 			return next();
 
-		res.redirect('/');
+		res.redirect('/login');
 	}
 		
 	//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));	// public/favicon.ico
-	//app.use(express.static(path.join(__dirname, 'public')));
 	app.use("/public", isAuthenticated, express.static(path.join(__dirname, '../public')));
 
 	app.get('/', function(req, res) {

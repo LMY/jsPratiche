@@ -1,13 +1,58 @@
 <html ng-app="app">
 <head>
 	<title>jsPratiche!</title>
+	<style>
+	body {
+		font: 20px Montserrat, sans-serif;
+		line-height: 1.8;
+		color: #f5f6f7;
+	}
+	.bg-4 {
+		margin: 30px;
+		background-color: #f8f8f8;
+		color: #777777;
+	}
+	</style>
 </head>
 <body>
-<ng-view></ng-view>
+
+<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>		
+			<a class="navbar-brand" href="#/">jsPratiche!</a>
+		</div>
+		<div class="collapse navbar-collapse" id="myNavbar">		
+			<ul class="nav navbar-nav">
+				<li class="dropdown">
+					<a class="dropdown-toggle active" data-toggle="dropdown" href="#">Pratiche<span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#/">Disponibili</a></li>
+						<li><a href="#/">In Carico</a></li>
+						<li><a href="#/">Storico: ultimo anno</a></li>
+						<li><a href="#/">Storico: tutte</a></li>
+					</ul>
+				</li>
+				<li><a href="#gestori">Gestori</a></li>
+				<li><a href="#comuni">Comuni</a></li>
+				<li><a href="#utenti">Utenti</a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script> 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<ng-view></ng-view>
 
 <script type="text/ng-template" id="/main.html">
 	<div>
@@ -29,30 +74,200 @@
 </script>
 
 <script type="text/ng-template" id="/gestori.html">
-	Search: <input type="text" ng-model="search.name">
-	<ul>
-		<li ng-repeat="gestore in gestori | filter: search">
-			<a ng-show="!editing[$index]" href="#/gestori/{{gestore.id}}">{{gestore.name}}</a>
-			<button ng-show="!editing[$index]" ng-click="edit($index)">edit</button>
-			<button ng-show="!editing[$index]" ng-click="remove($index)">remove</button>
-			<input ng-show="editing[$index]" type="text" ng-model="gestore.name">
-			<input ng-show="editing[$index]" type="text" ng-model="gestore.pec">
-			<button ng-show="editing[$index]" ng-click="update($index)">Update</button>
-			<button ng-show="editing[$index]" ng-click="cancel($index)">Cancel</button>
-		</li>
-	</ul>
-	Nuovo Gestore: <input type="text" ng-model="newGestore"><input type="text" ng-model="newPec"><button ng-click="save()">Create</button>
+	<div class="form-group">
+		<div class="span7 text-center">
+			<button class="btn btn-primary" ng-click="new()">Nuovo Gestore</button>
+		</div>
+	</div>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>PEC</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="gestore in gestori" ng-click="show(gestore.id)">
+				<td>{{gestore.id}}</td>
+				<td>{{gestore.name}}</td>
+				<td>{{gestore.pec}}</td>
+			</tr>
+		</tbody>
+	</table>
 </script>
 
 <script type="text/ng-template" id="/gestoreDetails.html">
-	<div>id: {{ egestore.id }}</div>
-	<div>name: <textarea ng-model="egestore.name"></textarea></div>
-	<div>pec: <textarea ng-model="egestore.pec"></textarea></div>
-	<button ng-click="update()">Update</button>
-	<button ng-click="remove()">Remove</button>
-	<button ng-click="cancel()">Cancel</button> 
+<div class="container">
+  <h2>{{ title }}</h2>
+  <form class="form-horizontal" role="form">
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="name">Name:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="name" ng-model="egestore.name" placeholder="Nome gestore">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pec">Pec:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="pec" ng-model="egestore.pec" placeholder="PEC gestore">
+      </div>
+    </div>
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+        <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+      </div>
+    </div>
+  </form>
+</div>
 </script>
+
+<script type="text/ng-template" id="/comuni.html">
+	<div class="form-group">
+		<div class="span7 text-center">
+			<button class="btn btn-primary" ng-click="new()">Nuovo Comune</button>
+		</div>
+	</div>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>PEC</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="comune in comuni" ng-click="show(comune.id)">
+				<td>{{comune.id}}</td>
+				<td>{{comune.name}}</td>
+				<td>{{comune.pec}}</td>
+			</tr>
+		</tbody>
+	</table>
+</script>
+
+<script type="text/ng-template" id="/comuneDetails.html">
+<div class="container">
+  <h2>{{ title }}</h2>
+  <form class="form-horizontal" role="form">
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="name">Name:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="name" ng-model="ecomune.name" placeholder="Nome comune">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pec">Pec:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="pec" ng-model="ecomune.pec" placeholder="PEC comune">
+      </div>
+    </div>
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+        <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+      </div>
+    </div>
+  </form>
+</div>
+</script>
+
+<script type="text/ng-template" id="/utenti.html">
+	<div class="form-group">
+		<div class="span7 text-center">
+			<button class="btn btn-primary" ng-click="new()">Nuovo Utente</button>
+		</div>
+	</div>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Username</th>
+				<th>Name</th>
+				<th>Surname</th>
+				<th>Email</th>
+				<th>Phone</th>
+				<th>Last Login</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="utente in utenti" ng-click="show(utente.id)">
+				<td>{{utente.id}}</td>
+				<td>{{utente.username}}</td>
+				<td>{{utente.name}}</td>
+				<td>{{utente.surname}}</td>
+				<td>{{utente.email}}</td>
+				<td>{{utente.phone}}</td>
+				<td>{{utente.lastlogin}}</td>
+			</tr>
+		</tbody>
+	</table>
+</script>
+
+<script type="text/ng-template" id="/utenteDetails.html">
+<div class="container">
+  <h2>{{ title }}</h2>
+  <form class="form-horizontal" role="form">
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="name">Username:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="name" ng-model="eutente.username" placeholder="Username">
+      </div>
+    </div>
 	
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="name">Password:</label>
+      <div class="col-sm-10">
+        <input type="password" class="form-control" id="name" ng-model="eutente.password1" placeholder="Password">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="name">Password2:</label>
+      <div class="col-sm-10">
+        <input type="password" class="form-control" id="name" ng-model="eutente.password2" placeholder="Password">
+      </div>
+    </div>	
+	
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pec">Name:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="pec" ng-model="eutente.name" placeholder="Name">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pec">Surname:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="pec" ng-model="eutente.surname" placeholder="Surname">
+      </div>
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="pec">Email:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="pec" ng-model="eutente.email" placeholder="Email">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pec">Phone:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="pec" ng-model="eutente.phone" placeholder="Phone">
+      </div>
+    </div>
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+        <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+      </div>
+    </div>
+  </form>
+</div>
+</script>
 	
 <script> angular.module('app', ['ngRoute', 'ngResource'])
 	.factory('Gestori', ['$resource', function($resource){
@@ -105,57 +320,134 @@ Comuni, Pratiche, Integrazioni, ConstStatiPratiche) {
 		
 	}])
 	
-	.controller('GestoriController', ['$scope', 'Gestori', function($scope, Gestori) {
-		$scope.editing = [];
+	.controller('GestoriController', ['$scope', 'Gestori', '$location', function($scope, Gestori, $location) {
 		$scope.gestori = Gestori.query();
-		$scope.save = function() {
-			if (!$scope.newGestore || $scope.newGestore.length < 1) return;
-			var gestore = new Gestori({ name: $scope.newGestore, pec: $scope.newPec });
-			gestore.$save(function(){
-				$scope.gestori.push(gestore);
-				$scope.newGestore = '';
-				$scope.newPec = '';
-			});
+		
+		$scope.new = function() {
+			$location.url('gestori/new');
 		}
-		$scope.update = function(index){
-			var gestore = $scope.gestori[index];
-			Gestori.update({id: gestore.id}, gestore);
-			$scope.editing[index] = false;
-		}
-		$scope.edit = function(index){
-			$scope.editing[index] = angular.copy($scope.gestori[index]);
-		}
-		$scope.cancel = function(index){
-			$scope.gestori[index] = angular.copy($scope.editing[index]);
-			$scope.editing[index] = false;
-		}
-		$scope.remove = function(index){
-			var gestore = $scope.gestori[index];
-			Gestori.remove({id: gestore.id}, function(){
-				$scope.gestori.splice(index, 1);
-			});
+
+		$scope.show = function(id) {
+			$location.url('gestori/'+id);
 		}
 	}])
   
 	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Gestori', '$location', function($scope, $routeParams, Gestori, $location) {
-		$scope.egestore = Gestori.get({id: $routeParams.id });
+		$scope.isnew = ($routeParams.id === "new");
+		$scope.egestore = $scope.isnew ? {} : Gestori.get({id: $routeParams.id });
+		$scope.title = $scope.isnew ? "Nuovo Gestore" : "Gestore "+$routeParams.id;
 		
 		$scope.update = function( ){
-			Gestori.update({id: $scope.egestore.id}, $scope.egestore, function() {
-				$location.url('/');
-			});
+			if ($scope.isnew) {
+				if (!$scope.egestore || $scope.egestore.length < 1) return;
+				var gestore = new Gestori({ name: $scope.egestore.name, pec: $scope.egestore.pec });
+				gestore.$save(function(){
+					$location.url('gestori');					
+				});
+			}
+			else
+				Gestori.update({id: $scope.egestore.id}, $scope.egestore, function() {
+					$location.url('gestori');
+				});
 		}
 		
 		$scope.remove = function() {
 			Gestori.remove({id: $scope.egestore.id}, function() {
-				$location.url('/');
+				$location.url('gestori');
 			});
 		}
 		
 		$scope.cancel = function() {
-			$location.url('/');
+			$location.url('gestori');
 		}
 	}])
+	
+	
+	.controller('ComuneController', ['$scope', 'Comuni', '$location', function($scope, Comuni, $location) {
+		$scope.comuni = Comuni.query();
+		
+		$scope.new = function() {
+			$location.url('comuni/new');
+		}
+		$scope.show = function(id) {
+			$location.url('comuni/'+id);
+		}
+	}])
+	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Comuni', '$location', function($scope, $routeParams, Comuni, $location) {
+		$scope.isnew = ($routeParams.id === "new");
+		$scope.ecomune = $scope.isnew ? {} : Comuni.get({id: $routeParams.id });
+		$scope.title = $scope.isnew ? "Nuovo Comune" : "Comune "+$routeParams.id;
+		
+		$scope.update = function( ){
+			if ($scope.isnew) {
+				if (!$scope.ecomune || $scope.ecomune.length < 1) return;
+				var comune = new Comuni({ name: $scope.ecomune.name, pec: $scope.ecomune.pec });
+				comune.$save(function(){
+					$location.url('comuni');					
+				});
+			}
+			else
+				Comuni.update({id: $scope.ecomune.id}, $scope.ecomune, function() {
+					$location.url('comuni');
+				});
+		}
+		
+		$scope.remove = function() {
+			Comuni.remove({id: $scope.ecomune.id}, function() {
+				$location.url('comuni');
+			});
+		}
+		
+		$scope.cancel = function() {
+			$location.url('comuni');
+		}
+	}])
+
+	.controller('UtentiController', ['$scope', 'Utenti', '$location', function($scope, Utenti, $location) {
+		$scope.utenti = Utenti.query();
+		
+		$scope.new = function() {
+			$location.url('utenti/new');
+		}
+		$scope.show = function(id) {
+			$location.url('utenti/'+id);
+		}
+	}])
+	.controller('UtenteDetailCtrl', ['$scope', '$routeParams', 'Utenti', '$location', function($scope, $routeParams, Utenti, $location) {
+		$scope.isnew = ($routeParams.id === "new");
+		$scope.eutente = $scope.isnew ? {} : Utenti.get({id: $routeParams.id });
+		$scope.title = $scope.isnew ? "Nuovo Utente" : "Utente "+$routeParams.id;
+		
+		$scope.update = function( ){
+			if ($scope.isnew) {
+				if (!$scope.eutente || $scope.eutente.length < 1) return;
+				if ($scope.eutente.password1 != $scope.eutente.password2) {
+					alert("Le password non coincidono!");
+					return;
+				}
+				
+				var utente = new Utenti({ username: $scope.eutente.username, hash: $scope.eutente.password1, name: $scope.eutente.name, surname: $scope.eutente.surname, email: $scope.eutente.email, phone: $scope.eutente.phone });
+				utente.$save(function(){
+					$location.url('utenti');					
+				});
+			}
+			else
+				Utenti.update({id: $scope.eutente.id}, $scope.eutente, function() {
+					$location.url('utenti');
+				});
+		}
+		
+		$scope.remove = function() {
+			Utenti.remove({id: $scope.eutente.id}, function() {
+				$location.url('utenti');
+			});
+		}
+		
+		$scope.cancel = function() {
+			$location.url('utenti');
+		}
+	}])
+
 	
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider
@@ -170,8 +462,42 @@ Comuni, Pratiche, Integrazioni, ConstStatiPratiche) {
 			.when('/gestori/:id', {
 				templateUrl: '/gestoreDetails.html',
 				controller: 'GestoreDetailCtrl'
+			})
+			.when('/comuni', {
+				templateUrl: '/comuni.html',
+				controller: 'ComuneController'
+			})
+			.when('/comuni/:id', {
+				templateUrl: '/comuneDetails.html',
+				controller: 'ComuneDetailCtrl'
+			})
+			.when('/utenti', {
+				templateUrl: '/utenti.html',
+				controller: 'UtentiController'
+			})
+			.when('/utenti/:id', {
+				templateUrl: '/utenteDetails.html',
+				controller: 'UtenteDetailCtrl'
 			});
 	}]);
 </script>
+
+<!-- Update navbar active -->
+<script>
+$(".nav a").on("click", function(){
+   $(".nav").find(".active").removeClass("active");
+   $(this).parent().addClass("active");
+});
+</script>
+
+<footer class="container-fluid bg-4 text-center">
+  <p>jsPratiche <!--made by <a href="http://www.miro.ovh">Miro Salvagni</a>--></p> 
+</footer>
+
+
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
 </body>
 </html>
