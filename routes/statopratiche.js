@@ -24,6 +24,15 @@ router.get('/stati', function(req, res, next) {
     });
 });
 
+router.get('/tipi', function(req, res, next) {
+    sql(function(err,connection) {
+        connection.query('SELECT * FROM ConstTipoPratiche', function(err, data) {
+            if (err) throw err;
+			res.json(data);
+		});
+    });
+});
+
 router.get('/current', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT * FROM '+tableNameCurrent, function(err, data) {

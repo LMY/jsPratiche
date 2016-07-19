@@ -23,28 +23,29 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
-			</button>		
-			<a class="navbar-brand" href="#/">jsPratiche!</a>
+			</button>
+			<a class="navbar-brand" href="#">jsPratiche!</a>
 		</div>
+		
 		<div class="collapse navbar-collapse" id="myNavbar">		
-			<ul class="nav navbar-nav">
-				<li class="dropdown">
-					<a class="dropdown-toggle active" data-toggle="dropdown" href="#">Pratiche<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="#/">Disponibili</a></li>
-						<li><a href="#/">In Carico</a></li>
-						<li><a href="#/">Storico: ultimo anno</a></li>
-						<li><a href="#/">Storico: tutte</a></li>
-					</ul>
-				</li>
+			<ul class="nav navbar-nav">		
+				<li><a href="#pratiche">Pratiche</a></li>				
 				<li><a href="#gestori">Gestori</a></li>
 				<li><a href="#comuni">Comuni</a></li>
-				<li><a href="#utenti">Utenti</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+				<li class="dropdown">
+					<a class="dropdown-toggle active" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> User<span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#profilo">Profilo</a></li>
+						<li><a href="#password">Cambia Password</a></li>
+						<li><a href="#utenti">Utenti</a></li>
+						<li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+					</ul>
+				</li>
 			</ul>
 		</div>
+		
 	</div>
 </nav>
 
@@ -54,26 +55,50 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <ng-view></ng-view>
 
-<script type="text/ng-template" id="/main.html">
-	<div>
-		<a href="#gestori">Gestori</a>: {{gestori.length}}
-		 <select ng-model="selectedGestore" ng-options="x.name for x in gestori"></select>
+
+<script type="text/ng-template" id="/pratiche.html">
+	<div class="form-group">
+		<div class="span7 text-center">
+			<button class="btn btn-primary" ng-click="new()">Nuova Pratica</button>
+		</div>
 	</div>
-	<div>Comuni: {{comuni.length}}</div>
-	<div>
-		Utenti: {{utenti.length}}
-		 <select ng-model="selectedUser" ng-options="x.username for x in utenti"></select>
-	</div>
-	<div>Pratiche: {{pratiche.length}}</div>
-	<div>Integrazioni: {{integrazioni.length}}</div>
 	
-	<div>
-		Conststatipratiche: {{conststatipratiche.length}}
-		 <select ng-model="selectedConstStato" ng-options="x.descrizione for x in conststatipratiche"></select>
-	</div>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th class="text-center">Gestore</th>
+				<th class="text-center">Comune</th>
+				<th>Indirizzo</th>
+				<th class="text-center">CodiceSito</th>
+				<th class="text-center">TipoPratica</th>
+				<th class="text-center">ProtoIN</th>
+				<th class="text-center">DateIN</th>
+
+				<th>note</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="x in pratiche" ng-click="show(x.id)">
+				<td class="text-center">{{x.id}}</td>
+
+				<td class="text-center">{{x.nameGestore}}</td>
+				<td class="text-center">{{x.nameComune}}</td>
+				<td>{{x.address}}</td>
+				<td class="text-center">{{x.sitecode}}</td>
+				<td class="text-center">{{x.nameTipo}}</td>
+				
+				<td class="text-center">{{x.protoIN}}</td>
+				<td class="text-center">{{x.dataIN}}</td>
+				
+				<td>{{x.note}}</td>
+			</tr>
+		</tbody>
+	</table>
+
 </script>
 
-<script type="text/ng-template" id="/gestori.html">
+<script type="text/ng-template" id="/anagrafiche.html">
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuovo Gestore</button>
@@ -88,10 +113,10 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="gestore in gestori" ng-click="show(gestore.id)">
-				<td>{{gestore.id}}</td>
-				<td>{{gestore.name}}</td>
-				<td>{{gestore.pec}}</td>
+			<tr ng-repeat="x in anagrafiche" ng-click="show(x.id)">
+				<td>{{x.id}}</td>
+				<td>{{x.name}}</td>
+				<td>{{x.pec}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -123,30 +148,6 @@
     </div>
   </form>
 </div>
-</script>
-
-<script type="text/ng-template" id="/comuni.html">
-	<div class="form-group">
-		<div class="span7 text-center">
-			<button class="btn btn-primary" ng-click="new()">Nuovo Comune</button>
-		</div>
-	</div>
-	<table class="table table-hover">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>Name</th>
-				<th>PEC</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="comune in comuni" ng-click="show(comune.id)">
-				<td>{{comune.id}}</td>
-				<td>{{comune.name}}</td>
-				<td>{{comune.pec}}</td>
-			</tr>
-		</tbody>
-	</table>
 </script>
 
 <script type="text/ng-template" id="/comuneDetails.html">
@@ -193,6 +194,7 @@
 				<th>Email</th>
 				<th>Phone</th>
 				<th>Last Login</th>
+				<th>UserLevel</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -204,6 +206,7 @@
 				<td>{{utente.email}}</td>
 				<td>{{utente.phone}}</td>
 				<td>{{utente.lastlogin}}</td>
+				<td>{{utente.userlevel}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -257,6 +260,12 @@
         <input type="text" class="form-control" id="pec" ng-model="eutente.phone" placeholder="Phone">
       </div>
     </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pec">Level:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="pec" ng-model="eutente.userlevel" placeholder="Level">
+      </div>
+    </div>	
     <div class="form-group">        
       <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
@@ -298,6 +307,9 @@
 	.factory('ConstStatiPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/stati', null);
 	}])
+	.factory('ConstTipiPratiche', ['$resource', function($resource){
+		return $resource('/statopratiche/tipi', null);
+	}])		
 	.factory('StatoPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/current/:id', null, {
 			'update': { method:'PUT' }
@@ -309,19 +321,8 @@
 		});
 	}])
 	
-	.controller('MainController', ['$scope', 'Gestori', 'Utenti', 'Comuni', 'Pratiche', 'Integrazioni', 'ConstStatiPratiche', function($scope, Gestori, Utenti, 
-Comuni, Pratiche, Integrazioni, ConstStatiPratiche) {
-		$scope.gestori = Gestori.query();
-		$scope.utenti = Utenti.query();
-		$scope.comuni = Comuni.query();
-		$scope.integrazioni = Integrazioni.query();
-		$scope.pratiche = Pratiche.query();
-		$scope.conststatipratiche = ConstStatiPratiche.query();
-		
-	}])
-	
 	.controller('GestoriController', ['$scope', 'Gestori', '$location', function($scope, Gestori, $location) {
-		$scope.gestori = Gestori.query();
+		$scope.anagrafiche = Gestori.query();
 		
 		$scope.new = function() {
 			$location.url('gestori/new');
@@ -364,7 +365,7 @@ Comuni, Pratiche, Integrazioni, ConstStatiPratiche) {
 	
 	
 	.controller('ComuneController', ['$scope', 'Comuni', '$location', function($scope, Comuni, $location) {
-		$scope.comuni = Comuni.query();
+		$scope.anagrafiche = Comuni.query();
 		
 		$scope.new = function() {
 			$location.url('comuni/new');
@@ -447,16 +448,30 @@ Comuni, Pratiche, Integrazioni, ConstStatiPratiche) {
 			$location.url('utenti');
 		}
 	}])
+	.controller('PraticheController', ['$scope', 'Pratiche', 'Gestori', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, Pratiche, Gestori, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, $location) {
+		$scope.gestori = Gestori.query();
+		$scope.comuni = Comuni.query();
+		$scope.utenti = Utenti.query();
+		$scope.integrazioni = Integrazioni.query();
+		$scope.conststatipratiche = ConstStatiPratiche.query();
+		$scope.consttipipratiche = ConstTipiPratiche.query();
+		$scope.pratiche = Pratiche.query(function() {
+			$scope.pratiche.forEach(function(x) { x.dataIN = x.dataIN.substring(0, 10); });
+		});
+		
+		$scope.new = function() {
+			$location.url('pratiche/new');
+		}
+		$scope.show = function(id) {
+			$location.url('pratiche/'+id);
+		}
 
+	}])
 	
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider
-			.when('/', {
-				templateUrl: '/main.html',
-				controller: 'MainController'
-			})
 			.when('/gestori', {
-				templateUrl: '/gestori.html',
+				templateUrl: '/anagrafiche.html',
 				controller: 'GestoriController'
 			})
 			.when('/gestori/:id', {
@@ -464,13 +479,21 @@ Comuni, Pratiche, Integrazioni, ConstStatiPratiche) {
 				controller: 'GestoreDetailCtrl'
 			})
 			.when('/comuni', {
-				templateUrl: '/comuni.html',
+				templateUrl: '/anagrafiche.html',
 				controller: 'ComuneController'
 			})
 			.when('/comuni/:id', {
 				templateUrl: '/comuneDetails.html',
 				controller: 'ComuneDetailCtrl'
 			})
+			.when('/pratiche', {
+				templateUrl: '/pratiche.html',
+				controller: 'PraticheController'
+			})			
+			.when('/pratiche/:id', {
+				templateUrl: '/praticaDetails.html',
+				controller: 'PraticaDetailController'
+			})			
 			.when('/utenti', {
 				templateUrl: '/utenti.html',
 				controller: 'UtentiController'

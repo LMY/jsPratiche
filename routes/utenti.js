@@ -6,6 +6,15 @@ var tableName = 'Utenti';
 var express = require('express');
 var router = express.Router();
 
+
+var calculatehash = function(input) {
+	bcrypt.genSalt(8, function (err, salt) {
+		bcrypt.hash(input, salt, function(err, hash) {
+			return hash;
+		});
+	});
+}
+
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT * FROM '+tableName, function(err, data) {
@@ -39,22 +48,11 @@ router.delete('/:id', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
     sql(function (err, connection) {
-		//
-		var reqhash = "";
-		bcrypt.genSalt(8, function (err, salt) {
-			if (err)
-				return next(err);
 
-			bcrypt.hash(req.body.password, salt, function (err, hash) {
-				if (err)
-					return next(err);
-
-				reqhash = hash;
-			});
-		});
+		var reqhash = calculatehash(req.body.password);
 		
-		var query = "INSERT INTO ??(??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?)";
-        var table = [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL"];
+		var query = "INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)";
+        var table = [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1];
         query = mysql.format(query, table);
 	
         connection.query(query, function(err, data) {
@@ -66,8 +64,9 @@ router.post('/', function(req, res, next) {
 
 router.put('/:id', function(req, res, next) {
     sql(function (err, connection) {
-	var query = "UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?";
-        var table = [tableName, "username", req.body.username, "hash", md5(req.body.password), "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "id", req.params.id];
+	var query = "UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?";
+		var newhash =  calculatehash(req.body.password);
+        var table = [tableName, "username", req.body.username, "hash", newhash, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id];
         query = mysql.format(query, table);
 	
         connection.query(query, function(err, data) {
