@@ -1,0 +1,33 @@
+<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#/">jsPratiche!</a>
+		</div>
+		
+		<div class="collapse navbar-collapse" id="myNavbar">
+			<ul class="nav navbar-nav">
+				<li><a href="#pratiche">Pratiche</a></li>
+				<li><a href="#gestori">Gestori</a></li>
+				<li><a href="#comuni">Comuni</a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown">
+					<a class="dropdown-toggle active" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{me.username}}<span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a ng-href="#utenti/{{me.id}}">Profilo</a></li>
+						<li><a ng-href="#utenti/pass/{{me.id}}">Cambia Password</a></li>
+						<li><a href="#utenti">Utenti</a></li>
+						<li class="nav-divider"></li>
+						<li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		
+	</div>
+</nav>

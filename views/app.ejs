@@ -16,47 +16,26 @@
 </head>
 <body>
 
-<nav class="navbar navbar-default">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="#">jsPratiche!</a>
-		</div>
-		
-		<div class="collapse navbar-collapse" id="myNavbar">		
-			<ul class="nav navbar-nav">		
-				<li><a href="#pratiche">Pratiche</a></li>				
-				<li><a href="#gestori">Gestori</a></li>
-				<li><a href="#comuni">Comuni</a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a class="dropdown-toggle active" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> User<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="#profilo">Profilo</a></li>
-						<li><a href="#password">Cambia Password</a></li>
-						<li><a href="#utenti">Utenti</a></li>
-						<li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-		
-	</div>
-</nav>
-
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script> 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
 <ng-view></ng-view>
+
+<script type="text/ng-template" id="/main.html">
+	<div ng-include="'/public/navbar.html'"></div>
+	<div class = "container">
+	<div class = "jumbotron">
+		<h1>Welcome to jsPratiche!</h1>
+		<p>Scegli dal menu in alto una voce.</p>
+	</div>
+</script>
 
 
 <script type="text/ng-template" id="/pratiche.html">
+	<div ng-include="'/public/navbar.html'"></div>
+
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuova Pratica</button>
@@ -99,6 +78,7 @@
 </script>
 
 <script type="text/ng-template" id="/anagrafiche.html">
+	<div ng-include="'/public/navbar.html'"></div>
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuovo Gestore</button>
@@ -123,6 +103,7 @@
 </script>
 
 <script type="text/ng-template" id="/gestoreDetails.html">
+	<div ng-include="'/public/navbar.html'"></div>	
 <div class="container">
   <h2>{{ title }}</h2>
   <form class="form-horizontal" role="form">
@@ -151,6 +132,7 @@
 </script>
 
 <script type="text/ng-template" id="/comuneDetails.html">
+	<div ng-include="'/public/navbar.html'"></div>
 <div class="container">
   <h2>{{ title }}</h2>
   <form class="form-horizontal" role="form">
@@ -179,6 +161,7 @@
 </script>
 
 <script type="text/ng-template" id="/utenti.html">
+	<div ng-include="'/public/navbar.html'"></div>
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuovo Utente</button>
@@ -213,6 +196,7 @@
 </script>
 
 <script type="text/ng-template" id="/utenteDetails.html">
+	<div ng-include="'/public/navbar.html'"></div>
 <div class="container">
   <h2>{{ title }}</h2>
   <form class="form-horizontal" role="form">
@@ -268,7 +252,8 @@
 </script>
 
 <script type="text/ng-template" id="/utentePass.html">
-<div class="container">
+	<div ng-include="'/public/navbar.html'"></div>
+	<div class="container">
 	<h2>{{ title }} - {{eutente.username}}</h2>
 	<form class="form-horizontal" role="form">
 
@@ -347,8 +332,12 @@
 			'update': { method:'PUT' }
 		});
 	}])
+	.factory('Me', ['$resource', function($resource){
+		return $resource('/utenti/me', null);
+	}])	
 	
-	.controller('GestoriController', ['$scope', 'Gestori', '$location', function($scope, Gestori, $location) {
+	.controller('GestoriController', ['$scope', 'Me', 'Gestori', '$location', function($scope, Me, Gestori, $location) {
+		$scope.me = Me.get();
 		$scope.anagrafiche = Gestori.query();
 		
 		$scope.new = function() {
@@ -359,8 +348,12 @@
 			$location.url('gestori/'+id);
 		}
 	}])
-  
-	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Gestori', '$location', function($scope, $routeParams, Gestori, $location) {
+  	.controller('MainController', ['$scope', 'Me', '$location', function($scope, Me, $location) {
+		$scope.me = Me.get();
+	}])
+	
+	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me','Gestori', '$location', function($scope, $routeParams, Me, Gestori, $location) {
+		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.egestore = $scope.isnew ? {} : Gestori.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Gestore" : "Gestore "+$routeParams.id;
@@ -391,7 +384,8 @@
 	}])
 	
 	
-	.controller('ComuneController', ['$scope', 'Comuni', '$location', function($scope, Comuni, $location) {
+	.controller('ComuneController', ['$scope', 'Me', 'Comuni', '$location', function($scope, Me, Comuni, $location) {
+		$scope.me = Me.get();
 		$scope.anagrafiche = Comuni.query();
 		
 		$scope.new = function() {
@@ -401,7 +395,7 @@
 			$location.url('comuni/'+id);
 		}
 	}])
-	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Comuni', '$location', function($scope, $routeParams, Comuni, $location) {
+	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Me', 'Comuni', '$location', function($scope, $routeParams, Me, Comuni, $location) {
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecomune = $scope.isnew ? {} : Comuni.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Comune" : "Comune "+$routeParams.id;
@@ -431,7 +425,8 @@
 		}
 	}])
 
-	.controller('UtentiController', ['$scope', 'Utenti', '$location', function($scope, Utenti, $location) {
+	.controller('UtentiController', ['$scope', 'Me', 'Utenti', '$location', function($scope, Me, Utenti, $location) {
+		$scope.me = Me.get();
 		$scope.utenti = Utenti.query();
 		
 		$scope.new = function() {
@@ -441,7 +436,8 @@
 			$location.url('utenti/'+id);
 		}
 	}])
-	.controller('UtenteDetailCtrl', ['$scope', '$routeParams', 'Utenti', '$location', function($scope, $routeParams, Utenti, $location) {
+	.controller('UtenteDetailCtrl', ['$scope', '$routeParams', 'Me', 'Utenti', '$location', function($scope, $routeParams, Me, Utenti, $location) {
+		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.eutente = $scope.isnew ? {} : Utenti.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Utente" : "Utente "+$routeParams.id;
@@ -476,7 +472,8 @@
 		}
 	}])
 	
-	.controller('UtentePassCtrl', ['$scope', '$http', '$routeParams', 'Utenti', '$location', function($scope, $http, $routeParams, Utenti, $location) {
+	.controller('UtentePassCtrl', ['$scope', '$http', '$routeParams', 'Me', 'Utenti', '$location', function($scope, $http, $routeParams, Me, Utenti, $location) {
+		$scope.me = Me.get();
 		$scope.eutente = Utenti.get({id: $routeParams.id });
 		$scope.title = "Utente "+$routeParams.id;
 		
@@ -506,7 +503,8 @@
 		}
 	}])
 	
-	.controller('PraticheController', ['$scope', 'Pratiche', 'Gestori', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, Pratiche, Gestori, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, $location) {
+	.controller('PraticheController', ['$scope', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, $location) {
+		$scope.me = Me.get();
 		$scope.gestori = Gestori.query();
 		$scope.comuni = Comuni.query();
 		$scope.utenti = Utenti.query();
@@ -527,6 +525,10 @@
 	
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider
+			.when('/', {
+				templateUrl: '/main.html',
+				controller: 'MainController'
+			})
 			.when('/gestori', {
 				templateUrl: '/anagrafiche.html',
 				controller: 'GestoriController'

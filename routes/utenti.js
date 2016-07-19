@@ -46,6 +46,13 @@ var checkPassword = function(id, password, cb, err) {
 	});	
 }
 
+router.get('/me', function(req, res, next) {
+	res.json({
+		id: req.user.id,
+		username: req.user.username,
+		userlevel: req.user.userlevel });
+});
+
 
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
