@@ -59,7 +59,7 @@ module.exports = function(passport) {
 //							console.log("error: "+err);
 							return done(err);
 						}
-						console.log("error: ");
+
 						return done(null, data[0]);
 					});
 				});	
