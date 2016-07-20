@@ -53,28 +53,100 @@
 				<th class="text-center">TipoPratica</th>
 				<th class="text-center">ProtoIN</th>
 				<th class="text-center">DateIN</th>
-
 				<th>note</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr ng-repeat="x in pratiche" ng-click="show(x.id)">
 				<td class="text-center">{{x.id}}</td>
-
 				<td class="text-center">{{x.nameGestore}}</td>
 				<td class="text-center">{{x.nameComune}}</td>
 				<td>{{x.address}}</td>
 				<td class="text-center">{{x.sitecode}}</td>
 				<td class="text-center">{{x.nameTipo}}</td>
-				
 				<td class="text-center">{{x.protoIN}}</td>
 				<td class="text-center">{{x.dataIN}}</td>
-				
 				<td>{{x.note}}</td>
 			</tr>
 		</tbody>
 	</table>
+</script>
 
+<script type="text/ng-template" id="/praticaDetails.html">
+<div ng-include="'/public/navbar.html'"></div>	
+<div class="container">
+  <h2>{{ title }}</h2>
+  <form class="form-horizontal" role="form">
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="gestore">Gestore:</label>
+      <div class="col-sm-10">
+		<select data-ng-options="g.id as g.name for g in gestori" data-ng-model="epratica.idGestore"></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="comune">Comune:</label>
+      <div class="col-sm-10">
+		<select data-ng-options="g.id as g.name for g in comuni" data-ng-model="epratica.idComune"></select>
+      </div>
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="address">Indirizzo:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="address" ng-model="epratica.address" placeholder="Indirizzo">
+      </div>
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="sitecode">Codice Sito:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="sitecode" ng-model="epratica.sitecode" placeholder="Codice Sito">
+      </div>
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="tipopratica">Tipo Pratica:</label>
+      <div class="col-sm-10">
+		<select data-ng-options="g.id as g.descrizione for g in consttipipratiche" data-ng-model="epratica.tipopratica"></select> 
+      </div>
+    </div>	
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="protoIN">Proto IN:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="protoIN" ng-model="epratica.protoIN" placeholder="Proto IN">
+      </div>
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="dataIN">Data IN:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="dataIN" ng-model="epratica.dataIN" placeholder="Data IN">
+      </div>
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="protoOUT">Proto OUT:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="protoOUT" ng-model="epratica.protoOUT" placeholder="Proto OUT">
+      </div>
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="dataOUT">Data OUT:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="dataOUT" ng-model="epratica.dataOUT" placeholder="Data OUT">
+      </div>
+    </div>
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="note">Note:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="note" ng-model="epratica.note" placeholder="Note">
+      </div>
+    </div>
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+        <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+      </div>
+    </div>
+  </form>
+</div>
 </script>
 
 <script type="text/ng-template" id="/anagrafiche.html">
@@ -242,7 +314,7 @@
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
         <div class="pull-right">
-			<button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="changepw()">Cambia Password</button>
+			<button type="submit" class="btn btn-primary" ng-show="!isnew" ng-click="changepw()">Cambia Password</button>
 			<button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button>
 		</div>
       </div>
@@ -520,6 +592,40 @@
 		}
 		$scope.show = function(id) {
 			$location.url('pratiche/'+id);
+		}
+	}])
+	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, $location) {
+		$scope.me = Me.get();
+		$scope.isnew = ($routeParams.id === "new");
+		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id });
+		$scope.title = $scope.isnew ? "Nuova Pratica" : "Pratica "+$routeParams.id;
+		
+		$scope.gestori = Gestori.query();
+		$scope.comuni = Comuni.query();
+		$scope.utenti = Utenti.query();
+
+		$scope.integrazioni = Integrazioni.query();
+		$scope.conststatipratiche = ConstStatiPratiche.query();
+		$scope.consttipipratiche = ConstTipiPratiche.query();
+		
+		$scope.update = function( ){
+			if ($scope.isnew) {
+				if (!$scope.epratica) return;
+
+				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dataIN: $scope.epratica.dataIN, protoOUT: $scope.epratica.protoOUT, dataOUT: $scope.epratica.dataOUT, note: $scope.epratica.note });
+				
+				pratica.$save(function(){
+					$location.url('pratiche');
+				});
+			}
+			else
+				Pratiche.update({id: $scope.epratica.id}, $scope.epratica, function() {
+					$location.url('pratiche');
+				});
+		}
+
+		$scope.cancel = function() {
+			$location.url('pratiche');
 		}
 	}])
 	
