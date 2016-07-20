@@ -14,7 +14,7 @@ var getConnection = function(callback) {
 var query = function(query, args, callback, errcallback) {
     pool.getConnection(function(err, connection) {
 		connection.query(mysql.format(query, args), function(err, data) {
-            if (err) errcallback(err);
+            if (err && errcallback) errcallback(err);
 			else callback(data);
         });
 

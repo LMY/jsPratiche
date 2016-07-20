@@ -5,7 +5,7 @@ module.exports = {
 	},
 	
 	json1: function(res, data) {
-		res.json(data.length == 1 ? data[0] : []);
+		res.json(data && data.length == 1 ? data[0] : []);
 	},
 	
 	error400: function(res, err) {
