@@ -18,7 +18,15 @@ app.set('view engine', 'ejs');
 
 
 // initialize passport
-app.use(expressSession({secret: config.secret}));
+app.use(expressSession({secret: config.secret
+    ,name: "jspratiche"
+//    ,store: sessionStore // connect-mongo session store
+    ,proxy: true
+    ,resave: false
+    ,saveUninitialized: false
+	/*,cookie: { secure: true }*/
+	}));
+	
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());

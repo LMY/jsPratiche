@@ -11,5 +11,15 @@ var getConnection = function(callback) {
     });
 };
 
-module.exports = getConnection;
+var query = function(query, args, callback, errcallback) {
+    pool.getConnection(function(err, connection) {
+		connection.query(mysql.format(query, args), function(err, data) {
+            if (err) errcallback(err);
+			else callback(data);
+        });
 
+		connection.release();
+    });
+};
+
+module.exports = getConnection;

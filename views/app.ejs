@@ -34,8 +34,7 @@
 
 
 <script type="text/ng-template" id="/pratiche.html">
-	<div ng-include="'/public/navbar.html'"></div>
-
+<div ng-include="'/public/navbar.html'"></div>
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuova Pratica</button>
@@ -142,7 +141,7 @@
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" confirmed-click="remove()" ng-confirm-click="Sei sicuro?">Remove</button></div>
       </div>
     </div>
   </form>
@@ -196,7 +195,7 @@
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" confirmed-click="remove()" ng-confirm-click="Sei sicuro?">Remove</button></div>
       </div>
     </div>
   </form>
@@ -225,7 +224,7 @@
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" confirmed-click="remove()" ng-confirm-click="Sei sicuro?">Remove</button></div>
       </div>
     </div>
   </form>
@@ -315,7 +314,7 @@
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
         <div class="pull-right">
 			<button type="submit" class="btn btn-primary" ng-show="!isnew" ng-click="changepw()">Cambia Password</button>
-			<button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button>
+			<button type="submit" class="btn btn-danger" ng-show="!isnew" confirmed-click="remove()" ng-confirm-click="Sei sicuro?">Remove</button>
 		</div>
       </div>
     </div>
@@ -332,21 +331,21 @@
 		<div class="form-group">
 		  <label class="control-label col-sm-2">Vecchia Password:</label>
 		  <div class="col-sm-10">          
-			<input type="password" class="form-control" ng-model="eutente.oldpassword" placeholder="">
+			<input type="password" class="form-control" ng-model="eutente.oldpassword">
 		  </div>
 		</div>
 		
 		<div class="form-group">
 		  <label class="control-label col-sm-2">Password:</label>
 		  <div class="col-sm-10">          
-			<input type="password" class="form-control" ng-model="eutente.password1" placeholder="">
+			<input type="password" class="form-control" ng-model="eutente.password1">
 		  </div>
 		</div>
 		
 		<div class="form-group">
 		  <label class="control-label col-sm-2">Ripeti Password:</label>
 		  <div class="col-sm-10">          
-			<input type="password" class="form-control" ng-model="eutente.password2" placeholder="">
+			<input type="password" class="form-control" ng-model="eutente.password2">
 		  </div>
 		</div>
 		
@@ -362,7 +361,7 @@
 
 
 
-<script> angular.module('app', ['ngRoute', 'ngResource'])
+<script>var app = angular.module('app', ['ngRoute', 'ngResource'])
 	.factory('Gestori', ['$resource', function($resource){
 		return $resource('/gestori/:id', null, {
 			'update': { method:'PUT' }
@@ -673,6 +672,20 @@
 			})
 			;
 	}]);
+	
+app.directive('ngConfirmClick', [function(){
+	return {
+		link: function (scope, element, attr) {
+			var msg = attr.ngConfirmClick || "Are you sure?";
+			var clickAction = attr.confirmedClick;
+			element.bind('click', function(event) {
+				if (window.confirm(msg)) {
+					scope.$eval(clickAction)
+				}
+			});
+		}
+	};
+}])
 </script>
 
 <!-- Update navbar active -->

@@ -1,3 +1,4 @@
+var rest = require('../helpers/rest.js');
 var mysql = require('mysql');
 var bCrypt = require('bcrypt');
 var sql = require('../helpers/db.js');
@@ -57,8 +58,8 @@ router.get('/me', function(req, res, next) {
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM '+tableName, function(err, data) {
-            if (err) throw err;
-			res.json(data);
+            if (err) rest.error500(err);
+			else res.json(data);
 		});
     });
 });
@@ -68,8 +69,8 @@ router.get('/:id', function(req, res, next) {
 		var query = mysql.format('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM ?? WHERE id=?', [tableName, req.params.id]);
 		
 		connection.query(query, function(err, data) {
-			if (err) throw err;
-			res.json(data.length == 1 ? data[0] : []);
+            if (err) rest.error500(err);
+			else res.json(data.length == 1 ? data[0] : []);
 		});
 	});
 });
@@ -79,14 +80,14 @@ router.delete('/:id', function(req, res, next) {
 	getUserLevel(req.params.id, function(requserlvl) {
 		// a normal user cannot delete an account <= level. superuser(lvl=0) can delete anything
 		if (req.user.userlevel != 0 && requserlvl <= req.user.userlevel)
-			res.render("error", {message:"not authorized"});
+			rest.error403(res);
 		else
 			sql(function (err, connection) {
 				var query = mysql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
 				
 				connection.query(query, function(err, data) {
-					if (err) throw err;
-					res.json(data);
+					if (err) rest.error500(err);
+					else rest.deleted(res, data);
 				});
 			});
 	});
@@ -96,19 +97,15 @@ router.post('/', function(req, res, next) {
 
 	// a normal user cannot create users
 	if (req.user.userlevel != 0)
-		res.render("error", {message:"not authorized"});
+		rest.error403(res);
 	else
 		sql(function (err, connection) {
-
-			var reqhash = calculatehash(req.body.password);
-			
-			var query = "INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)";
-			var table = [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1];
-			query = mysql.format(query, table);
+			var reqhash = calculatehash(req.body.password);			
+			var query = mysql.format("INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1]);
 		
 			connection.query(query, function(err, data) {
-				if (err) throw err;
-				res.json(data);
+				if (err) rest.error500(err);
+				else rest.created(res, data);
 			});
 		});
 });
@@ -117,17 +114,15 @@ router.put('/:id', function(req, res, next) {
 	
 	// a normal user cannot update other users
 	if (req.user.userlevel != 0 && req.user.id != req.params.id)
-		res.render("error", {message:"not authorized"});
+			rest.error403(res);
 	else
 		sql(function (err, connection) {
-		var query = "UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?";
 			var newhash =  calculatehash(req.body.password);
-			var table = [tableName, "username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id];
-			query = mysql.format(query, table);
+			var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id]);
 		
 			connection.query(query, function(err, data) {
-				if (err) throw err;
-				res.json(data);
+				if (err) rest.error500(err);
+				else rest.updated(res, data);
 			});
 		});
 });
@@ -136,24 +131,21 @@ router.put('/password/:id', function(req, res, next) {
 	
 	// a normal user cannot update other users passwords
 	if (req.user.userlevel != 0 && req.user.id != req.params.id)
-		res.render("error", {message:"not authorized"});
-	else {
-		
+		rest.error403(res);
+	else {	
 		checkPassword(req.user.id, req.body.oldpassword, function() {
 			sql(function (err, connection) {
-				var query = "UPDATE ?? SET ?? = ? WHERE ?? = ?";
 				var newhash =  calculatehash(req.body.password);
-				var table = [tableName, "hash", newhash, "id", req.params.id];
-				query = mysql.format(query, table);
+				var query = mysql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "hash", newhash, "id", req.params.id]);
 			
 				connection.query(query, function(err, data) {
-					if (err) throw err;
-					res.json(data);
+					if (err) rest.error500(err);
+					else rest.updated(res, data);
 				});
 			});
 		},
 		function(err) {
-			res.render("error", { message: err });
+			rest.error403(res);
 		});
 	}
 });

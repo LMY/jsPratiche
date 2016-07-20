@@ -1,11 +1,12 @@
 /*
 Gestore(id, name, pec)
 Comune(id, name, pec)
-Utenti(id, username, hash, name, surname, email, phone, lastlogin)
-Pratiche(id, idGestore, idComune, address, sitecode, protoIN, dataIN, protoOUT, dateOUT, note)
+Utenti(id, username, hash, name, surname, email, phone, lastlogin, userlevel)
+Pratiche(id, idGestore, idComune, address, sitecode, tipopratica, protoIN, dataIN, protoOUT, dataOUT, note)
 ConstStatoPratiche(id, descrizione)
-StatoPratiche(idPratica, idUtente, idStato, timePoint)
-StoricoStatoPratiche(id, idPratica, idUtente, idStato, timePoint)
+ConstTipoPratiche(id, descrizione)
+StatoPratiche(idPratica, idUtente, idStato, idUtenteModifica, timePoint)
+StoricoStatoPratiche(id, idPratica, idUtente, idStato, idUtenteModifica, timePoint)
 Integrazioni(idPratica, dateOUT, dateIN, protoOUT, protoIN, note)
 */
 
@@ -29,13 +30,28 @@ CREATE TABLE Gestori (
 CREATE TABLE Utenti (
   id int(11) NOT NULL AUTO_INCREMENT,
   username varchar(50),
-  hash varchar(50),
+  hash varchar(256),
   name varchar(50),
   surname varchar(50),
   email varchar(50),
   phone varchar(50),
 /*  firstlogin datetime TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, */
-  lastlogin TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  lastlogin TIMESTAMP,
+  userlevel int(11),
+  PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE ConstTipoPratiche (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  descrizione varchar(50),
+  
+  PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE ConstStatoPratiche (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  descrizione varchar(50),
+  
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
@@ -46,6 +62,8 @@ CREATE TABLE Pratiche (
   address varchar(50),
   sitecode varchar(50),
 
+  tipopratica int(11),
+  
   protoIN varchar(50),
   dataIN date,
 
@@ -55,16 +73,11 @@ CREATE TABLE Pratiche (
   note varchar(256),
   
   PRIMARY KEY (id),
+  FOREIGN KEY (tipopratica) REFERENCES ConstTipoPratiche(id) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (idGestore) REFERENCES Gestori(id) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (idComune) REFERENCES Comuni(id) ON DELETE SET NULL ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE ConstStatoPratiche (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  descrizione varchar(50),
-  
-  PRIMARY KEY (id)
-) DEFAULT CHARSET=utf8;
 
 CREATE TABLE StatoPratiche (
   idPratica int(11),
@@ -113,4 +126,3 @@ CREATE TABLE Integrazioni (
   PRIMARY KEY (idPratica, dateOUT),
   FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) DEFAULT CHARSET=utf8;
-
