@@ -574,14 +574,8 @@
 		}
 	}])
 	
-	.controller('PraticheController', ['$scope', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, $location) {
+	.controller('PraticheController', ['$scope', 'Me', 'Pratiche', '$location', function($scope, Me, Pratiche, $location) {
 		$scope.me = Me.get();
-		$scope.gestori = Gestori.query();
-		$scope.comuni = Comuni.query();
-		$scope.utenti = Utenti.query();
-		$scope.integrazioni = Integrazioni.query();
-		$scope.conststatipratiche = ConstStatiPratiche.query();
-		$scope.consttipipratiche = ConstTipiPratiche.query();
 		$scope.pratiche = Pratiche.query(function() {
 			$scope.pratiche.forEach(function(x) { x.dataIN = x.dataIN.substring(0, 10); });
 		});
