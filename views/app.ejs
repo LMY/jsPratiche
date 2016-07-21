@@ -148,6 +148,40 @@
 </div>
 </script>
 
+<script type="text/ng-template" id="/praticaStatoDetails.html">
+<div ng-include="'/public/navbar.html'"></div>	
+<div class="container">
+	<h2>{{ title }}</h2>
+	<div>{{ infoline }}</div>
+	<div>
+		div coi bottoni: tipo {{ epratica.idStato }}
+		<button class="btn btn-default" ng-click="cancel()">Indietro</button>
+		<button class="btn btn-success" ng-click="show()">Modifica</button>
+	</div>
+	<div>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Stato</th>
+					<th>Utente</th>
+					<th>Quando</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="x in stati">
+					<td>{{x.id}}</td>
+					<td>{{x.stato}}</td>
+					<td>{{x.username}}</td>
+					<td>{{x.timepoint}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</script>
+
+
 <script type="text/ng-template" id="/anagrafiche.html">
 	<div ng-include="'/public/navbar.html'"></div>
 	<div class="form-group">
@@ -577,11 +611,14 @@
 	.controller('PraticheController', ['$scope', 'Me', 'Pratiche', '$location', function($scope, Me, Pratiche, $location) {
 		$scope.me = Me.get();
 		$scope.pratiche = Pratiche.query(function() {
-			$scope.pratiche.forEach(function(x) { x.dataIN = x.dataIN.substring(0, 10); });
+			$scope.pratiche.forEach(function(x) {
+				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
+				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
+			});
 		});
 		
 		$scope.new = function() {
-			$location.url('pratiche/new');
+			$location.url('pratiche/detail/new');
 		}
 		$scope.show = function(id) {
 			$location.url('pratiche/'+id);
@@ -590,7 +627,10 @@
 	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, $location) {
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
-		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id });
+		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id }, function(x) {
+			if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
+			if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
+		});
 		$scope.title = $scope.isnew ? "Nuova Pratica" : "Pratica "+$routeParams.id;
 		
 		$scope.gestori = Gestori.query();
@@ -620,6 +660,37 @@
 		$scope.cancel = function() {
 			$location.url('pratiche');
 		}
+		
+		$scope.remove = function() {
+			Pratiche.remove({id: $scope.epratica.id}, function() {
+				$location.url('pratiche');
+			});
+		}
+	}])
+		.controller('PraticaStatoDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, $location) {
+		$scope.me = Me.get();
+		$scope.isnew = ($routeParams.id === "new");
+		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id }, function(x) {
+			if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
+			if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
+		});
+		$scope.title = $scope.isnew ? "Nuova Pratica" : "Pratica "+$routeParams.id;
+		
+		$scope.gestori = Gestori.query();
+		$scope.comuni = Comuni.query();
+		$scope.utenti = Utenti.query();
+
+		$scope.integrazioni = Integrazioni.query();
+		$scope.conststatipratiche = ConstStatiPratiche.query();
+		$scope.consttipipratiche = ConstTipiPratiche.query();
+		
+		$scope.cancel = function() {
+			$location.url('pratiche');
+		}
+		
+		$scope.show = function() {
+			$location.url('pratiche/detail/'+$scope.epratica.id);
+		}
 	}])
 	
 	.config(['$routeProvider', function($routeProvider) {
@@ -648,10 +719,14 @@
 				templateUrl: '/pratiche.html',
 				controller: 'PraticheController'
 			})			
-			.when('/pratiche/:id', {
+			.when('/pratiche/detail/:id', {
 				templateUrl: '/praticaDetails.html',
 				controller: 'PraticaDetailController'
-			})			
+			})
+			.when('/pratiche/:id', {
+				templateUrl: '/praticaStatoDetails.html',
+				controller: 'PraticaStatoDetailController'
+			})
 			.when('/utenti', {
 				templateUrl: '/utenti.html',
 				controller: 'UtentiController'

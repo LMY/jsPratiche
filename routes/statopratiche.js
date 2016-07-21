@@ -87,21 +87,17 @@ router.delete('/:id', function(req, res, next) {
 });*/
 
 router.post('/', function(req, res, next) {
+	var userid = req.user.id;
+		
     sql(function (err, connection) {
-	var query = "INSERT INTO ??(??,??,??,??) VALUES (?,?,?,?)";
-        var table = [tableName, "idPratica", "idUtente", "idStato", "timePoint", req.body.id, req.body.user, req.body.state, Date.now() ];
-        query = mysql.format(query, table);
+		var query =  mysql.format("INSERT INTO ??(??,??,??,idUtenteModifica) VALUES (?,?,?,?)", [tableName, "idPratica", "idUtente", "idStato", req.body.id, req.body.user, req.body.state, userid ]);
 	
         connection.query(query, function(err, data) {
             if (err)			
 				throw err;
 
 			// if OK, update Current table
-			query = "INSERT INTO ??(??,??,??,??) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE ??=?, ??=?, ??=?";
-			table = [tableNameCurrent, "idPratica", "idUtente", "idStato", "timePoint", req.body.id, req.body.user, req.body.state, Date.now(),
-				 "idUtente", req.body.user, "idStato", req.body.state, "timePoint", Date.now() ];
-
-			query = mysql.format(query, table);
+			query = mysql.format("INSERT INTO ??(??,??,??,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE ??=?, ??=?", [tableNameCurrent, "idPratica", "idUtente", "idStato", req.body.id, req.body.user, req.body.state, "idUtente", req.body.user, "idStato", req.body.state, userid ]);
 		
 			connection.query(query, function(err, data) {			
 				if (err) rest.error500(err);
