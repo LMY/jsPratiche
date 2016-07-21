@@ -1,7 +1,7 @@
 var rest = require('../helpers/rest.js');
 var mysql = require('mysql');
 var sql = require('../helpers/db.js');
-var tableName = 'StoricoStatoPratiche';
+var tableNameHistory = 'StoricoStatoPratiche';
 var tableNameCurrent = 'StatoPratiche';
 
 var express = require('express');
@@ -9,9 +9,20 @@ var router = express.Router();
 
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
-        connection.query('SELECT * FROM '+tableName, function(err, data) {
+        connection.query('SELECT * FROM StoricoStatoPratiche', function(err, data) {
             if (err) rest.error500(err);
 			else res.json(data);
+		});
+    });
+});
+
+router.get('/:id', function(req, res, next) {
+    sql(function(err,connection) {
+		var query = mysql.format('SELECT * FROM StoricoStatoPratiche WHERE id=?', [req.params.id]);
+		
+        connection.query(query, function(err, data) {
+            if (err) rest.error500(err);
+			else res.json(data.length == 1 ? data[0] : []);
 		});
     });
 });
@@ -34,18 +45,10 @@ router.get('/tipi', function(req, res, next) {
     });
 });
 
-router.get('/current', function(req, res, next) {
+router.get('/history/:id', function(req, res, next) {
     sql(function(err,connection) {
-        connection.query('SELECT * FROM '+tableNameCurrent, function(err, data) {
-            if (err) rest.error500(err);
-			else res.json(data);
-		});
-    });
-});
-
-router.get('/current/:id', function(req, res, next) {
-    sql(function(err,connection) {
-		var query = mysql.format('SELECT * FROM ?? WHERE ??=?', [tableNameCurrent, "idPratica", req.params.id]);
+		//idPratica, idUtente, idStato, idUtenteModifica, timePoint)
+		var query = mysql.format('SELECT A.*, Utenti.username as usernameMod FROM (SELECT StoricoStatoPratiche.id, StoricoStatoPratiche.idPratica, StoricoStatoPratiche.idUtente, StoricoStatoPratiche.idStato, StoricoStatoPratiche.idUtenteModifica, StoricoStatoPratiche.timePoint, Utenti.username as usernameAss, ConstStatoPratiche.descrizione as descStato FROM StoricoStatoPratiche LEFT JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) LEFT JOIN ConstStatoPratiche on (StoricoStatoPratiche.idStato = ConstStatoPratiche.id) WHERE StoricoStatoPratiche.idPratica=? ORDER BY StoricoStatoPratiche.id DESC) AS A LEFT JOIN Utenti on (A.idUtenteModifica = Utenti.id)', [req.params.id]);
 				
         connection.query(query, function(err, data) {
             if (err) rest.error500(err);
@@ -54,24 +57,13 @@ router.get('/current/:id', function(req, res, next) {
     });
 });
 
-router.get('/pratica/:id', function(req, res, next) {
+router.get('/current/:id', function(req, res, next) {
     sql(function(err,connection) {
-		var query = mysql.format('SELECT * FROM ?? WHERE ??=?', [tableName, "idPratica", req.params.id]);
-			
+		var query = mysql.format('SELECT A.*, Utenti.username as usernameMod FROM (SELECT StoricoStatoPratiche.id, StoricoStatoPratiche.idPratica, StoricoStatoPratiche.idUtente, StoricoStatoPratiche.idStato, StoricoStatoPratiche.idUtenteModifica, StoricoStatoPratiche.timePoint, Utenti.username as usernameAss, ConstStatoPratiche.descrizione as descStato FROM StoricoStatoPratiche LEFT JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) LEFT JOIN ConstStatoPratiche on (StoricoStatoPratiche.idStato = ConstStatoPratiche.id) WHERE StoricoStatoPratiche.idPratica=? ORDER BY StoricoStatoPratiche.id DESC) AS A LEFT JOIN Utenti on (A.idUtenteModifica = Utenti.id)', [req.params.id]);
+				
         connection.query(query, function(err, data) {
             if (err) rest.error500(err);
-			else res.json(data.length == 1 ? data[0] : []);
-		});
-    });
-});
-
-router.get('/:id', function(req, res, next) {
-    sql(function(err,connection) {
-		var query = mysql.format('SELECT * FROM ?? WHERE ??=?', [tableName, "id", req.params.id]);
-		
-        connection.query(query, function(err, data) {
-            if (err) rest.error500(err);
-			else res.json(data.length == 1 ? data[0] : []);
+			else res.json(data);
 		});
     });
 });
@@ -79,7 +71,7 @@ router.get('/:id', function(req, res, next) {
 /*
 router.delete('/:id', function(req, res, next) {
     sql(function (err, connection) {
-        connection.query('DELETE FROM '+tableName+' WHERE id = '+req.params.id, function(err, data) {
+        connection.query('DELETE FROM '+tableNameHistory+' WHERE id = '+req.params.id, function(err, data) {
             if (err) throw err;
 			res.json(data);
         });
@@ -90,7 +82,7 @@ router.post('/', function(req, res, next) {
 	var userid = req.user.id;
 		
     sql(function (err, connection) {
-		var query =  mysql.format("INSERT INTO ??(??,??,??,idUtenteModifica) VALUES (?,?,?,?)", [tableName, "idPratica", "idUtente", "idStato", req.body.id, req.body.user, req.body.state, userid ]);
+		var query =  mysql.format("INSERT INTO ??(??,??,??,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, "idPratica", "idUtente", "idStato", req.body.id, req.body.user, req.body.state, userid ]);
 	
         connection.query(query, function(err, data) {
             if (err)			
@@ -110,7 +102,7 @@ router.post('/', function(req, res, next) {
 /*
 router.put('/:id', function(req, res, next) {
     sql(function (err, connection) {
-		var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ? AND ?? = ?", [tableName, "dateIN", req.body.dateIN, "protoOUT", req.body.protoOUT, "protoIN", req.body.protoIN, "note", req.body.note, "idPratica", req.params.id, "dateOUT", req.body.dateout ];
+		var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ? AND ?? = ?", [tableNameHistory, "dateIN", req.body.dateIN, "protoOUT", req.body.protoOUT, "protoIN", req.body.protoIN, "note", req.body.note, "idPratica", req.params.id, "dateOUT", req.body.dateout ];
 	
         connection.query(query, function(err, data) {
             if (err) rest.error500(err);

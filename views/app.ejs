@@ -154,30 +154,45 @@
 	<h2>{{ title }}</h2>
 	<div>{{ infoline }}</div>
 	<div>
-		div coi bottoni: tipo {{ epratica.idStato }}
-		<button class="btn btn-default" ng-click="cancel()">Indietro</button>
-		<button class="btn btn-success" ng-click="show()">Modifica</button>
+		<button class="btn btn-default" ng-click="stato(1)" ng-show="epratica.idStato != 1">Rilascia</button>
+		<button class="btn btn-default" ng-click="stato(2)" ng-show="epratica.idStato == 1">Prendi in carico</button>
+		<button class="btn btn-default" ng-click="stato(3)" ng-show="epratica.idStato == 2">Mancano misure</button>
+		<button class="btn btn-default" ng-click="stato(4)" ng-show="epratica.idStato == 1 || epratica.idStato == 2">Richiedi integrazioni</button>
+		<button class="btn btn-default" ng-click="stato(5)" ng-show="epratica.idStato == 7">Arrivate integrazioni</button>
+		<button class="btn btn-default" ng-click="stato(6)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
+		<button class="btn btn-default" ng-click="stato(7)" ng-show="epratica.idStato == 4">Corretto</button>
 	</div>
+
 	<div>
 		<table class="table table-hover">
 			<thead>
 				<tr>
 					<th>ID</th>
 					<th>Stato</th>
-					<th>Utente</th>
+					<th>Utente assegnato</th>					
 					<th>Quando</th>
+					<th>Utente modifica</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="x in stati">
+				<tr ng-repeat="x in history">
 					<td>{{x.id}}</td>
-					<td>{{x.stato}}</td>
-					<td>{{x.username}}</td>
-					<td>{{x.timepoint}}</td>
+					<td>{{x.descStato}}</td>
+					<td>{{x.usernameAss}}</td>
+					<td>{{x.timePoint}}</td>
+					<td>{{x.usernameMod}}</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
+	
+	<div>
+		<button class="btn btn-default" ng-click="cancel()">Indietro</button>
+		<div class="pull-right">
+			<button class="btn btn-default" ng-click="show()">Modifica</button>
+		</div>
+	</div>
+
 </div>
 </script>
 
@@ -347,8 +362,8 @@
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
         <div class="pull-right">
-			<button type="submit" class="btn btn-primary" ng-show="!isnew" ng-click="changepw()">Cambia Password</button>
-			<button type="submit" class="btn btn-danger" ng-show="!isnew" confirmed-click="remove()" ng-confirm-click="Sei sicuro?">Remove</button>
+			<button type="submit" class="btn btn-primary" ng-click="changepw()" ng-show="!isnew &&(me.userlevel == 0 || me.id == eutente.id)">Cambia Password</button>
+			<button type="submit" class="btn btn-danger" confirmed-click="remove()" ng-confirm-click="Sei sicuro?" ng-show="!isnew && me.userlevel == 0 && me.id != eutente.id">Remove</button>
 		</div>
       </div>
     </div>
@@ -434,6 +449,7 @@
 	}])
 	.factory('StoricoStatoPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/:id', null, {
+			'get' : { method:'GET', url:'/statopratiche/history/:id', isArray:true},
 			'update': { method:'PUT' }
 		});
 	}])
@@ -667,30 +683,31 @@
 			});
 		}
 	}])
-		.controller('PraticaStatoDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, $location) {
-		$scope.me = Me.get();
-		$scope.isnew = ($routeParams.id === "new");
-		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id }, function(x) {
-			if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
-			if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
-		});
-		$scope.title = $scope.isnew ? "Nuova Pratica" : "Pratica "+$routeParams.id;
-		
-		$scope.gestori = Gestori.query();
-		$scope.comuni = Comuni.query();
-		$scope.utenti = Utenti.query();
+		.controller('PraticaStatoDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'StoricoStatoPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, StoricoStatoPratiche, $location) {
+			$scope.me = Me.get();
+			$scope.epratica = Pratiche.get({id: $routeParams.id }, function(x) {
+				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
+				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
+			});
+			$scope.title = "Pratica "+$routeParams.id;
+			
+			$scope.gestori = Gestori.query();
+			$scope.comuni = Comuni.query();
+			$scope.utenti = Utenti.query();
 
-		$scope.integrazioni = Integrazioni.query();
-		$scope.conststatipratiche = ConstStatiPratiche.query();
-		$scope.consttipipratiche = ConstTipiPratiche.query();
-		
-		$scope.cancel = function() {
-			$location.url('pratiche');
-		}
-		
-		$scope.show = function() {
-			$location.url('pratiche/detail/'+$scope.epratica.id);
-		}
+			$scope.integrazioni = Integrazioni.query();
+			$scope.conststatipratiche = ConstStatiPratiche.query();
+			$scope.consttipipratiche = ConstTipiPratiche.query();
+			
+			$scope.history = StoricoStatoPratiche.get({id: $routeParams.id});
+			
+			$scope.cancel = function() {
+				$location.url('pratiche');
+			}
+			
+			$scope.show = function() {
+				$location.url('pratiche/detail/'+$scope.epratica.id);
+			}
 	}])
 	
 	.config(['$routeProvider', function($routeProvider) {
