@@ -35,8 +35,8 @@ CREATE TABLE Utenti (
   surname varchar(50),
   email varchar(50),
   phone varchar(50),
-/*  firstlogin datetime TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, */
-  lastlogin TIMESTAMP,
+/*  firstlogin datetime DATETIME ON UPDATE CURRENT_TIMESTAMP, */
+  lastlogin DATETIME,
   userlevel int(11),
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
@@ -85,7 +85,7 @@ CREATE TABLE StatoPratiche (
   idStato int(11),
   
   idUtenteModifica int(11),
-  timePoint TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  timePoint DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   PRIMARY KEY (idPratica),
   FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -102,7 +102,7 @@ CREATE TABLE StoricoStatoPratiche (
   idStato int(11),
   
   idUtenteModifica int(11),
-  timePoint TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  timePoint DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   PRIMARY KEY (id),
   FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON DELETE CASCADE ON UPDATE CASCADE,
