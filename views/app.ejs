@@ -12,6 +12,16 @@
 		background-color: #f8f8f8;
 		color: #777777;
 	}
+	.div-border-rounded {
+		border: 1px solid #aaaaaa;
+		padding: 15px;
+	}
+	.div-buttons {
+		border-radius: 25px;
+		border: 2px solid #73AD21;
+		padding: 20px;
+		margin: 50px;
+	}
 	</style>
 </head>
 <body>
@@ -153,14 +163,22 @@
 <div class="container">
 	<h2>{{ title }}</h2>
 	<div>{{ infoline }}</div>
-	<div>
-		<button class="btn btn-default" ng-click="stato(1)" ng-show="epratica.idStato != 1">Rilascia</button>
-		<button class="btn btn-default" ng-click="stato(2)" ng-show="epratica.idStato == 1">Prendi in carico</button>
-		<button class="btn btn-default" ng-click="stato(3)" ng-show="epratica.idStato == 2">Mancano misure</button>
-		<button class="btn btn-default" ng-click="stato(4)" ng-show="epratica.idStato == 1 || epratica.idStato == 2">Richiedi integrazioni</button>
-		<button class="btn btn-default" ng-click="stato(5)" ng-show="epratica.idStato == 7">Arrivate integrazioni</button>
-		<button class="btn btn-default" ng-click="stato(6)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
-		<button class="btn btn-default" ng-click="stato(7)" ng-show="epratica.idStato == 4">Corretto</button>
+	<div class="div-buttons">
+		<span class="div-border-rounded" ng-show="epratica.idStato == null || epratica.idStato == 1">
+			<button class="btn btn-primary" ng-click="stato(2, selectedUser)" >Prendi in carico</button>
+			<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
+		</span>
+		<button class="btn btn-primary" ng-click="stato(3)" ng-show="epratica.idStato == 2">Mancano misure</button>
+		<button class="btn btn-warning" ng-click="integric('A/111','2016-01-01')" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Richiedi integrazioni</button>
+		<button class="btn btn-warning" ng-click="integarr('A/111','2016-01-01')" ng-show="epratica.idStato == 7">Arrivate integrazioni</button>
+		<button class="btn btn-success" ng-click="stato(4)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
+		<span class="div-border-rounded" ng-show="epratica.idStato == 4">
+			<button class="btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
+			<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
+		</span>
+		<span class="pull-right">
+			<button class="btn btn-danger" ng-click="stato(1)" ng-show="epratica.idStato && epratica.idStato != 1">Rilascia</button>
+		</span>
 	</div>
 
 	<div>
@@ -554,7 +572,8 @@
 			$location.url('utenti/new');
 		}
 		$scope.show = function(id) {
-			$location.url('utenti/'+id);
+			if ($scope.me.userlevel == 0 || $scope.me.id == id)
+				$location.url('utenti/'+id);
 		}
 	}])
 	.controller('UtenteDetailCtrl', ['$scope', '$routeParams', 'Me', 'Utenti', '$location', function($scope, $routeParams, Me, Utenti, $location) {
@@ -684,12 +703,15 @@
 		}
 	}])
 		.controller('PraticaStatoDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'StoricoStatoPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, StoricoStatoPratiche, $location) {
-			$scope.me = Me.get();
+			$scope.me = Me.get(function(x) {
+				$scope.selectedUser = $scope.me.id
+			});
 			$scope.epratica = Pratiche.get({id: $routeParams.id }, function(x) {
 				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
 				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
+
+				$scope.title = "Pratica "+$routeParams.id+" stato: "+$scope.epratica.idStato;
 			});
-			$scope.title = "Pratica "+$routeParams.id;
 			
 			$scope.gestori = Gestori.query();
 			$scope.comuni = Comuni.query();
@@ -700,13 +722,36 @@
 			$scope.consttipipratiche = ConstTipiPratiche.query();
 			
 			$scope.history = StoricoStatoPratiche.get({id: $routeParams.id});
-			
+
 			$scope.cancel = function() {
 				$location.url('pratiche');
 			}
 			
 			$scope.show = function() {
 				$location.url('pratiche/detail/'+$scope.epratica.id);
+			}
+			
+			$scope.integric = function(proto, date) {
+				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 7 });
+				newstate.$save(function(){
+					$location.url('pratiche');
+				});
+			}
+			
+			$scope.integarr = function(proto, date) {
+				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 2 });
+				newstate.$save(function(){
+					$location.url('pratiche');
+				});
+			}
+			
+			$scope.stato = function(state, user) {
+				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
+				console.log("se3t: "+JSON.stringify(newstate));
+				
+				newstate.$save(function(){
+					$location.url('pratiche');
+				});
 			}
 	}])
 	

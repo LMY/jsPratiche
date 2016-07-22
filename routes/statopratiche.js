@@ -82,16 +82,19 @@ router.post('/', function(req, res, next) {
 	var userid = req.user.id;
 		
     sql(function (err, connection) {
-		var query =  mysql.format("INSERT INTO ??(??,??,??,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, "idPratica", "idUtente", "idStato", req.body.id, req.body.user, req.body.state, userid ]);
+		var query =  mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, req.body.idPratica, req.body.idUtente, req.body.idStato, userid ]);
+		
+		console.log(query);
 	
         connection.query(query, function(err, data) {
             if (err)			
 				throw err;
 
 			// if OK, update Current table
-			query = mysql.format("INSERT INTO ??(??,??,??,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE ??=?, ??=?", [tableNameCurrent, "idPratica", "idUtente", "idStato", req.body.id, req.body.user, req.body.state, "idUtente", req.body.user, "idStato", req.body.state, userid ]);
+			var query2 = mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE idUtente=?, idStato=?", [tableNameCurrent, req.body.idPratica, req.body.idUtente, req.body.idStato, userid, req.body.idUtente, req.body.idStato ]);
+			console.log(query2);
 		
-			connection.query(query, function(err, data) {			
+			connection.query(query2, function(err, data) {			
 				if (err) rest.error500(err);
 				else rest.created(res, data);
 			});
