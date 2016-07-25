@@ -36,27 +36,37 @@ router.post('/', function(req, res, next) {
 	var userid = req.user.id;
 
     sql(function (err, connection) {
-        var query = mysql.format('INSERT INTO ??(idGestore, idComune, address, sitecode, tipopratica, protoIN, dataIN, protoOUT, dataOUT, note) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dataIN, req.body.protoOUT, req.body.dataOUT, req.body.note]);
-	
-        connection.query(query, function(err, data) {
+		connection.query('START TRANSACTION;', function(err, data) {
 			if (err) rest.error500(res, err);
-			else
-				connection.query("SELECT LAST_INSERT_ID() AS id;", function(err, datares) {
+			else {
+				var query = mysql.format('INSERT INTO ??(idGestore, idComune, address, sitecode, tipopratica, protoIN, dataIN, protoOUT, dataOUT, note) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dataIN, req.body.protoOUT, req.body.dataOUT, req.body.note]);
+			
+				connection.query(query, function(err, data) {
 					if (err) rest.error500(res, err);
-					else {
-						var lastid = datares[0].id;
-									
-						connection.query(mysql.format("INSERT INTO StatoPratiche(idPratica,idUtenteModifica,idStato) VALUES (?,?,?)", [lastid, userid, 1]), function(err, datares2) {				
+					else
+						connection.query("SELECT LAST_INSERT_ID() AS id;", function(err, datares) {
 							if (err) rest.error500(res, err);
-							else 							
-								connection.query(mysql.format("INSERT INTO StoricoStatoPratiche(idPratica,idUtenteModifica,idStato) VALUES (?,?,?)", [lastid, userid, 1]), function(err, datares3) {
+							else {
+								var lastid = datares[0].id;
+											
+								connection.query(mysql.format("INSERT INTO StatoPratiche(idPratica,idUtenteModifica,idStato) VALUES (?,?,?)", [lastid, userid, 1]), function(err, datares2) {				
 									if (err) rest.error500(res, err);
-									rest.created(res, datares3[0]);
-								});
-							});
-					}
+									else 							
+										connection.query(mysql.format("INSERT INTO StoricoStatoPratiche(idPratica,idUtenteModifica,idStato) VALUES (?,?,?)", [lastid, userid, 1]), function(err, datares3) {
+											if (err) rest.error500(res, err);
+											else {
+												connection.query('COMMIT;', function(err, data) {
+													if (err) rest.error500(res, err);
+													rest.created(res, datares3[0]);
+												});
+											}
+										});
+									});
+							}
+						});
 				});
-        });
+			}
+		});
     });
 });
 

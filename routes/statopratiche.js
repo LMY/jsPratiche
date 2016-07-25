@@ -16,17 +16,6 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.get('/:id', function(req, res, next) {
-    sql(function(err,connection) {
-		var query = mysql.format('SELECT * FROM StoricoStatoPratiche WHERE id=?', [req.params.id]);
-		
-        connection.query(query, function(err, data) {
-            if (err) rest.error500(err);
-			else res.json(data.length == 1 ? data[0] : []);
-		});
-    });
-});
-
 router.get('/stati', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT * FROM ConstStatoPratiche', function(err, data) {
@@ -68,6 +57,50 @@ router.get('/current/:id', function(req, res, next) {
     });
 });
 
+router.get('/:id', function(req, res, next) {
+    sql(function(err,connection) {
+		var query = mysql.format('SELECT * FROM StoricoStatoPratiche WHERE id=?', [req.params.id]);
+		
+        connection.query(query, function(err, data) {
+            if (err) rest.error500(err);
+			else res.json(data.length == 1 ? data[0] : []);
+		});
+    });
+});
+
+router.post('/', function(req, res, next) {
+	var userid = req.user.id;
+		
+    sql(function (err, connection) {
+		connection.query('START TRANSACTION;', function(err, data) {
+			if (err) rest.error500(err);
+			else {
+				var query =  mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, req.body.idPratica, req.body.idUtente, req.body.idStato, userid ]);
+				
+				console.log(query);
+			
+				connection.query(query, function(err, data) {
+					if (err)			
+						throw err;
+
+					// if OK, update Current table
+					var query2 = mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE idUtente=?, idStato=?", [tableNameCurrent, req.body.idPratica, req.body.idUtente, req.body.idStato, userid, req.body.idUtente, req.body.idStato ]);
+					console.log(query2);
+				
+					connection.query(query2, function(err, data) {			
+						if (err) rest.error500(err);
+						else
+							connection.query('COMMIT;', function(err, data) {
+								if (err) rest.error500(err);
+								else rest.created(res, data);
+							});
+					});
+				});
+			}
+		});
+    });
+});
+
 /*
 router.delete('/:id', function(req, res, next) {
     sql(function (err, connection) {
@@ -77,31 +110,6 @@ router.delete('/:id', function(req, res, next) {
         });
     });
 });*/
-
-router.post('/', function(req, res, next) {
-	var userid = req.user.id;
-		
-    sql(function (err, connection) {
-		var query =  mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, req.body.idPratica, req.body.idUtente, req.body.idStato, userid ]);
-		
-		console.log(query);
-	
-        connection.query(query, function(err, data) {
-            if (err)			
-				throw err;
-
-			// if OK, update Current table
-			var query2 = mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE idUtente=?, idStato=?", [tableNameCurrent, req.body.idPratica, req.body.idUtente, req.body.idStato, userid, req.body.idUtente, req.body.idStato ]);
-			console.log(query2);
-		
-			connection.query(query2, function(err, data) {			
-				if (err) rest.error500(err);
-				else rest.created(res, data);
-			});
-		});
-    });
-});
-
 /*
 router.put('/:id', function(req, res, next) {
     sql(function (err, connection) {

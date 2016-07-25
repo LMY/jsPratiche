@@ -500,6 +500,9 @@
 		$scope.update = function( ){
 			if ($scope.isnew) {
 				if (!$scope.egestore || $scope.egestore.length < 1) return;
+				if (!$scope.egestore.name || $scope.egestore.name.length < 1) { alert('Specificare nome!'); return; }
+				if (!$scope.egestore.pec || $scope.egestore.pec.length < 1) { alert('Specificare PEC!'); return; }
+				
 				var gestore = new Gestori({ name: $scope.egestore.name, pec: $scope.egestore.pec });
 				gestore.$save(function(){
 					$location.url('gestori');					
@@ -542,6 +545,9 @@
 		$scope.update = function( ){
 			if ($scope.isnew) {
 				if (!$scope.ecomune || $scope.ecomune.length < 1) return;
+				if (!$scope.ecomune.name || $scope.ecomune.name.length < 1) { alert('Specificare nome!'); return; }
+				if (!$scope.ecomune.pec || $scope.ecomune.pec.length < 1) { alert('Specificare PEC!'); return; }
+				
 				var comune = new Comuni({ name: $scope.ecomune.name, pec: $scope.ecomune.pec });
 				comune.$save(function(){
 					$location.url('comuni');					
@@ -585,6 +591,7 @@
 		$scope.update = function( ){
 			if ($scope.isnew) {
 				if (!$scope.eutente || $scope.eutente.length < 1) return;
+				if (!$scope.eutente.username || $scope.eutente.username.length < 1) { alert('Specificare username!'); return; }
 				
 				var utente = new Utenti({ username: $scope.eutente.username, name: $scope.eutente.name, surname: $scope.eutente.surname, email: $scope.eutente.email, phone: $scope.eutente.phone });
 				utente.$save(function(){
@@ -617,8 +624,7 @@
 		$scope.eutente = Utenti.get({id: $routeParams.id });
 		$scope.title = "Utente "+$routeParams.id;
 		
-		$scope.update = function( ){
-			
+		$scope.update = function(){
 			if ($scope.eutente.password1 != $scope.eutente.password2) {
 				alert("Le password non corrispondono");
 				return;
@@ -679,6 +685,9 @@
 		$scope.update = function( ){
 			if ($scope.isnew) {
 				if (!$scope.epratica) return;
+				if (!$scope.epratica.idGestore) { alert('Specificare il gestore!'); return; }
+				if (!$scope.epratica.idComune) { alert('Specificare il Comune!'); return; }
+				if (!$scope.epratica.tipopratica) { alert('Specificare il tipo di pratica!'); return; }
 
 				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dataIN: $scope.epratica.dataIN, protoOUT: $scope.epratica.protoOUT, dataOUT: $scope.epratica.dataOUT, note: $scope.epratica.note });
 				
@@ -702,7 +711,7 @@
 			});
 		}
 	}])
-		.controller('PraticaStatoDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'StoricoStatoPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, StoricoStatoPratiche, $location) {
+	.controller('PraticaStatoDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'StoricoStatoPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, StoricoStatoPratiche, $location) {
 			$scope.me = Me.get(function(x) {
 				$scope.selectedUser = $scope.me.id
 			});
