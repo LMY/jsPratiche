@@ -5,3 +5,4 @@ npm-debug.log
 helpers/*~
 routes/*~
 views/*~
+public/js
