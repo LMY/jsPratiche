@@ -625,6 +625,11 @@
 		$scope.title = "Utente "+$routeParams.id;
 		
 		$scope.update = function(){
+			if (!$scope.eutente.password1 || $scope.eutente.password1.length < 1) {
+				alert("Devi specificare una password con almeno 2 maiuscole, 3 minuscole, 6 numeri, 4 animali, 2 colori e una tortiera.");
+				return;
+			}
+			
 			if ($scope.eutente.password1 != $scope.eutente.password2) {
 				alert("Le password non corrispondono");
 				return;

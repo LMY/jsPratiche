@@ -8,10 +8,29 @@ module.exports = function(passport) {
 	var calculatehash = function(input) {
 		bCrypt.genSalt(8, function (err, salt) {
 			bCrypt.hash(input, salt, function(err, hash) {
-				return hash;
+				console.log("calculatehash: "+hash);
 			});
 		});
 	}
+	
+	var formatLocalDate = function() {
+		var now = new Date(),
+		tzo = -now.getTimezoneOffset(),
+		dif = tzo >= 0 ? '+' : '-',
+		pad = function(num) {
+			var norm = Math.abs(Math.floor(num));
+			return (norm < 10 ? '0' : '') + norm;
+		};
+		return now.getFullYear() 
+			+ '-' + pad(now.getMonth()+1)
+			+ '-' + pad(now.getDate())
+			+ 'T' + pad(now.getHours())
+			+ ':' + pad(now.getMinutes()) 
+			+ ':' + pad(now.getSeconds()) 
+			+ dif + pad(tzo / 60) 
+			+ ':' + pad(tzo % 60);
+	}
+
 
     passport.serializeUser(function(user, done) {
 		done(null, user.id);
@@ -41,16 +60,19 @@ module.exports = function(passport) {
 				}
 
 				if (!bCrypt.compareSync(password, data[0].hash)) {
-//					console.log('Invalid Password');
-//					console.log("data[0].hash: "+data[0].hash);
-//					console.log("password given: "+password);
-//					console.log("should be: "+calculatehash(password));
+/*
+					// because sometimes you forget your hashes
+					console.log('Invalid Password');
+					console.log("data[0].hash: "+data[0].hash);
+					console.log("password given: "+password);
+					console.log("should be: "+calculatehash(password));
+*/
 					return done(null, false, req.flash('message', 'Invalid Password'));
 				}
 
 				// set lastlogin
 				sql(function(err, connection) {
-					var timestamp = new Date().toISOString(); //.slice(0, 19).replace('T', ' ');
+					var timestamp = formatLocalDate(); //new Date().toISOString(); //.slice(0, 19).replace('T', ' ');
 
 					var query2 = mysql.format('UPDATE ?? SET lastlogin=? WHERE username=?', ["Utenti", timestamp, username]);
 					connection.query(query2, function(err, data2) {

@@ -6,6 +6,7 @@ module.exports = {
         user     : 'ceruser',
         password : 'cerpass',
         database : 'jsPratiche',
+		dateStrings: 'date',
         debug    :  false
 	}
 };

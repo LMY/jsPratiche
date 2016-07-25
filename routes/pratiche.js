@@ -84,14 +84,37 @@ router.put('/:id', function(req, res, next) {
 
 /* DELETE /pratiche/:id */
 router.delete('/:id', function(req, res, next) {
-    sql(function (err, connection) {
-		var query = mysql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
+	
+	var userid = req.user.id;
 		
-        connection.query(query, function(err, data) {
-            if (err) rest.error500(res, err);
-            else rest.deleted(res, data);
-        });
-    });
+    sql(function (err, connection) {
+		connection.query('START TRANSACTION;', function(err, data) {
+			if (err) rest.error500(err);
+			else {
+				var query =  mysql.format("INSERT INTO StoricoStatoPratiche(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [req.params.id, userid, 10, userid ]);
+				
+				console.log(query);
+			
+				connection.query(query, function(err, data) {
+					if (err)			
+						throw err;
+
+					// if OK, update Current table
+					var query2 = mysql.format("INSERT INTO StatoPratiche(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE idUtente=?, idStato=?", [req.params.id, userid, 10, userid, userid, 10 ]);
+					console.log(query2);
+				
+					connection.query(query2, function(err, data) {			
+						if (err) rest.error500(err);
+						else
+							connection.query('COMMIT;', function(err, data) {
+								if (err) rest.error500(err);
+								else rest.created(res, data);
+							});
+					});
+				});
+			}
+		});
+    });	
 });
 
 module.exports = router;
