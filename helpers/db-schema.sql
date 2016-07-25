@@ -51,6 +51,7 @@ CREATE TABLE ConstTipoPratiche (
 CREATE TABLE ConstStatoPratiche (
   id int(11) NOT NULL AUTO_INCREMENT,
   descrizione varchar(50),
+  final BOOLEAN,
   
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;

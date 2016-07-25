@@ -9,7 +9,7 @@ var router = express.Router();
 /* GET /pratiche listing. */
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
-		var query = "select Pratiche.id, Pratiche.idGestore, Pratiche.idComune, Pratiche.address, Pratiche.sitecode, Pratiche.tipopratica, Pratiche.protoIN, Pratiche.dataIN, Pratiche.protoOUT, Pratiche.dataOUT, Pratiche.note, Gestori.name as nameGestore, Comuni.name as nameComune, ConstTipoPratiche.descrizione as nameTipo, B.idUtente, B.idStato, B.timePoint, B.stringStato FROM Pratiche LEFT JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id) LEFT JOIN (select StatoPratiche.idPratica, StatoPratiche.idUtente, StatoPratiche.idStato, StatoPratiche.timePoint, ConstStatoPratiche.descrizione as stringStato FROM StatoPratiche LEFT JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id)) AS B on (Pratiche.id = B.idPratica) ORDER BY Pratiche.ID;";
+		var query = "SELECT Pratiche.*, stringUser, StatoPratiche.idStato, ConstStatoPratiche.descrizione as stringStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, ConstStatoPratiche.final as Final FROM Pratiche LEFT OUTER JOIN (SELECT DISTINCT Pratiche.id, Utenti.username stringUser FROM Pratiche LEFT OUTER JOIN StoricoStatoPratiche on (Pratiche.id = StoricoStatoPratiche.idPratica) LEFT OUTER JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) WHERE StoricoStatoPratiche.idStato = 2) AS B on (Pratiche.id = B.id) LEFT OUTER JOIN StatoPratiche on (Pratiche.id = StatoPratiche.idPratica) LEFT OUTER JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id) LEFT OUTER JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT OUTER JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT OUTER JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id) WHERE Final=0 OR Final IS NULL;";
 		
 		connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
@@ -18,10 +18,22 @@ router.get('/', function(req, res, next) {
     });
 });
 
+router.get('/all', function(req, res, next) {
+    sql(function(err,connection) {
+		var query = "SELECT Pratiche.*, stringUser, StatoPratiche.idStato, ConstStatoPratiche.descrizione as stringStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, ConstStatoPratiche.final as Final FROM Pratiche LEFT OUTER JOIN (SELECT DISTINCT Pratiche.id, Utenti.username stringUser FROM Pratiche LEFT OUTER JOIN StoricoStatoPratiche on (Pratiche.id = StoricoStatoPratiche.idPratica) LEFT OUTER JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) WHERE StoricoStatoPratiche.idStato = 2) AS B on (Pratiche.id = B.id) LEFT OUTER JOIN StatoPratiche on (Pratiche.id = StatoPratiche.idPratica) LEFT OUTER JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id) LEFT OUTER JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT OUTER JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT OUTER JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id);";
+		
+		connection.query(query, function(err, data) {
+            if (err) rest.error500(res, err);
+			else res.json(data);
+        });
+    });
+});
+
+
 /* GET /pratiche/id */
 router.get('/:id', function(req, res, next) {
     sql(function(err, connection) {
-		var query = mysql.format("select Pratiche.id, Pratiche.idGestore, Pratiche.idComune, Pratiche.address, Pratiche.sitecode, Pratiche.tipopratica, Pratiche.protoIN, Pratiche.dataIN, Pratiche.protoOUT, Pratiche.dataOUT, Pratiche.note, Gestori.name as nameGestore, Comuni.name as nameComune, ConstTipoPratiche.descrizione as nameTipo, B.idUtente, B.idStato, B.timePoint, B.stringStato FROM Pratiche LEFT JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id) LEFT JOIN (select StatoPratiche.idPratica, StatoPratiche.idUtente, StatoPratiche.idStato, StatoPratiche.timePoint, ConstStatoPratiche.descrizione as stringStato FROM StatoPratiche LEFT JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id)) AS B on (Pratiche.id = B.idPratica) WHERE Pratiche.id=?", [req.params.id]);
+		var query = mysql.format("SELECT Pratiche.*, StatoPratiche.idStato FROM Pratiche LEFT OUTER JOIN StatoPratiche on (Pratiche.id = StatoPratiche.idPratica) WHERE Pratiche.id=?", [req.params.id]);
 		
 		connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
@@ -108,7 +120,7 @@ router.delete('/:id', function(req, res, next) {
 						else
 							connection.query('COMMIT;', function(err, data) {
 								if (err) rest.error500(err);
-								else rest.created(res, data);
+								else rest.deleted(res, data);
 							});
 					});
 				});

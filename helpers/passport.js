@@ -13,6 +13,7 @@ module.exports = function(passport) {
 		});
 	}
 	
+	// http://stackoverflow.com/questions/17415579/how-to-iso-8601-format-a-date-with-timezone-offset-in-javascript
 	var formatLocalDate = function() {
 		var now = new Date(),
 		tzo = -now.getTimezoneOffset(),
@@ -65,7 +66,7 @@ module.exports = function(passport) {
 					console.log('Invalid Password');
 					console.log("data[0].hash: "+data[0].hash);
 					console.log("password given: "+password);
-					console.log("should be: "+calculatehash(password));
+					calculatehash(password);
 */
 					return done(null, false, req.flash('message', 'Invalid Password'));
 				}

@@ -62,19 +62,27 @@
 				<th class="text-center">TipoPratica</th>
 				<th class="text-center">ProtoIN</th>
 				<th class="text-center">DateIN</th>
+				<th class="text-center">Stato</th>
+				<th class="text-center">Utente</th>
+				<th class="text-center">Scadenza</th>
 				<th>note</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr ng-repeat="x in pratiche" ng-click="show(x.id)">
 				<td class="text-center">{{x.id}}</td>
-				<td class="text-center">{{x.nameGestore}}</td>
-				<td class="text-center">{{x.nameComune}}</td>
+				<td class="text-center">{{x.stringGestore}}</td>
+				<td class="text-center">{{x.stringComune}}</td>
 				<td>{{x.address}}</td>
 				<td class="text-center">{{x.sitecode}}</td>
-				<td class="text-center">{{x.nameTipo}}</td>
+				<td class="text-center">{{x.stringTipo}}</td>
 				<td class="text-center">{{x.protoIN}}</td>
 				<td class="text-center">{{x.dataIN}}</td>
+				
+				<td class="text-center">{{x.stringStato}}</td>
+				<td class="text-center">{{x.stringUser}}</td>
+				<td class="text-center">boh</td>
+				
 				<td>{{x.note}}</td>
 			</tr>
 		</tbody>

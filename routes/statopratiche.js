@@ -77,15 +77,11 @@ router.post('/', function(req, res, next) {
 			else {
 				var query =  mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, req.body.idPratica, req.body.idUtente, req.body.idStato, userid ]);
 				
-				console.log(query);
-			
 				connection.query(query, function(err, data) {
-					if (err)			
-						throw err;
+					if (err) rest.error500(err);
 
 					// if OK, update Current table
 					var query2 = mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE idUtente=?, idStato=?", [tableNameCurrent, req.body.idPratica, req.body.idUtente, req.body.idStato, userid, req.body.idUtente, req.body.idStato ]);
-					console.log(query2);
 				
 					connection.query(query2, function(err, data) {			
 						if (err) rest.error500(err);
