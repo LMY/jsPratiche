@@ -17,10 +17,20 @@
 		padding: 15px;
 	}
 	.div-buttons {
-		border-radius: 25px;
+/*		border-radius: 25px; */
 		border: 2px solid #73AD21;
-		padding: 20px;
-		margin: 50px;
+		padding: 10px;
+		margin: 10px;
+	}
+	.time-integ {
+		color: green;
+	}	
+	.time-final {
+		color: orange;
+	}	
+	.time-exceed {
+		color: red;
+		font-weight: bold;
 	}
 	</style>
 
@@ -77,6 +87,7 @@
 				<th class="text-center"><a ng-click="orderByField='stringStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='stringStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='scadenzaData'; reverseSort=!reverseSort">Scadenza Data<span ng-show="orderByField=='scadenzaData'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
 				<th><a ng-click="orderByField='note'; reverseSort=!reverseSort">note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
@@ -93,7 +104,8 @@
 				
 				<td class="text-center">{{x.stringStato}}</td>
 				<td class="text-center">{{x.stringUser}}</td>
-				<td class="text-center">boh</td>
+				<td class="text-center {{x.scadenzaType}}">{{x.scadenza}}</td>
+				<td class="text-center {{x.scadenzaType}}">{{x.scadenzaData}}</td>
 				
 				<td>{{x.note}}</td>
 			</tr>
@@ -245,13 +257,12 @@
 			<button class="btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
 			<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
 		</span>
-		<span class="pull-right">
-			<button class="btn btn-danger" ng-click="stato(1)" ng-show="epratica.idStato && epratica.idStato != 1">Rilascia</button>
-		</span>
+
+		<button class="btn btn-danger pull-right" ng-click="stato(1)" ng-show="epratica.idStato && epratica.idStato != 1">Rilascia</button>
+		<div class="clearfix"></div>	<!-- https://github.com/twbs/bootstrap/issues/8843 -->
 	</div>
 
-	<div>
-		<table class="table table-hover" id="table3">
+		<table class="table table-hover">
 			<thead>
 				<tr>
 					<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
@@ -263,15 +274,15 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="x in history|orderBy:orderByField:reverseSort">
-					<td>{{x.id}}</td>
-					<td>{{x.descStato}}</td>
-					<td>{{x.usernameAss}}</td>
-					<td>{{x.timePoint}}</td>
-					<td>{{x.usernameMod}}</td>
+					<td class="text-center">{{x.id}}</td>
+					<td class="text-center">{{x.descStato}}</td>
+					<td class="text-center">{{x.usernameAss}}</td>
+					<td class="text-center">{{x.timePoint}}</td>
+					<td class="text-center">{{x.usernameMod}}</td>
 				</tr>
 			</tbody>
 		</table>
-	</div>
+
 	
 	<div>
 		<button class="btn btn-default" ng-click="cancel()">Indietro</button>
@@ -374,7 +385,7 @@
 			<button class="btn btn-primary" ng-click="new()">Nuovo Utente</button>
 		</div>
 	</div>
-	<table class="table table-hover" id="table5">
+	<table class="table table-hover">
 		<thead>
 			<tr>
 				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
@@ -757,11 +768,28 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = Pratiche.query(function() {
+			
+			var today = moment();
+		
 			$scope.pratiche.forEach(function(x) {
-				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
-				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
-				
 				x.rowClass = getTableRowClass(x.idStato);
+				
+				var arrivo = moment(x.dataIN);
+				var diff = moment.duration(today.diff(arrivo)).asDays();
+				
+				if (diff < 15) {
+					x.scadenza = ((30-diff)|0);
+					x.scadenzaType = "time-integ";
+				}
+				else if (diff < 30) {
+					x.scadenza = ((30-diff)|0);
+					x.scadenzaType = "time-final";
+				}
+				else {
+					x.scadenza = ((30-diff)|0);
+					x.scadenzaType = "time-exceed";
+				}
+				x.scadenzaData = arrivo.add(30, 'd').format('YYYY-MM-DD');
 			});
 		});
 		
@@ -777,10 +805,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = PraticheAll.query(function() {
-			$scope.pratiche.forEach(function(x) {
-				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
-				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
-				
+			$scope.pratiche.forEach(function(x) {			
 				x.rowClass = getTableRowClass(x.idStato);
 			});
 		});
