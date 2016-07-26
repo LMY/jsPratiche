@@ -1,9 +1,9 @@
 /*
 Gestore(id, name, pec)
 Comune(id, name, pec)
-Utenti(id, username, hash, name, surname, email, phone, lastlogin, userlevel)
+Utenti(id, username, hash, name, surname, email, phone, lastlogin, userlevel, pareri, correzioni)
 Pratiche(id, idGestore, idComune, address, sitecode, tipopratica, protoIN, dataIN, protoOUT, dataOUT, note)
-ConstStatoPratiche(id, descrizione)
+ConstStatoPratiche(id, descrizione, final)
 ConstTipoPratiche(id, descrizione)
 StatoPratiche(idPratica, idUtente, idStato, idUtenteModifica, timePoint)
 StoricoStatoPratiche(id, idPratica, idUtente, idStato, idUtenteModifica, timePoint)
@@ -38,6 +38,8 @@ CREATE TABLE Utenti (
 /*  firstlogin datetime TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, */
   lastlogin TIMESTAMP,
   userlevel int(11),
+  pareri boolean,
+  correzioni boolean,
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 

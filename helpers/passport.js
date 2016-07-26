@@ -39,7 +39,7 @@ module.exports = function(passport) {
 	
 	passport.deserializeUser(function(id, done) {
 		sql(function(err, connection) {
-			var query = mysql.format('SELECT id,username,userlevel FROM ?? WHERE id=?', ["Utenti", id]);
+			var query = mysql.format('SELECT id,username,userlevel,pareri,correzioni FROM Utenti WHERE id=?', [id]);
 			
 			connection.query(query, function(err, user) {
 				done(err, user[0]);
@@ -49,7 +49,7 @@ module.exports = function(passport) {
 	
 	passport.use('login', new LocalStrategy({ passReqToCallback : true }, function(req, username, password, done) { 
 		sql(function(err, connection) {
-			var query = mysql.format('SELECT * FROM ?? WHERE username=?', ["Utenti", username]);
+			var query = mysql.format('SELECT * FROM Utenti WHERE username=?', [username]);
 			connection.query(query, function(err, data) {
 
 				if (err)
@@ -75,7 +75,7 @@ module.exports = function(passport) {
 				sql(function(err, connection) {
 					var timestamp = formatLocalDate(); //new Date().toISOString(); //.slice(0, 19).replace('T', ' ');
 
-					var query2 = mysql.format('UPDATE ?? SET lastlogin=? WHERE username=?', ["Utenti", timestamp, username]);
+					var query2 = mysql.format('UPDATE Utenti SET lastlogin=? WHERE username=?', [timestamp, username]);
 					connection.query(query2, function(err, data2) {
 
 						if (err) {

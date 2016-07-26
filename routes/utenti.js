@@ -51,7 +51,10 @@ router.get('/me', function(req, res, next) {
 	res.json({
 		id: req.user.id,
 		username: req.user.username,
-		userlevel: req.user.userlevel });
+		userlevel: req.user.userlevel,
+		pareri: req.user.pareri,
+		correzioni: req.user.correzioni
+	});
 });
 
 

@@ -34,7 +34,7 @@
 	<link rel="stylesheet" href="public/js/bootstrap/dist/css/bootstrap.min.css" />
 	
 	<script type="text/javascript" src="public/js/moment/min/moment.min.js"></script>
-
+  
 	<script src="public/js/rm-datepicker/dist/rm-datepicker.min.js"></script>
 	<link rel="stylesheet" href="public/js/rm-datepicker/dist/rm-datepicker.min.css" />
 
@@ -62,26 +62,26 @@
 			<button class="btn btn-primary" ng-click="new()">Nuova Pratica</button>
 		</div>
 	</div>
-	
+
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th class="text-center">Gestore</th>
-				<th class="text-center">Comune</th>
-				<th>Indirizzo</th>
-				<th class="text-center">CodiceSito</th>
-				<th class="text-center">TipoPratica</th>
-				<th class="text-center">ProtoIN</th>
-				<th class="text-center">DateIN</th>
-				<th class="text-center">Stato</th>
-				<th class="text-center">Utente</th>
-				<th class="text-center">Scadenza</th>
-				<th>note</th>
+				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='stringGestore'; reverseSort=!reverseSort">Gestore <span ng-show="orderByField=='stringGestore'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
+				<th class="text-center"><a ng-click="orderByField='stringComune'; reverseSort=!reverseSort">Comune <span ng-show="orderByField=='stringComune'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th><a ng-click="orderByField='address'; reverseSort=!reverseSort">Indirizzo <span ng-show="orderByField=='address'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='sitecode'; reverseSort=!reverseSort">CodiceSito <span ng-show="orderByField=='sitecode'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='stringTipo'; reverseSort=!reverseSort">TipoPratica <span ng-show="orderByField=='stringTipo'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='protoIN'; reverseSort=!reverseSort">ProtoIN <span ng-show="orderByField=='protoIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='dataIN'; reverseSort=!reverseSort">DateIN <span ng-show="orderByField=='dataIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='stringStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='stringStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th><a ng-click="orderByField='note'; reverseSort=!reverseSort">note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="x in pratiche" ng-click="show(x.id)">
+			<tr ng-repeat="x in pratiche|orderBy:orderByField:reverseSort" ng-click="show(x.id)" class="{{x.rowClass}}">
 				<td class="text-center">{{x.id}}</td>
 				<td class="text-center">{{x.stringGestore}}</td>
 				<td class="text-center">{{x.stringComune}}</td>
@@ -108,27 +108,27 @@
 		Da:<input rm-datepicker type="text" ng-model="startDate" rm-config="rmConfig1">
 		A:<input rm-datepicker type="text" ng-model="endDate" rm-config="rmConfig1">
 	</div>
-			
+
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th class="text-center">Gestore</th>
-				<th class="text-center">Comune</th>
-				<th>Indirizzo</th>
-				<th class="text-center">CodiceSito</th>
-				<th class="text-center">TipoPratica</th>
-				<th class="text-center">ProtoIN</th>
-				<th class="text-center">DateIN</th>
-				<th class="text-center">Stato</th>
-				<th class="text-center">Utente</th>
-				<th class="text-center">ProtoOUT</th>
-				<th class="text-center">DateOUT</th>
-				<th>note</th>
+				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='stringGestore'; reverseSort=!reverseSort">Gestore <span ng-show="orderByField=='stringGestore'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
+				<th class="text-center"><a ng-click="orderByField='stringComune'; reverseSort=!reverseSort">Comune <span ng-show="orderByField=='stringComune'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th><a ng-click="orderByField='address'; reverseSort=!reverseSort">Indirizzo <span ng-show="orderByField=='address'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='sitecode'; reverseSort=!reverseSort">CodiceSito <span ng-show="orderByField=='sitecode'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='stringTipo'; reverseSort=!reverseSort">TipoPratica <span ng-show="orderByField=='stringTipo'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='protoIN'; reverseSort=!reverseSort">ProtoIN <span ng-show="orderByField=='protoIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='dataIN'; reverseSort=!reverseSort">DateIN <span ng-show="orderByField=='dataIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='stringStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='stringStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='protoOUT'; reverseSort=!reverseSort">ProtoOUT <span ng-show="orderByField=='protoOUT'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='dataOUT'; reverseSort=!reverseSort">DataOUT <span ng-show="orderByField=='dataOUT'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th><a ng-click="orderByField='note'; reverseSort=!reverseSort">note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="x in pratiche" ng-click="show(x.id)">
+			<tr ng-repeat="x in pratiche|orderBy:orderByField:reverseSort" ng-click="show(x.id)"class="{{x.rowClass}}" >
 				<td class="text-center">{{x.id}}</td>
 				<td class="text-center">{{x.stringGestore}}</td>
 				<td class="text-center">{{x.stringComune}}</td>
@@ -251,18 +251,18 @@
 	</div>
 
 	<div>
-		<table class="table table-hover">
+		<table class="table table-hover" id="table3">
 			<thead>
 				<tr>
-					<th>ID</th>
-					<th>Stato</th>
-					<th>Utente assegnato</th>					
-					<th>Quando</th>
-					<th>Utente modifica</th>
+					<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField='descStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='descStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField='usernameAss'; reverseSort=!reverseSort">Utente assegnato <span ng-show="orderByField=='usernameAss'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Quando <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField='usernameMod'; reverseSort=!reverseSort">Utente modifica <span ng-show="orderByField=='usernameMod'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="x in history">
+				<tr ng-repeat="x in history|orderBy:orderByField:reverseSort">
 					<td>{{x.id}}</td>
 					<td>{{x.descStato}}</td>
 					<td>{{x.usernameAss}}</td>
@@ -294,16 +294,16 @@
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Name</th>
-				<th>PEC</th>
+				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Name <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='pec'; reverseSort=!reverseSort">PEC <span ng-show="orderByField=='pec'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="x in anagrafiche" ng-click="show(x.id)">
-				<td>{{x.id}}</td>
-				<td>{{x.name}}</td>
-				<td>{{x.pec}}</td>
+			<tr ng-repeat="x in anagrafiche|orderBy:orderByField:reverseSort" ng-click="show(x.id)">
+				<td class="text-center">{{x.id}}</td>
+				<td class="text-center">{{x.name}}</td>
+				<td class="text-center">{{x.pec}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -374,29 +374,29 @@
 			<button class="btn btn-primary" ng-click="new()">Nuovo Utente</button>
 		</div>
 	</div>
-	<table class="table table-hover">
+	<table class="table table-hover" id="table5">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Username</th>
-				<th>Name</th>
-				<th>Surname</th>
-				<th>Email</th>
-				<th>Phone</th>
-				<th>Last Login</th>
-				<th>UserLevel</th>
+				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='username'; reverseSort=!reverseSort">Username <span ng-show="orderByField=='username'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Name <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='surname'; reverseSort=!reverseSort">Surname <span ng-show="orderByField=='surname'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='email'; reverseSort=!reverseSort">Email <span ng-show="orderByField=='email'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='phone'; reverseSort=!reverseSort">Phone <span ng-show="orderByField=='phone'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='lastlogin'; reverseSort=!reverseSort">Last Login <span ng-show="orderByField=='lastlogin'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='userlevel'; reverseSort=!reverseSort">UserLevel <span ng-show="orderByField=='userlevel'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="utente in utenti" ng-click="show(utente.id)">
-				<td>{{utente.id}}</td>
-				<td>{{utente.username}}</td>
-				<td>{{utente.name}}</td>
-				<td>{{utente.surname}}</td>
-				<td>{{utente.email}}</td>
-				<td>{{utente.phone}}</td>
-				<td>{{utente.lastlogin}}</td>
-				<td>{{utente.userlevel}}</td>
+			<tr ng-repeat="utente in utenti|orderBy:orderByField:reverseSort" ng-click="show(utente.id)">
+				<td class="text-center">{{utente.id}}</td>
+				<td class="text-center">{{utente.username}}</td>
+				<td class="text-center">{{utente.name}}</td>
+				<td class="text-center">{{utente.surname}}</td>
+				<td class="text-center">{{utente.email}}</td>
+				<td class="text-center">{{utente.phone}}</td>
+				<td class="text-center">{{utente.lastlogin}}</td>
+				<td class="text-center">{{utente.userlevel}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -497,7 +497,24 @@
 
 
 
-<script>var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
+<script>
+var getTableRowClass = function(id) {
+
+	if (!id|| id == 1)						// arrivata
+		return "danger";
+	else if (id == 2 || id == 3)			// in carico
+		return "active";
+	else if (id == 4 || id == 5)			// da correggere
+		return "info";
+	else if (id == 7)						// attesa integ
+		return "warning";
+	else if (id==8 || id==9 || id==6 || id==10 || id==11) // fatta/uscita/cancellata
+		return "success";
+		
+	return "";
+}
+
+var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 	.factory('Gestori', ['$resource', function($resource){
 		return $resource('/gestori/:id', null, {
 			'update': { method:'PUT' }
@@ -551,6 +568,8 @@
 	}])	
 	
 	.controller('GestoriController', ['$scope', 'Me', 'Gestori', '$location', function($scope, Me, Gestori, $location) {
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.anagrafiche = Gestori.query();
 		
@@ -602,6 +621,8 @@
 	
 	
 	.controller('ComuneController', ['$scope', 'Me', 'Comuni', '$location', function($scope, Me, Comuni, $location) {
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.anagrafiche = Comuni.query();
 		
@@ -646,6 +667,8 @@
 	}])
 
 	.controller('UtentiController', ['$scope', 'Me', 'Utenti', '$location', function($scope, Me, Utenti, $location) {
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.utenti = Utenti.query();
 		
@@ -730,11 +753,15 @@
 	}])
 	
 	.controller('PraticheController', ['$scope', 'Me', 'Pratiche', '$location', function($scope, Me, Pratiche, $location) {
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = Pratiche.query(function() {
 			$scope.pratiche.forEach(function(x) {
 				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
 				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
+				
+				x.rowClass = getTableRowClass(x.idStato);
 			});
 		});
 		
@@ -746,14 +773,18 @@
 		}
 	}])
 	.controller('PraticheAllController', ['$scope', 'Me', 'PraticheAll', '$location', function($scope, Me, PraticheAll, $location) {
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = PraticheAll.query(function() {
 			$scope.pratiche.forEach(function(x) {
 				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
 				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
+				
+				x.rowClass = getTableRowClass(x.idStato);
 			});
 		});
-		
+  
 		$scope.new = function() {
 			$location.url('pratiche/detail/new');
 		}
@@ -857,7 +888,7 @@
 			}
 			
 			$scope.integarr = function(proto, date) {
-				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 2 });
+				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: $scope.me.id, idStato: 2 });
 				newstate.$save(function(){
 					$location.url('pratiche');
 				});
