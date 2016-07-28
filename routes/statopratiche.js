@@ -70,7 +70,7 @@ router.get('/:id', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
 	var userid = req.user.id;
-		
+console.log("ok, stato: "+req.body.idStato);		
     sql(function (err, connection) {
 		connection.query('START TRANSACTION;', function(err, data) {
 			if (err) rest.error500(err);
@@ -85,11 +85,41 @@ router.post('/', function(req, res, next) {
 				
 					connection.query(query2, function(err, data) {			
 						if (err) rest.error500(err);
-						else
-							connection.query('COMMIT;', function(err, data) {
-								if (err) rest.error500(err);
-								else rest.created(res, data);
-							});
+						else {
+							if (req.body.idStato == 7) {	// richiedi integrazioni
+								var query3 = mysql.format("INSERT INTO Integrazioni(idPratica, dateOUT, dateIN, protoOUT, protoIN, note) VALUES (?,?,NULL,?,NULL,?)", [ req.body.idPratica, req.body.integData, req.body.integProto, req.body.integNote]);
+console.log("richiedi: "+query3);								
+								connection.query(query3, function(err, data) {
+									if (err) rest.error500(err);
+									else {						
+										connection.query('COMMIT;', function(err, data) {
+											if (err) rest.error500(err);
+											else rest.created(res, data);
+										});
+									}
+								});//Integrazioni(idPratica, dateOUT, dateIN, protoOUT, protoIN, note)
+							}
+							else if (req.body.idStato == 2 && req.body.integData) {	// lavorazione (arrivate integrazioni)
+								var query3 = mysql.format("UPDATE Integrazioni SET dateIN=?,protoIN=? WHERE idPratica=?", [ req.body.integData, req.body.integProto, req.body.idPratica]);
+console.log("arriba: "+query3);							
+								connection.query(query3, function(err, data) {
+									if (err) rest.error500(err);
+									else {						
+										connection.query('COMMIT;', function(err, data) {
+											if (err) rest.error500(err);
+											else rest.created(res, data);
+										});
+									}
+								});
+							}
+							else {
+console.log("normale");								
+								connection.query('COMMIT;', function(err, data) {
+									if (err) rest.error500(err);
+									else rest.created(res, data);
+								});
+							}
+						}
 					});
 				});
 			}

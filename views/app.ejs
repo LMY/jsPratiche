@@ -22,13 +22,16 @@
 		padding: 10px;
 		margin: 10px;
 	}
-	.time-integ {
+	.time-green {
 		color: green;
 	}	
-	.time-final {
+	.time-orange {
 		color: orange;
-	}	
-	.time-exceed {
+	}
+	.time-red {
+		color: red;
+	}
+	.time-danger {
 		color: red;
 		font-weight: bold;
 	}
@@ -76,7 +79,7 @@
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+<!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
 				<th class="text-center"><a ng-click="orderByField='stringGestore'; reverseSort=!reverseSort">Gestore <span ng-show="orderByField=='stringGestore'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
 				<th class="text-center"><a ng-click="orderByField='stringComune'; reverseSort=!reverseSort">Comune <span ng-show="orderByField=='stringComune'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th><a ng-click="orderByField='address'; reverseSort=!reverseSort">Indirizzo <span ng-show="orderByField=='address'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
@@ -93,7 +96,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="x in pratiche|orderBy:orderByField:reverseSort" ng-click="show(x.id)" class="{{x.rowClass}}">
-				<td class="text-center">{{x.id}}</td>
+<!--				<td class="text-center">{{x.id}}</td> -->
 				<td class="text-center">{{x.stringGestore}}</td>
 				<td class="text-center">{{x.stringComune}}</td>
 				<td>{{x.address}}</td>
@@ -124,7 +127,7 @@
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+<!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
 				<th class="text-center"><a ng-click="orderByField='stringGestore'; reverseSort=!reverseSort">Gestore <span ng-show="orderByField=='stringGestore'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
 				<th class="text-center"><a ng-click="orderByField='stringComune'; reverseSort=!reverseSort">Comune <span ng-show="orderByField=='stringComune'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th><a ng-click="orderByField='address'; reverseSort=!reverseSort">Indirizzo <span ng-show="orderByField=='address'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
@@ -141,7 +144,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="x in pratiche|orderBy:orderByField:reverseSort" ng-click="show(x.id)"class="{{x.rowClass}}" >
-				<td class="text-center">{{x.id}}</td>
+<!--				<td class="text-center">{{x.id}}</td> -->
 				<td class="text-center">{{x.stringGestore}}</td>
 				<td class="text-center">{{x.stringComune}}</td>
 				<td>{{x.address}}</td>
@@ -250,8 +253,18 @@
 			<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
 		</span>
 		<button class="btn btn-primary" ng-click="stato(3)" ng-show="epratica.idStato == 2">Mancano misure</button>
-		<button class="btn btn-warning" ng-click="integric('A/111','2016-01-01')" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Richiedi integrazioni</button>
-		<button class="btn btn-warning" ng-click="integarr('A/111','2016-01-01')" ng-show="epratica.idStato == 7">Arrivate integrazioni</button>
+		
+		<span class="div-border-rounded" ng-show="epratica.idStato == 2 || epratica.idStato == 3">		
+			<button class="btn btn-warning" ng-click="integric()" >Richiedi integrazioni</button>
+			<input type="text" ng-model="integProto" placeholder="Protocollo">
+			<input rm-datepicker type="text" ng-model="integDate" rm-config="rmConfig1" placeholder="Data">
+		</span>
+		<span class="div-border-rounded" ng-show="epratica.idStato == 7">
+			<button class="btn btn-warning" ng-click="integarr()">Arrivate integrazioni</button>
+			<input type="text" ng-model="integProto" placeholder="Protocollo">
+			<input rm-datepicker type="text" ng-model="integDate" rm-config="rmConfig1" placeholder="Data">
+		</span>
+		
 		<button class="btn btn-success" ng-click="stato(4)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
 		<span class="div-border-rounded" ng-show="epratica.idStato == 4">
 			<button class="btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
@@ -265,7 +278,7 @@
 		<table class="table table-hover">
 			<thead>
 				<tr>
-					<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+<!--					<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
 					<th class="text-center"><a ng-click="orderByField='descStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='descStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 					<th class="text-center"><a ng-click="orderByField='usernameAss'; reverseSort=!reverseSort">Utente assegnato <span ng-show="orderByField=='usernameAss'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 					<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Quando <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
@@ -274,7 +287,7 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="x in history|orderBy:orderByField:reverseSort">
-					<td class="text-center">{{x.id}}</td>
+<!--					<td class="text-center">{{x.id}}</td>  -->
 					<td class="text-center">{{x.descStato}}</td>
 					<td class="text-center">{{x.usernameAss}}</td>
 					<td class="text-center">{{x.timePoint}}</td>
@@ -388,7 +401,7 @@
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+<!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
 				<th class="text-center"><a ng-click="orderByField='username'; reverseSort=!reverseSort">Username <span ng-show="orderByField=='username'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Name <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='surname'; reverseSort=!reverseSort">Surname <span ng-show="orderByField=='surname'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
@@ -400,7 +413,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="utente in utenti|orderBy:orderByField:reverseSort" ng-click="show(utente.id)">
-				<td class="text-center">{{utente.id}}</td>
+<!--				<td class="text-center">{{utente.id}}</td> -->
 				<td class="text-center">{{utente.username}}</td>
 				<td class="text-center">{{utente.name}}</td>
 				<td class="text-center">{{utente.surname}}</td>
@@ -777,19 +790,17 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 				var arrivo = moment(x.dataIN);
 				var diff = moment.duration(today.diff(arrivo)).asDays();
 				
-				if (diff < 15) {
-					x.scadenza = ((30-diff)|0);
-					x.scadenzaType = "time-integ";
-				}
-				else if (diff < 30) {
-					x.scadenza = ((30-diff)|0);
-					x.scadenzaType = "time-final";
-				}
-				else {
-					x.scadenza = ((30-diff)|0);
-					x.scadenzaType = "time-exceed";
-				}
+				x.scadenza = ((30-diff)|0);
 				x.scadenzaData = arrivo.add(30, 'd').format('YYYY-MM-DD');
+				
+				if (x.scadenza < 0)
+					x.scadenzaType = "time-danger";
+				else if (x.scadenza < 7)
+					x.scadenzaType = "time-red";
+				else if (x.scadenza < 15)
+					x.scadenzaType = "time-orange";
+				else //if (x.scadenza < 30)
+					x.scadenzaType = "time-green";
 			});
 		});
 		
@@ -876,7 +887,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 			});
 		}
 	}])
-	.controller('PraticaStatoDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'StoricoStatoPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, StoricoStatoPratiche, $location) {
+	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'Integrazioni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'StoricoStatoPratiche', '$location', function($window, $scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, Integrazioni, ConstStatiPratiche, ConstTipiPratiche, StoricoStatoPratiche, $location) {
 			$scope.me = Me.get(function(x) {
 				$scope.selectedUser = $scope.me.id
 			});
@@ -884,8 +895,20 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
 				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
 
-				$scope.title = "Pratica "+$routeParams.id+" stato: "+$scope.epratica.idStato;
+				$scope.title = x.stringGestore + '-' +x.sitecode + ' / ' + x.stringComune + ' - ' + x.address;
 			});
+			
+			$scope.rmConfig1 = {
+				mondayStart: true,
+				initState : "month", /* decade || year || month */
+				maxState : "decade",
+				minState : "month",
+				decadeSize: 12,
+				monthSize: 42, /* "auto" || fixed nr. (35 or 42) */
+				min: new Date("2000-01-01"),
+				max: null,
+				format: "yyyy-MM-dd" /* https://docs.angularjs.org/api/ng/filter/date */
+			}
 			
 			$scope.gestori = Gestori.query();
 			$scope.comuni = Comuni.query();
@@ -898,24 +921,29 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 			$scope.history = StoricoStatoPratiche.get({id: $routeParams.id});
 
 			$scope.cancel = function() {
-				$location.url('pratiche');
+				$window.history.back();
 			}
 			
 			$scope.show = function() {
 				$location.url('pratiche/detail/'+$scope.epratica.id);
 			}
 			
-			$scope.integric = function(proto, date) {
-				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 7 });
+			$scope.integDate = new Date();
+			$scope.integProto = '';
+					
+			$scope.integric = function() {
+				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 7, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
+				
 				newstate.$save(function(){
-					$location.url('pratiche');
+					$window.history.back();
 				});
 			}
 			
-			$scope.integarr = function(proto, date) {
-				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: $scope.me.id, idStato: 2 });
+			$scope.integarr = function() {
+				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
+				
 				newstate.$save(function(){
-					$location.url('pratiche');
+					$window.history.back();
 				});
 			}
 			
@@ -924,7 +952,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 				console.log("se3t: "+JSON.stringify(newstate));
 				
 				newstate.$save(function(){
-					$location.url('pratiche');
+					$window.history.back();
 				});
 			}
 	}])
