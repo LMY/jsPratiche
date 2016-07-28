@@ -789,9 +789,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 				
 				var arrivo = moment(x.dataIN);
 				var diff = moment.duration(today.diff(arrivo)).asDays();
+				var integDiff = (x.diff?x.diff:0);
 				
-				x.scadenza = ((30-diff)|0);
-				x.scadenzaData = arrivo.add(30, 'd').format('YYYY-MM-DD');
+				x.scadenza = ((30-diff + integDiff )|0);
+				x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
 				
 				if (x.scadenza < 0)
 					x.scadenzaType = "time-danger";
