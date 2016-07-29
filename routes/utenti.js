@@ -8,10 +8,11 @@ var express = require('express');
 var router = express.Router();
 
 
-var calculatehash = function(input) {
-	bCrypt.genSalt(8, function (err, salt) {
+var calculatehash = function(input, cb) {
+	bCrypt.genSalt(8, function(err, salt) {
 		bCrypt.hash(input, salt, function(err, hash) {
-			return hash;
+			cb(err, hash);
+			//return hash;
 		});
 	});
 }
@@ -31,14 +32,16 @@ var getUserLevel = function(inputid, cb) {
 };
 
 var checkPassword = function(id, password, cb, err) {
-	if (id && password)	{	// ensure they do exist
+	
+	if (!id || !password)	{	// ensure they do exist
 		err("old password not provided");
 		return;
 	}
-		
+
 	sql(function(err, connection) {
 		var query = mysql.format('SELECT * FROM ?? WHERE id=?', [tableName, id]);
 		connection.query(query, function(err, data) {
+			
 			if (!err && data && data.length == 1 && bCrypt.compareSync(password, data[0].hash))
 				return cb();
 			else
@@ -102,13 +105,14 @@ router.post('/', function(req, res, next) {
 	if (req.user.userlevel != 0)
 		rest.error403(res);
 	else
-		sql(function (err, connection) {
-			var reqhash = calculatehash(req.body.password);			
-			var query = mysql.format("INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1]);
-		
-			connection.query(query, function(err, data) {
-				if (err) rest.error500(err);
-				else rest.created(res, data);
+		sql(function(err, connection) {
+			calculatehash(req.body.password, function(err, newhash) {
+				var query = mysql.format("INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1]);
+			
+				connection.query(query, function(err, data) {
+					if (err) rest.error500(err);
+					else rest.created(res, data);
+				});
 			});
 		});
 });
@@ -119,13 +123,14 @@ router.put('/:id', function(req, res, next) {
 	if (req.user.userlevel != 0 && req.user.id != req.params.id)
 			rest.error403(res);
 	else
-		sql(function (err, connection) {
-			var newhash =  calculatehash(req.body.password);
-			var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id]);
-		
-			connection.query(query, function(err, data) {
-				if (err) rest.error500(err);
-				else rest.updated(res, data);
+		sql(function(err, connection) {
+			calculatehash(req.body.password, function(err, newhash) {
+				var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id]);
+			
+				connection.query(query, function(err, data) {
+					if (err) rest.error500(err);
+					else rest.updated(res, data);
+				});
 			});
 		});
 });
@@ -137,13 +142,14 @@ router.put('/password/:id', function(req, res, next) {
 		rest.error403(res);
 	else {	
 		checkPassword(req.user.id, req.body.oldpassword, function() {
-			sql(function (err, connection) {
-				var newhash =  calculatehash(req.body.password);
-				var query = mysql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "hash", newhash, "id", req.params.id]);
-			
-				connection.query(query, function(err, data) {
-					if (err) rest.error500(err);
-					else rest.updated(res, data);
+			sql(function(err, connection) {
+				calculatehash(req.body.password, function(err, newhash) {
+					var query = mysql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "hash", newhash, "id", req.params.id]);
+
+					connection.query(query, function(err, data) {
+						if (err) rest.error500(err);
+						else rest.updated(res, data);
+					});
 				});
 			});
 		},
