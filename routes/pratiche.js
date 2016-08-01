@@ -9,7 +9,6 @@ var router = express.Router();
 /* GET /pratiche listing. */
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
-		//var query = "SELECT Pratiche.*, stringUser, StatoPratiche.idStato, ConstStatoPratiche.descrizione as stringStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, ConstStatoPratiche.final as Final FROM Pratiche LEFT OUTER JOIN (SELECT DISTINCT Pratiche.id, Utenti.username stringUser FROM Pratiche LEFT OUTER JOIN StoricoStatoPratiche on (Pratiche.id = StoricoStatoPratiche.idPratica) LEFT OUTER JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) WHERE StoricoStatoPratiche.idStato = 2 AND Utenti.username IS NOT NULL) AS B on (Pratiche.id = B.id) LEFT OUTER JOIN StatoPratiche on (Pratiche.id = StatoPratiche.idPratica) LEFT OUTER JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id) LEFT OUTER JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT OUTER JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT OUTER JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id) WHERE Final=0 OR Final IS NULL;";
 		var query = "SELECT * FROM ((SELECT Pratiche.*, stringUser, StatoPratiche.idStato, ConstStatoPratiche.descrizione as stringStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, ConstStatoPratiche.final as Final FROM Pratiche LEFT OUTER JOIN (SELECT DISTINCT Pratiche.id, Utenti.username stringUser FROM Pratiche LEFT OUTER JOIN StoricoStatoPratiche on (Pratiche.id = StoricoStatoPratiche.idPratica) LEFT OUTER JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) WHERE StoricoStatoPratiche.idStato = 2 AND Utenti.username IS NOT NULL) AS B on (Pratiche.id = B.id) LEFT OUTER JOIN StatoPratiche on (Pratiche.id = StatoPratiche.idPratica) LEFT OUTER JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id) LEFT OUTER JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT OUTER JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT OUTER JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id) WHERE Final=0 OR Final IS NULL) AS A LEFT OUTER JOIN ((select idPratica,SUM(DATEDIFF(dateIN,dateOUT)) as diff from Integrazioni GROUP BY idPratica) AS C) on A.id = C.idPratica)";
 		
 		connection.query(query, function(err, data) {
@@ -21,7 +20,6 @@ router.get('/', function(req, res, next) {
 
 router.get('/all', function(req, res, next) {
     sql(function(err,connection) {
-		//var query = "SELECT Pratiche.*, stringUser, StatoPratiche.idStato, ConstStatoPratiche.descrizione as stringStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, ConstStatoPratiche.final as Final FROM Pratiche LEFT OUTER JOIN (SELECT DISTINCT Pratiche.id, Utenti.username stringUser FROM Pratiche LEFT OUTER JOIN StoricoStatoPratiche on (Pratiche.id = StoricoStatoPratiche.idPratica) LEFT OUTER JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) WHERE StoricoStatoPratiche.idStato = 2 AND Utenti.username IS NOT NULL) AS B on (Pratiche.id = B.id) LEFT OUTER JOIN StatoPratiche on (Pratiche.id = StatoPratiche.idPratica) LEFT OUTER JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id) LEFT OUTER JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT OUTER JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT OUTER JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id);";
 		var query = "SELECT * FROM ((SELECT Pratiche.*, stringUser, StatoPratiche.idStato, ConstStatoPratiche.descrizione as stringStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, ConstStatoPratiche.final as Final FROM Pratiche LEFT OUTER JOIN (SELECT DISTINCT Pratiche.id, Utenti.username stringUser FROM Pratiche LEFT OUTER JOIN StoricoStatoPratiche on (Pratiche.id = StoricoStatoPratiche.idPratica) LEFT OUTER JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) WHERE StoricoStatoPratiche.idStato = 2 AND Utenti.username IS NOT NULL) AS B on (Pratiche.id = B.id) LEFT OUTER JOIN StatoPratiche on (Pratiche.id = StatoPratiche.idPratica) LEFT OUTER JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id) LEFT OUTER JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT OUTER JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT OUTER JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id)) AS A LEFT OUTER JOIN ((select idPratica,SUM(DATEDIFF(dateIN,dateOUT)) as diff from Integrazioni GROUP BY idPratica) AS C) on A.id = C.idPratica)";
 				
 		connection.query(query, function(err, data) {
@@ -31,6 +29,30 @@ router.get('/all', function(req, res, next) {
     });
 });
 
+router.get('/fare', function(req, res, next) {
+	
+	var userid = req.user.id;
+	
+    sql(function(err,connection) {
+		var query = mysql.format("SELECT * FROM ((SELECT Pratiche.*, stringUser, StatoPratiche.idStato, ConstStatoPratiche.descrizione as stringStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, ConstStatoPratiche.final as Final, userId FROM Pratiche LEFT OUTER JOIN (SELECT DISTINCT Pratiche.id, Utenti.username stringUser, Utenti.id as userId FROM Pratiche LEFT OUTER JOIN StoricoStatoPratiche on (Pratiche.id = StoricoStatoPratiche.idPratica) LEFT OUTER JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) WHERE StoricoStatoPratiche.idStato = 2 AND Utenti.username IS NOT NULL) AS B on (Pratiche.id = B.id) LEFT OUTER JOIN StatoPratiche on (Pratiche.id = StatoPratiche.idPratica) LEFT OUTER JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id) LEFT OUTER JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT OUTER JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT OUTER JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id)) AS A LEFT OUTER JOIN ((select idPratica,SUM(DATEDIFF(dateIN,dateOUT)) as diff from Integrazioni GROUP BY idPratica) AS C) on A.id = C.idPratica) WHERE (idStato = 1 OR idStato IS NULL) OR userId = ?", [userid]);
+				
+		connection.query(query, function(err, data) {
+            if (err) rest.error500(res, err);
+			else res.json(data);
+        });
+    });
+});
+
+router.get('/corr', function(req, res, next) {
+    sql(function(err,connection) {
+		var query = "SELECT * FROM ((SELECT Pratiche.*, stringUser, StatoPratiche.idStato, ConstStatoPratiche.descrizione as stringStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, ConstStatoPratiche.final as Final FROM Pratiche LEFT OUTER JOIN (SELECT DISTINCT Pratiche.id, Utenti.username stringUser FROM Pratiche LEFT OUTER JOIN StoricoStatoPratiche on (Pratiche.id = StoricoStatoPratiche.idPratica) LEFT OUTER JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) WHERE StoricoStatoPratiche.idStato = 2 AND Utenti.username IS NOT NULL) AS B on (Pratiche.id = B.id) LEFT OUTER JOIN StatoPratiche on (Pratiche.id = StatoPratiche.idPratica) LEFT OUTER JOIN ConstStatoPratiche on (StatoPratiche.idStato = ConstStatoPratiche.id) LEFT OUTER JOIN Gestori on (Pratiche.idGestore = Gestori.id) LEFT OUTER JOIN Comuni on (Pratiche.idComune = Comuni.id) LEFT OUTER JOIN ConstTipoPratiche on (Pratiche.tipopratica = ConstTipoPratiche.id)) AS A LEFT OUTER JOIN ((select idPratica,SUM(DATEDIFF(dateIN,dateOUT)) as diff from Integrazioni GROUP BY idPratica) AS C) on A.id = C.idPratica) WHERE idStato = 4 OR idStato = 5";
+				
+		connection.query(query, function(err, data) {
+            if (err) rest.error500(res, err);
+			else res.json(data);
+        });
+    });
+});
 
 /* GET /pratiche/id */
 router.get('/:id', function(req, res, next) {
@@ -75,7 +97,7 @@ router.post('/', function(req, res, next) {
 												});
 											}
 										});
-									});
+								});
 							}
 						});
 				});
