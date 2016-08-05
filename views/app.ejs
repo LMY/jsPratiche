@@ -49,12 +49,10 @@
 	<script type="text/javascript" src="public/js/moment/min/moment.min.js"></script>
   
 	<script src="public/js/rm-datepicker/dist/rm-datepicker.min.js"></script>
-	<link rel="stylesheet" href="public/js/rm-datepicker/dist/rm-datepicker.min.css" />
+	<link rel="stylesheet"  type="text/css" href="public/js/rm-datepicker/dist/rm-datepicker.min.css" />
 
 </head>
 <body>
-
-
 
 <ng-view></ng-view>
 
@@ -211,8 +209,8 @@
 <div ng-include="'/public/navbar.html'"></div>
 
 	<div class="form-group center">
-		Da:<input rm-datepicker type="text" ng-model="startDate" rm-config="rmConfig1">
-		A:<input rm-datepicker type="text" ng-model="endDate" rm-config="rmConfig1">
+		Da:<input rm-datepicker type="text" ng-model="startDate">
+		A:<input rm-datepicker type="text" ng-model="endDate">
 	</div>
 
 	<table class="table table-hover">
@@ -257,7 +255,7 @@
 
 
 <script type="text/ng-template" id="/praticaDetails.html">
-<div ng-include="'/public/navbar.html'"></div>	
+<div ng-include="'/public/navbar.html'"></div>
 <div class="container">
   <h2>{{ title }}</h2>
   <form class="form-horizontal" role="form">
@@ -300,8 +298,7 @@
 	<div class="form-group">
       <label class="control-label col-sm-2" for="dataIN">Data IN:</label>
       <div class="col-sm-10">          
-        <!--<input type="text" class="form-control" id="dataIN" ng-model="epratica.dataIN" placeholder="Data IN">-->
-		<input rm-datepicker class="form-control" type="text" ng-model="dataIN" rm-config="rmConfig1" placeholder="Data IN">
+		<input rm-datepicker class="form-control" type="text" ng-model="dataIN" placeholder="Data IN">
       </div>
     </div>
 	<div class="form-group">
@@ -313,8 +310,7 @@
 	<div class="form-group">
       <label class="control-label col-sm-2" for="dataOUT">Data OUT:</label>
       <div class="col-sm-10">          
-        <!--<input type="text" class="form-control" id="dataOUT" ng-model="epratica.dataOUT" placeholder="Data OUT"> -->
-		<input rm-datepicker class="form-control" type="text" ng-model="dataOUT" rm-config="rmConfig1" placeholder="Data OUT">
+		<input rm-datepicker class="form-control" type="text" ng-model="dataOUT" placeholder="Data OUT">
       </div>
     </div>
 	<div class="form-group">
@@ -350,12 +346,12 @@
 		<span class="div-border-rounded" ng-show="epratica.idStato == 2 || epratica.idStato == 3">		
 			<button class="btn btn-warning" ng-click="integric()" >Richiedi integrazioni</button>
 			<input type="text" ng-model="integProto" placeholder="Protocollo">
-			<input rm-datepicker type="text" ng-model="integDate" rm-config="rmConfig1" placeholder="Data">
+			<input rm-datepicker type="text" ng-model="integDate" placeholder="Data">
 		</span>
 		<span class="div-border-rounded" ng-show="epratica.idStato == 7">
 			<button class="btn btn-warning" ng-click="integarr()">Arrivate integrazioni</button>
 			<input type="text" ng-model="integProto" placeholder="Protocollo">
-			<input rm-datepicker type="text" ng-model="integDate" rm-config="rmConfig1" placeholder="Data">
+			<input rm-datepicker type="text" ng-model="integDate" placeholder="Data">
 		</span>
 		
 		<button class="btn btn-success" ng-click="stato(4)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
@@ -995,30 +991,24 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 		$scope.show = function(id) {
 			$location.url('pratiche/'+id);
 		}
-		$scope.rmConfig1 = {
-			mondayStart: true,
-			initState : "month", /* decade || year || month */
-			maxState : "decade",
-			minState : "month",
-			decadeSize: 12,
-			monthSize: 42, /* "auto" || fixed nr. (35 or 42) */
-			min: new Date("2000-01-01"),
-			max: null,
-			format: "yyyy-MM-dd" /* https://docs.angularjs.org/api/ng/filter/date */
-		}
+
 		$scope.startDate = new Date();
 		$scope.endDate = new Date();
 	}])	
 	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, $location) {
+
+		$scope.dataIN = new Date();
+		$scope.dataOUT = new Date();
+
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id }, function(x) {
-			if (x.dataIN) $scope.dataIN = x.dataIN = x.dataIN.substring(0, 10);
-			if (x.dataOUT) $scope.dataOUT = x.dataOUT = x.dataOUT.substring(0, 10);
+
+			x.dataIN = x.dataIN ? new Date(x.dataIN.substring(0, 10)) : null;
+			x.dataOUT = x.dataOUT ? new Date(x.dataOUT.substring(0, 10)) : null;
+			$scope.dataIN = x.dataIN ? x.dataIN : new Date();
+			$scope.dataOUT = x.dataOUT ? x.dataOUT : new Date();
 		});
-		
-		$scope.dataIN = new Date();
-		$scope.dataOUT = new Date();
 		
 		$scope.title = $scope.isnew ? "Nuova Pratica" : "Pratica "+$routeParams.id;
 		
@@ -1028,18 +1018,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 
 		$scope.conststatipratiche = ConstStatiPratiche.query();
 		$scope.consttipipratiche = ConstTipiPratiche.query();
-		
-		$scope.rmConfig1 = {
-				mondayStart: true,
-				initState : "month", /* decade || year || month */
-				maxState : "decade",
-				minState : "month",
-				decadeSize: 12,
-				monthSize: 42, /* "auto" || fixed nr. (35 or 42) */
-				min: new Date("2000-01-01"),
-				max: null,
-				format: "yyyy-MM-dd" /* https://docs.angularjs.org/api/ng/filter/date */
-		}
 		
 		$scope.update = function( ){
 			if ($scope.isnew) {
@@ -1080,19 +1058,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 
 				$scope.title = x.stringGestore + '-' +x.sitecode + ' / ' + x.stringComune + ' - ' + x.address;
 			});
-			
-			$scope.rmConfig1 = {
-				mondayStart: true,
-				initState : "month", /* decade || year || month */
-				maxState : "decade",
-				minState : "month",
-				decadeSize: 12,
-				monthSize: 42, /* "auto" || fixed nr. (35 or 42) */
-				min: new Date("2000-01-01"),
-				max: null,
-				format: "yyyy-MM-dd" /* https://docs.angularjs.org/api/ng/filter/date */
-			}
-			
+
 			$scope.gestori = Gestori.query();
 			$scope.comuni = Comuni.query();
 			$scope.utenti = Utenti.query();
@@ -1208,6 +1174,12 @@ app.directive('ngConfirmClick', [function(){
 		}
 	};
 }]);
+
+app.config(['rmDatepickerConfig', function(rmDatepickerConfig) {
+    rmDatepickerConfig.mondayStart = true;
+    rmDatepickerConfig.initState = "month";
+}]);
+
 </script>
 
 <!-- Update navbar active -->
