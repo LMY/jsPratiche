@@ -297,7 +297,7 @@
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="dataIN">Data IN:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">     
 		<input rm-datepicker class="form-control" type="text" ng-model="dataIN" placeholder="Data IN">
       </div>
     </div>
@@ -1026,7 +1026,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 				if (!$scope.epratica.idComune) { alert('Specificare il Comune!'); return; }
 				if (!$scope.epratica.tipopratica) { alert('Specificare il tipo di pratica!'); return; }
 
-				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dataIN: $scope.epratica.dataIN, protoOUT: $scope.epratica.protoOUT, dataOUT: $scope.epratica.dataOUT, note: $scope.epratica.note });
+				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dataIN: $scope.dataIN, protoOUT: $scope.epratica.protoOUT, dataOUT: $scope.dataOUT, note: $scope.epratica.note });
 				
 				pratica.$save(function(){
 					$location.url('pratiche');
