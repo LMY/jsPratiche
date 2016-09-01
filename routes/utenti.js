@@ -119,9 +119,9 @@ router.post('/', function(req, res, next) {
 
 router.put('/:id', function(req, res, next) {
 	
-	if (req.user.userlevel != 0 && req.user.id != req.params.id)	// a normal user cannot update other users
+	if (req.user.userlevel != 0 && req.user.id != req.params.id)					// a normal user cannot update other users
 		rest.error403(res);
-	else if (req.user.id == req.params.id && req.user.userlevel > req.body.userlevel)	// a user cannot decrease his own user level
+	else if (req.user.userlevel != 0 && req.user.userlevel != req.body.userlevel)	// normal users cannot change (his own) level
 		rest.error403(res);
 	else
 		sql(function(err, connection) {
