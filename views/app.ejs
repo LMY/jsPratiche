@@ -891,18 +891,24 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 				var arrivo = moment(x.dataIN);
 				var diff = moment.duration(today.diff(arrivo)).asDays();
 				var integDiff = (x.diff?x.diff:0);
-				
-				x.scadenza = ((30-diff + integDiff )|0);
-				x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
-				
-				if (x.scadenza < 0)
-					x.scadenzaType = "time-danger";
-				else if (x.scadenza < 7)
-					x.scadenzaType = "time-red";
-				else if (x.scadenza < 15)
-					x.scadenzaType = "time-orange";
-				else //if (x.scadenza < 30)
-					x.scadenzaType = "time-green";
+								
+				if (x.stringStato == "Attesa Integrazione") {
+					x.scadenza = "";
+					x.scadenzaData = "";
+				}
+				else {
+					x.scadenza = ((30-diff + integDiff )|0);
+					x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
+					
+					if (x.scadenza < 0)
+						x.scadenzaType = "time-danger";
+					else if (x.scadenza < 7)
+						x.scadenzaType = "time-red";
+					else if (x.scadenza < 15)
+						x.scadenzaType = "time-orange";
+					else //if (x.scadenza < 30)
+						x.scadenzaType = "time-green";
+				}
 			});
 		});
 		
@@ -930,17 +936,23 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 				var diff = moment.duration(today.diff(arrivo)).asDays();
 				var integDiff = (x.diff?x.diff:0);
 				
-				x.scadenza = ((30-diff + integDiff )|0);
-				x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
-				
-				if (x.scadenza < 0)
-					x.scadenzaType = "time-danger";
-				else if (x.scadenza < 7)
-					x.scadenzaType = "time-red";
-				else if (x.scadenza < 15)
-					x.scadenzaType = "time-orange";
-				else //if (x.scadenza < 30)
-					x.scadenzaType = "time-green";
+				if (x.stringStato == "Attesa Integrazione") {
+					x.scadenza = "";
+					x.scadenzaData = "";
+				}
+				else {
+					x.scadenza = ((30-diff + integDiff )|0);
+					x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
+					
+					if (x.scadenza < 0)
+						x.scadenzaType = "time-danger";
+					else if (x.scadenza < 7)
+						x.scadenzaType = "time-red";
+					else if (x.scadenza < 15)
+						x.scadenzaType = "time-orange";
+					else //if (x.scadenza < 30)
+						x.scadenzaType = "time-green";
+				}
 			});
 		});
 		$scope.pratichecorr = PraticheCorr.query(function() {
@@ -954,17 +966,23 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 				var diff = moment.duration(today.diff(arrivo)).asDays();
 				var integDiff = (x.diff?x.diff:0);
 				
-				x.scadenza = ((30-diff + integDiff )|0);
-				x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
-				
-				if (x.scadenza < 0)
-					x.scadenzaType = "time-danger";
-				else if (x.scadenza < 7)
-					x.scadenzaType = "time-red";
-				else if (x.scadenza < 15)
-					x.scadenzaType = "time-orange";
-				else //if (x.scadenza < 30)
-					x.scadenzaType = "time-green";
+				if (x.stringStato == "Attesa Integrazione") {
+					x.scadenza = "";
+					x.scadenzaData = "";
+				}
+				else {
+					x.scadenza = ((30-diff + integDiff )|0);
+					x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
+					
+					if (x.scadenza < 0)
+						x.scadenzaType = "time-danger";
+					else if (x.scadenza < 7)
+						x.scadenzaType = "time-red";
+					else if (x.scadenza < 15)
+						x.scadenzaType = "time-orange";
+					else //if (x.scadenza < 30)
+						x.scadenzaType = "time-green";
+				}
 			});
 		});
 		

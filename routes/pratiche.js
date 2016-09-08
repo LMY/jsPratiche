@@ -125,7 +125,7 @@ router.delete('/:id', function(req, res, next) {
 		
     sql(function (err, connection) {
 		connection.query('START TRANSACTION;', function(err, data) {
-			if (err) rest.error500(err);
+			if (err) rest.error500(res, err);
 			else {
 				var query =  mysql.format("INSERT INTO StoricoStatoPratiche(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [req.params.id, userid, 10, userid ]);
 				
@@ -140,7 +140,7 @@ router.delete('/:id', function(req, res, next) {
 					console.log(query2);
 				
 					connection.query(query2, function(err, data) {			
-						if (err) rest.error500(err);
+						if (err) rest.error500(res, err);
 						else
 							connection.query('COMMIT;', function(err, data) {
 								if (err) rest.error500(err);

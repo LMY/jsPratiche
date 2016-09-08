@@ -64,7 +64,7 @@ router.get('/me', function(req, res, next) {
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM '+tableName, function(err, data) {
-            if (err) rest.error500(err);
+            if (err) rest.error500(res, err);
 			else res.json(data);
 		});
     });
@@ -75,7 +75,7 @@ router.get('/:id', function(req, res, next) {
 		var query = mysql.format('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM ?? WHERE id=?', [tableName, req.params.id]);
 		
 		connection.query(query, function(err, data) {
-            if (err) rest.error500(err);
+            if (err) rest.error500(res, err);
 			else res.json(data.length == 1 ? data[0] : []);
 		});
 	});
@@ -92,7 +92,7 @@ router.delete('/:id', function(req, res, next) {
 				var query = mysql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
 				
 				connection.query(query, function(err, data) {
-					if (err) rest.error500(err);
+					if (err) rest.error500(res, err);
 					else rest.deleted(res, data);
 				});
 			});
@@ -110,7 +110,7 @@ router.post('/', function(req, res, next) {
 				var query = mysql.format("INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1]);
 			
 				connection.query(query, function(err, data) {
-					if (err) rest.error500(err);
+					if (err) rest.error500(res, err);
 					else rest.created(res, data);
 				});
 			});
@@ -129,7 +129,7 @@ router.put('/:id', function(req, res, next) {
 				var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id]);
 			
 				connection.query(query, function(err, data) {
-					if (err) rest.error500(err);
+					if (err) rest.error500(res, err);
 					else rest.updated(res, data);
 				});
 			});
@@ -148,7 +148,7 @@ router.put('/password/:id', function(req, res, next) {
 					var query = mysql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "hash", newhash, "id", req.params.id]);
 
 					connection.query(query, function(err, data) {
-						if (err) rest.error500(err);
+						if (err) rest.error500(res, err);
 						else rest.updated(res, data);
 					});
 				});

@@ -10,7 +10,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT * FROM StoricoStatoPratiche', function(err, data) {
-            if (err) rest.error500(err);
+            if (err) rest.error500(res, err);
 			else res.json(data);
 		});
     });
@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
 router.get('/stati', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT * FROM ConstStatoPratiche', function(err, data) {
-            if (err) rest.error500(err);
+            if (err) rest.error500(res, err);
 			else res.json(data);
 		});
     });
@@ -28,7 +28,7 @@ router.get('/stati', function(req, res, next) {
 router.get('/tipi', function(req, res, next) {
     sql(function(err,connection) {
         connection.query('SELECT * FROM ConstTipoPratiche', function(err, data) {
-            if (err) rest.error500(err);
+            if (err) rest.error500(res, err);
 			else res.json(data);
 		});
     });
@@ -40,7 +40,7 @@ router.get('/history/:id', function(req, res, next) {
 		var query = mysql.format('SELECT A.*, Utenti.username as usernameMod FROM (SELECT StoricoStatoPratiche.id, StoricoStatoPratiche.idPratica, StoricoStatoPratiche.idUtente, StoricoStatoPratiche.idStato, StoricoStatoPratiche.idUtenteModifica, StoricoStatoPratiche.timePoint, Utenti.username as usernameAss, ConstStatoPratiche.descrizione as descStato FROM StoricoStatoPratiche LEFT JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) LEFT JOIN ConstStatoPratiche on (StoricoStatoPratiche.idStato = ConstStatoPratiche.id) WHERE StoricoStatoPratiche.idPratica=? ORDER BY StoricoStatoPratiche.id DESC) AS A LEFT JOIN Utenti on (A.idUtenteModifica = Utenti.id)', [req.params.id]);
 				
         connection.query(query, function(err, data) {
-            if (err) rest.error500(err);
+            if (err) rest.error500(res, err);
 			else res.json(data);
 		});
     });
@@ -51,7 +51,7 @@ router.get('/current/:id', function(req, res, next) {
 		var query = mysql.format('SELECT A.*, Utenti.username as usernameMod FROM (SELECT StoricoStatoPratiche.id, StoricoStatoPratiche.idPratica, StoricoStatoPratiche.idUtente, StoricoStatoPratiche.idStato, StoricoStatoPratiche.idUtenteModifica, StoricoStatoPratiche.timePoint, Utenti.username as usernameAss, ConstStatoPratiche.descrizione as descStato FROM StoricoStatoPratiche LEFT JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) LEFT JOIN ConstStatoPratiche on (StoricoStatoPratiche.idStato = ConstStatoPratiche.id) WHERE StoricoStatoPratiche.idPratica=? ORDER BY StoricoStatoPratiche.id DESC) AS A LEFT JOIN Utenti on (A.idUtenteModifica = Utenti.id)', [req.params.id]);
 				
         connection.query(query, function(err, data) {
-            if (err) rest.error500(err);
+            if (err) rest.error500(res, err);
 			else res.json(data);
 		});
     });
@@ -62,7 +62,7 @@ router.get('/:id', function(req, res, next) {
 		var query = mysql.format('SELECT * FROM StoricoStatoPratiche WHERE id=?', [req.params.id]);
 		
         connection.query(query, function(err, data) {
-            if (err) rest.error500(err);
+            if (err) rest.error500(res, err);
 			else res.json(data.length == 1 ? data[0] : []);
 		});
     });
@@ -73,27 +73,27 @@ router.post('/', function(req, res, next) {
 console.log("ok, stato: "+req.body.idStato);		
     sql(function (err, connection) {
 		connection.query('START TRANSACTION;', function(err, data) {
-			if (err) rest.error500(err);
+			if (err) rest.error500(res, err);
 			else {
 				var query =  mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, req.body.idPratica, req.body.idUtente, req.body.idStato, userid ]);
 				
 				connection.query(query, function(err, data) {
-					if (err) rest.error500(err);
+					if (err) rest.error500(res, err);
 
 					// if OK, update Current table
 					var query2 = mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE idUtente=?, idStato=?", [tableNameCurrent, req.body.idPratica, req.body.idUtente, req.body.idStato, userid, req.body.idUtente, req.body.idStato ]);
 				
 					connection.query(query2, function(err, data) {			
-						if (err) rest.error500(err);
+						if (err) rest.error500(res, err);
 						else {
 							if (req.body.idStato == 7) {	// richiedi integrazioni
 								var query3 = mysql.format("INSERT INTO Integrazioni(idPratica, dateOUT, dateIN, protoOUT, protoIN, note) VALUES (?,?,NULL,?,NULL,?)", [ req.body.idPratica, req.body.integData, req.body.integProto, req.body.integNote]);
 console.log("richiedi: "+query3);								
 								connection.query(query3, function(err, data) {
-									if (err) rest.error500(err);
+									if (err) rest.error500(res, err);
 									else {						
 										connection.query('COMMIT;', function(err, data) {
-											if (err) rest.error500(err);
+											if (err) rest.error500(res, err);
 											else rest.created(res, data);
 										});
 									}
@@ -103,10 +103,10 @@ console.log("richiedi: "+query3);
 								var query3 = mysql.format("UPDATE Integrazioni SET dateIN=?,protoIN=? WHERE idPratica=?", [ req.body.integData, req.body.integProto, req.body.idPratica]);
 console.log("arriba: "+query3);							
 								connection.query(query3, function(err, data) {
-									if (err) rest.error500(err);
+									if (err) rest.error500(res, err);
 									else {						
 										connection.query('COMMIT;', function(err, data) {
-											if (err) rest.error500(err);
+											if (err) rest.error500(res, err);
 											else rest.created(res, data);
 										});
 									}
@@ -115,7 +115,7 @@ console.log("arriba: "+query3);
 							else {
 console.log("normale");								
 								connection.query('COMMIT;', function(err, data) {
-									if (err) rest.error500(err);
+									if (err) rest.error500(res, err);
 									else rest.created(res, data);
 								});
 							}
