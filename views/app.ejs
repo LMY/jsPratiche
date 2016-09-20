@@ -17,7 +17,6 @@
 		padding: 12px;
 	}
 	.div-border-invisible {
-/*		border: 1px solid #aaaaaa;*/
 		padding: 12px;
 	}
 	.div-buttons {
@@ -242,7 +241,7 @@
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" confirmed-click="remove()" ng-confirm-click="Sei sicuro?">Remove</button></div>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
       </div>
     </div>
   </form>
@@ -366,7 +365,7 @@
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" confirmed-click="remove()" ng-confirm-click="Sei sicuro?">Remove</button></div>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
       </div>
     </div>
   </form>
@@ -395,7 +394,7 @@
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" confirmed-click="remove()" ng-confirm-click="Sei sicuro?">Remove</button></div>
+        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
       </div>
     </div>
   </form>
@@ -485,7 +484,7 @@
         <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
         <div class="pull-right">
 			<button type="submit" class="btn btn-primary" ng-click="changepw()" ng-show="!isnew &&(me.userlevel == 0 || me.id == eutente.id)">Cambia Password</button>
-			<button type="submit" class="btn btn-danger" confirmed-click="remove()" ng-confirm-click="Sei sicuro?" ng-show="!isnew && me.userlevel == 0 && me.id != eutente.id">Remove</button>
+			<button type="submit" class="btn btn-danger" ng-click="remove()" ng-show="!isnew && me.userlevel == 0 && me.id != eutente.id">Remove</button>
 		</div>
       </div>
     </div>
@@ -549,6 +548,23 @@ var getTableRowClass = function(id) {
 		return "danger";
 		
 	return "";
+}
+
+var askconfirm = function(ModalService, next, textmessage) {
+	ModalService.showModal({
+		templateUrl: "public/confirm.html",
+		controller: "YesNoController",
+		inputs: {
+			message: textmessage
+		}
+	}).then(function(modal) {
+		modal.element.modal();
+		modal.close.then(function(result) {
+			if (result) {
+				next();
+			}
+		});
+	});
 }
 
 var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angularModalService'])
@@ -616,6 +632,27 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		return $resource('/utenti/me', null);
 	}])	
 	
+	// helper controllers
+	.controller('YesNoController', ['$scope', 'message', 'close', function($scope, message, close) {
+		$scope.message = message;
+		$scope.close = function(result) {
+			close(result, 500); // close, but give 500ms for bootstrap to animate
+		};
+	}])
+	.controller('ProtoOUTController', ['$scope', '$element', 'title', 'close',  function($scope, $element, title, close) {
+		$scope.protoout = null;
+		$scope.date = new Date();
+		$scope.title = title;
+
+		$scope.close = function() {
+			close({ protoout: $scope.protoout, date: $scope.date }, 500);
+		};
+
+		$scope.cancel = function() {
+			$element.modal('hide');
+		};
+	}])
+	
 	.controller('GestoriController', ['$scope', 'Me', 'Gestori', '$location', function($scope, Me, Gestori, $location) {
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -639,7 +676,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		});
 	}])
 	
-	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me','Gestori', '$location', function($scope, $routeParams, Me, Gestori, $location) {
+	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'Gestori', '$location', 'ModalService', function($scope, $routeParams, Me, Gestori, $location, ModalService) {
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.egestore = $scope.isnew ? {} : Gestori.get({id: $routeParams.id });
@@ -663,9 +700,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		}
 		
 		$scope.remove = function() {
-			Gestori.remove({id: $scope.egestore.id}, function() {
-				$location.url('gestori');
-			});
+			askconfirm(ModalService, function() {
+				Gestori.remove({id: $scope.egestore.id}, function() {
+					$location.url('gestori');
+				});
+			}, "Sei sicuro di voler rimovere "+$scope.egestore.name+"?");
 		}
 		
 		$scope.cancel = function() {
@@ -687,7 +726,8 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('comuni/'+id);
 		}
 	}])
-	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Me', 'Comuni', '$location', function($scope, $routeParams, Me, Comuni, $location) {
+	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Me', 'Comuni', '$location', 'ModalService', function($scope, $routeParams, Me, Comuni, $location, ModalService) {
+		$scope.me = Me.get();	
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecomune = $scope.isnew ? {} : Comuni.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Comune" : "Comune "+$routeParams.id;
@@ -710,9 +750,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		}
 		
 		$scope.remove = function() {
-			Comuni.remove({id: $scope.ecomune.id}, function() {
-				$location.url('comuni');
-			});
+			askconfirm(ModalService, function() {
+				Comuni.remove({id: $scope.ecomune.id}, function() {
+					$location.url('comuni');
+				});
+			}, "Sei sicuro di voler rimovere "+$scope.ecomune.name+"?");	
 		}
 		
 		$scope.cancel = function() {
@@ -734,7 +776,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				$location.url('utenti/'+id);
 		}
 	}])
-	.controller('UtenteDetailCtrl', ['$scope', '$routeParams', 'Me', 'Utenti', '$location', function($scope, $routeParams, Me, Utenti, $location) {
+	.controller('UtenteDetailCtrl', ['$scope', '$routeParams', 'Me', 'Utenti', '$location', 'ModalService', function($scope, $routeParams, Me, Utenti, $location, ModalService) {
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.eutente = $scope.isnew ? {} : Utenti.get({id: $routeParams.id });
@@ -757,9 +799,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		}
 		
 		$scope.remove = function() {
-			Utenti.remove({id: $scope.eutente.id}, function() {
-				$location.url('utenti');
-			});
+			askconfirm(ModalService, function() {
+				Utenti.remove({id: $scope.eutente.id}, function() {
+					$location.url('utenti');
+				})
+			}, "Sei sicuro di voler rimovere "+$scope.eutente.name+"?");
 		}
 		
 		$scope.cancel = function() {
@@ -817,6 +861,8 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$scope.pratiche.forEach(function(x) {
 				x.rowClass = getTableRowClass(x.idStato);
 				
+				if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
+				
 				var arrivo = moment(x.dataIN);
 				var diff = moment.duration(today.diff(arrivo)).asDays();
 				var integDiff = (x.diff?x.diff:0);
@@ -856,6 +902,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.pratiche = PraticheAll.query(function() {
 			$scope.pratiche.forEach(function(x) {			
 				x.rowClass = getTableRowClass(x.idStato);
+				if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
 			});
 		});
 		$scope.show = function(id) {
@@ -890,17 +937,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			});
 		});
 		$scope.show = function(id) {
-			
-	/*		ModalService.showModal({
-				templateUrl: "public/yesno.html",
-				controller: "YesNoController"
-			}).then(function(modal) {
-				modal.element.modal();
-				modal.close.then(function(result) {
-					alert(result ? "You said Yes" : "You said No");
-				});
-			});*/
-			
 			ModalService.showModal({
 				templateUrl: "public/protoout.html",
 				controller: "ProtoOUTController",
@@ -915,27 +951,8 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			});
 		}
 	}])
-	.controller('YesNoController', ['$scope', 'close', function($scope, close) {
-		$scope.close = function(result) {
-			close(result, 500); // close, but give 500ms for bootstrap to animate
-		};
-	}])
-	.controller('ProtoOUTController', ['$scope', '$element', 'title', 'close',  function($scope, $element, title, close) {
-		$scope.protoout = null;
-		$scope.date = new Date();
-		$scope.title = title;
-
-		$scope.close = function() {
-			close({ protoout: $scope.protoout, date: $scope.date }, 500);
-		};
-
-		$scope.cancel = function() {
-			$element.modal('hide');
-		};
-	}])
 	
-	
-	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, $location) {
+	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
 
 		$scope.dataIN = new Date();
 		$scope.dataOUT = new Date();
@@ -983,12 +1000,14 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		}
 		
 		$scope.remove = function() {
-			Pratiche.remove({id: $scope.epratica.id}, function() {
-				$location.url('pratiche');
-			});
+			askconfirm(ModalService, function() {
+				Pratiche.remove({id: $scope.epratica.id}, function() {
+					$location.url('pratiche');
+				});
+			}, "Sei sicuro di voler rimovere la pratica?");
 		}
 	}])
-	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'StoricoStatoPratiche', '$location', function($window, $scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, StoricoStatoPratiche, $location) {
+	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, StoricoStatoPratiche, $location, ModalService) {
 			$scope.me = Me.get(function(x) {
 				$scope.selectedUser = $scope.me.id
 			});
@@ -1034,13 +1053,24 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 					$window.history.back();
 				});
 			}
-			
+
 			$scope.stato = function(state, user) {
-				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
-				
-				newstate.$save(function(){
-					$window.history.back();
-				});
+				if (state == 1) {
+					askconfirm(ModalService, function() {
+						var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
+						
+						newstate.$save(function(){
+							$window.history.back();
+						});
+					}, "Sei sicuro di voler rilasciare la pratica?");
+				}
+				else {
+					var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
+					
+					newstate.$save(function(){
+						$window.history.back();
+					});
+				}
 			}
 	}])
 	
@@ -1106,20 +1136,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			})
 			;
 	}]);
-	
-app.directive('ngConfirmClick', [function(){
-	return {
-		link: function (scope, element, attr) {
-			var msg = attr.ngConfirmClick || "Are you sure?";
-			var clickAction = attr.confirmedClick;
-			element.bind('click', function(event) {
-				if (window.confirm(msg)) {
-					scope.$eval(clickAction)
-				}
-			});
-		}
-	};
-}]);
 
 app.config(['rmDatepickerConfig', function(rmDatepickerConfig) {
     rmDatepickerConfig.mondayStart = true;
