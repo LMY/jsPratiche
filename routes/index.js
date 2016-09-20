@@ -38,6 +38,10 @@ module.exports = function(app, passport) {
 	app.get("/home", isAuthenticated, function(req, res) {
 		res.render('app');
 	});
+
+	app.get("/test", isAuthenticated, function(req, res) {
+		res.render('test');
+	});
 	
 	app.get('/logout', function(req, res) {
 		req.logout();
