@@ -41,11 +41,11 @@
 	}
 	</style>
 
+	<script src="public/js/jquery/dist/jquery.min.js"></script>
+
 	<script src="public/js/angular/angular.min.js"></script> 
 	<script src="public/js/angular-route/angular-route.min.js"></script> 
 	<script src="public/js/angular-resource/angular-resource.min.js"></script> 
-	
-	<script src="public/js/jquery/dist/jquery.min.js"></script>
 	
 	<script src="public/js/bootstrap/dist/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="public/js/bootstrap/dist/css/bootstrap.min.css" />
@@ -54,7 +54,8 @@
   
 	<script src="public/js/rm-datepicker/dist/rm-datepicker.min.js"></script>
 	<link rel="stylesheet"  type="text/css" href="public/js/rm-datepicker/dist/rm-datepicker.min.css" />
-
+	
+	<script src="public/js/angular-modal-service/dst/angular-modal-service.min.js"></script>
 </head>
 <body>
 
@@ -68,7 +69,6 @@
 		<p>Scegli dal menu in alto una voce.</p>
 	</div>
 </script>
-
 
 <script type="text/ng-template" id="/pratiche.html">
 <div ng-include="'/public/navbar.html'"></div>
@@ -122,6 +122,7 @@
 
 <script type="text/ng-template" id="/pratiche-storico.html">
 <div ng-include="'/public/navbar.html'"></div>
+		
 <!--
 	<div class="form-group center">
 		Da:<input rm-datepicker type="text" ng-model="startDate">
@@ -166,6 +167,8 @@
 			</tr>
 		</tbody>
 	</table>
+	
+
 </script>
 
 
@@ -548,7 +551,7 @@ var getTableRowClass = function(id) {
 	return "";
 }
 
-var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
+var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angularModalService'])
 	.factory('Gestori', ['$resource', function($resource){
 		return $resource('/gestori/:id', null, {
 			'update': { method:'PUT' }
@@ -569,15 +572,15 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 			'update': { method:'PUT' }
 		});
 	}])
-/*	.factory('PraticheFare', ['$resource', function($resource){
+	.factory('PraticheCorreggere', ['$resource', function($resource){
 		return $resource('/pratiche/:id', null, {
-			'query': { isArray: true, method:'GET', url:'/pratiche/fare' },
+			'query': { isArray: true, method:'GET', url:'/pratiche/correggere' },
 			'update': { method:'PUT' }
 		});
-	}])*/
-	.factory('PraticheFirma', ['$resource', function($resource){
+	}])
+	.factory('PraticheProtocollare', ['$resource', function($resource){
 		return $resource('/pratiche/:id', null, {
-			'query': { isArray: true, method:'GET', url:'/pratiche/firma' },
+			'query': { isArray: true, method:'GET', url:'/pratiche/protocollare' },
 			'update': { method:'PUT' }
 		});
 	}])
@@ -855,17 +858,83 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 				x.rowClass = getTableRowClass(x.idStato);
 			});
 		});
-  
-		$scope.new = function() {
-			$location.url('pratiche/detail/new');
-		}
 		$scope.show = function(id) {
 			$location.url('pratiche/'+id);
 		}
 
 		$scope.startDate = new Date();
 		$scope.endDate = new Date();
+	}])
+	
+	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PraticheCorreggere', '$location', function($scope, Me, PraticheCorreggere, $location) {
+		$scope.orderByField = 'dataIN';
+		$scope.reverseSort = false;
+		$scope.me = Me.get();
+		$scope.pratiche = PraticheCorreggere.query(function() {
+			$scope.pratiche.forEach(function(x) {			
+				x.rowClass = getTableRowClass(x.idStato);
+			});
+		});
+		$scope.show = function(id) {
+			$location.url('pratiche/'+id);
+		}
 	}])	
+	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PraticheProtocollare', '$location', "ModalService", function($scope, Me, PraticheProtocollare, $location, ModalService) {
+		$scope.orderByField = 'dataIN';
+		$scope.reverseSort = false;
+		$scope.me = Me.get();
+			
+		$scope.pratiche = PraticheProtocollare.query(function() {
+			$scope.pratiche.forEach(function(x) {			
+				x.rowClass = getTableRowClass(x.idStato);
+			});
+		});
+		$scope.show = function(id) {
+			
+	/*		ModalService.showModal({
+				templateUrl: "public/yesno.html",
+				controller: "YesNoController"
+			}).then(function(modal) {
+				modal.element.modal();
+				modal.close.then(function(result) {
+					alert(result ? "You said Yes" : "You said No");
+				});
+			});*/
+			
+			ModalService.showModal({
+				templateUrl: "public/protoout.html",
+				controller: "ProtoOUTController",
+				inputs: {
+					title: "ProtoOUT per pratica "+id
+				}
+			}).then(function(modal) {
+				modal.element.modal();
+				modal.close.then(function(result) {
+					alert("protoout: " + result.protoout + ", date: " + result.date);
+				});
+			});
+		}
+	}])
+	.controller('YesNoController', ['$scope', 'close', function($scope, close) {
+		$scope.close = function(result) {
+			close(result, 500); // close, but give 500ms for bootstrap to animate
+		};
+	}])
+	.controller('ProtoOUTController', ['$scope', '$element', 'title', 'close',  function($scope, $element, title, close) {
+		$scope.protoout = null;
+		$scope.date = new Date();
+		$scope.title = title;
+
+		$scope.close = function() {
+			close({ protoout: $scope.protoout, date: $scope.date }, 500);
+		};
+
+		$scope.cancel = function() {
+			$element.modal('hide');
+		};
+	}])
+	
+	
 	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, $location) {
 
 		$scope.dataIN = new Date();
@@ -1004,11 +1073,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker'])
 			})
 			.when('/pratiche-correggere', {
 				templateUrl: '/pratiche.html',
-				controller: 'PraticheFirmaController'
+				controller: 'PraticheCorreggereController'
 			})
 			.when('/pratiche-protocollare', {
 				templateUrl: '/pratiche-storico.html',
-				controller: 'PraticheUsciteController'
+				controller: 'PraticheProtocollareController'
 			})			
 			.when('/pratiche-all', {
 				templateUrl: '/pratiche-storico.html',
