@@ -290,18 +290,14 @@
 				<tr>
 <!--					<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
 					<th class="text-center"><a ng-click="orderByField='descStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='descStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-					<th class="text-center"><a ng-click="orderByField='usernameAss'; reverseSort=!reverseSort">Utente assegnato <span ng-show="orderByField=='usernameAss'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-					<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Quando <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-					<th class="text-center"><a ng-click="orderByField='usernameMod'; reverseSort=!reverseSort">Utente modifica <span ng-show="orderByField=='usernameMod'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Modifica <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr ng-repeat="x in history|orderBy:orderByField:reverseSort">
 <!--					<td class="text-center">{{x.id}}</td>  -->
 					<td class="text-center">{{x.descStato}}</td>
-					<td class="text-center">{{x.usernameAss}}</td>
 					<td class="text-center">{{x.timePoint}}</td>
-					<td class="text-center">{{x.usernameMod}}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -624,10 +620,16 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 	}])
 	.factory('StoricoStatoPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/:id', null, {
-			'get' : { method:'GET', url:'/statopratiche/history/:id', isArray:true},
+			'get' : { method:'GET', url:'/statopratiche/history/:id', isArray:true },
 			'update': { method:'PUT' }
 		});
 	}])
+	.factory('IntegrazioniPratica', ['$resource', function($resource){
+		return $resource('/integrazioni/:id', null, {
+			'get' : { method:'GET', url:'/integrazioni/:id', isArray:true },
+			'update': { method:'PUT' }
+		});
+	}])	
 	.factory('Me', ['$resource', function($resource){
 		return $resource('/utenti/me', null);
 	}])	
@@ -1007,7 +1009,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			}, "Sei sicuro di voler rimovere la pratica?");
 		}
 	}])
-	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, StoricoStatoPratiche, $location, ModalService) {
+	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'IntegrazioniPratica', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, IntegrazioniPratica, StoricoStatoPratiche, $location, ModalService) {
 			$scope.me = Me.get(function(x) {
 				$scope.selectedUser = $scope.me.id
 			});
@@ -1025,7 +1027,29 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$scope.conststatipratiche = ConstStatiPratiche.query();
 			$scope.consttipipratiche = ConstTipiPratiche.query();
 			
-			$scope.history = StoricoStatoPratiche.get({id: $routeParams.id});
+			$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id});
+			
+			$scope.history = StoricoStatoPratiche.get({id: $routeParams.id}, function(array) {
+				
+				var integ=$scope.integrazioni.length-1;
+				
+				for (var i=0; i<array.length; i++) {
+					if (array[i].descStato == "Lavorazione") {
+						if (array[i].usernameAss)
+							array[i].descStato +=  " ("+array[i].usernameAss+")";
+						else {	// arrivata integrazione
+							if (integ >= 0)
+								array[i].descStato +=  " - " + $scope.integrazioni[integ].protoIN + " - "+ $scope.integrazioni[integ].dateIN;
+						}
+					}
+					else if (array[i].descStato ==  "Attesa Integrazione" && integ >= 0) {
+						array[i].descStato +=  " - " + $scope.integrazioni[integ].protoOUT + " - "+ $scope.integrazioni[integ].dateOUT;
+						--integ;
+					}
+					
+					array[i].timePoint += " - "+array[i].usernameMod;
+				}
+			});
 
 			$scope.cancel = function() {
 				$window.history.back();

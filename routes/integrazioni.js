@@ -21,7 +21,7 @@ router.get('/:id', function(req, res, next) {
 		
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
-			else res.json(data.length == 1 ? data[0] : []);
+			else res.json(data);	// return ARRAY of integrazioni
 		});
     });
 });
