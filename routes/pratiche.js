@@ -118,6 +118,18 @@ router.put('/:id', function(req, res, next) {
     });
 });
 
+/* PUT /pratiche/protoout/:id */
+router.put('/protoout/:id', function(req, res, next) {
+    sql(function (err, connection) {
+        var query = mysql.format('UPDATE ?? SET protoOUT = ?, dataOUT = ? WHERE id = ?', [tableName, req.body.protoOUT, req.body.dataOUT, req.params.id]);
+
+        connection.query(query, function(err, data) {
+            if (err) rest.error500(res, err);
+            else rest.updated(res, data);
+        });
+    });
+});
+
 /* DELETE /pratiche/:id */
 router.delete('/:id', function(req, res, next) {
 	

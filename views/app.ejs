@@ -584,6 +584,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			'update': { method:'PUT' }
 		});
 	}])
+	.factory('PraticheProtoOUT', ['$resource', function($resource){
+		return $resource('/pratiche/protoout/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])	
 	.factory('PraticheCorreggere', ['$resource', function($resource){
 		return $resource('/pratiche/:id', null, {
 			'query': { isArray: true, method:'GET', url:'/pratiche/correggere' },
@@ -784,7 +789,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.eutente = $scope.isnew ? {} : Utenti.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Utente" : "Utente "+$routeParams.id;
 		
-		$scope.update = function( ){
+		$scope.update = function() {
 			if ($scope.isnew) {
 				if (!$scope.eutente || $scope.eutente.length < 1) return;
 				if (!$scope.eutente.username || $scope.eutente.username.length < 1) { alert('Specificare username!'); return; }
@@ -928,7 +933,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('pratiche/'+id);
 		}
 	}])	
-	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PraticheProtocollare', '$location', "ModalService", function($scope, Me, PraticheProtocollare, $location, ModalService) {
+	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PraticheProtocollare', 'PraticheProtoOUT', '$route', "ModalService", function($scope, Me, PraticheProtocollare, PraticheProtoOUT, $route, ModalService) {
 		$scope.orderByField = 'dataIN';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
@@ -948,7 +953,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			}).then(function(modal) {
 				modal.element.modal();
 				modal.close.then(function(result) {
-					alert("protoout: " + result.protoout + ", date: " + result.date);
+					var protoOUT = new PraticheProtoOUT({ id: id, protoOUT: result.protoout, dataOUT: result.date });
+					
+					PraticheProtoOUT.update({id: id}, protoOUT, function() {
+						$route.reload();
+					});
 				});
 			});
 		}

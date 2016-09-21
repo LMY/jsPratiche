@@ -107,7 +107,7 @@ router.post('/', function(req, res, next) {
 							}
 							else if (req.body.idStato == 2 && req.body.integData) {	// lavorazione (arrivate integrazioni)
 								var query3 = mysql.format("UPDATE Integrazioni SET dateIN=?,protoIN=? WHERE idPratica=?", [ req.body.integData, req.body.integProto, req.body.idPratica]);
-console.log("arriba: "+query3);							
+					
 								connection.query(query3, function(err, data) {
 									if (err) rest.error500(res, err);
 									else {						
@@ -118,8 +118,7 @@ console.log("arriba: "+query3);
 									}
 								});
 							}
-							else {
-console.log("normale");								
+							else {				
 								connection.query('COMMIT;', function(err, data) {
 									if (err) rest.error500(res, err);
 									else rest.created(res, data);
