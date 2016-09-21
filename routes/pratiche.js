@@ -120,6 +120,33 @@ router.put('/:id', function(req, res, next) {
 
 /* PUT /pratiche/protoout/:id */
 router.put('/protoout/:id', function(req, res, next) {
+	var userid = req.user.id;
+	
+	sql(function (err, connection) {
+		connection.query('START TRANSACTION;', function(err, data) {
+			if (err) rest.error500(res, err);
+			else
+				connection.query(mysql.format('UPDATE ?? SET protoOUT = ?, dataOUT = ? WHERE id = ?', [tableName, req.body.protoOUT, req.body.dataOUT, req.params.id]), function(err, data) {
+					if (err) rest.error500(res, err);
+					else
+						connection.query(mysql.format("UPDATE StatoPratiche SET idUtenteModifica = ?, idStato = ? WHERE idPratica = ?", [userid, 12, req.params.id]), function(err, datares2) {				
+							if (err) rest.error500(res, err);
+							else 							
+								connection.query(mysql.format("INSERT INTO StoricoStatoPratiche(idPratica,idUtenteModifica,idStato) VALUES (?,?,?)", [req.params.id, userid, 12]), function(err, datares3) {
+									if (err) rest.error500(res, err);
+									else {
+										connection.query('COMMIT;', function(err, data) {
+											if (err) rest.error500(res, err);
+											else rest.updated(res, data);
+										});
+									}
+								});
+						});
+				});
+		});
+    });
+	
+	/*
     sql(function (err, connection) {
         var query = mysql.format('UPDATE ?? SET protoOUT = ?, dataOUT = ? WHERE id = ?', [tableName, req.body.protoOUT, req.body.dataOUT, req.params.id]);
 
@@ -127,7 +154,7 @@ router.put('/protoout/:id', function(req, res, next) {
             if (err) rest.error500(res, err);
             else rest.updated(res, data);
         });
-    });
+    });*/
 });
 
 /* DELETE /pratiche/:id */
