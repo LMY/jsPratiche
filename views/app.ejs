@@ -70,13 +70,12 @@
 </script>
 
 <script type="text/ng-template" id="/pratiche.html">
-<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/navbar.html'"></div>
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuova Pratica</button>
 		</div>
 	</div>
-
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -119,8 +118,7 @@
 
 
 <script type="text/ng-template" id="/pratiche-storico.html">
-<div ng-include="'/public/navbar.html'"></div>
-
+	<div ng-include="'/public/navbar.html'"></div>
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -162,133 +160,132 @@
 </script>
 
 <script type="text/ng-template" id="/praticaDetails.html">
-<div ng-include="'/public/navbar.html'"></div>
-<div class="container">
-  <h2>{{ title }}</h2>
-  <form class="form-horizontal" role="form">
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="gestore">Gestore:</label>
-      <div class="col-sm-10">
-		<select data-ng-options="g.id as g.name for g in gestori" data-ng-model="epratica.idGestore"></select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="comune">Comune:</label>
-      <div class="col-sm-10">
-		<select data-ng-options="g.id as g.name for g in comuni" data-ng-model="epratica.idComune"></select>
-      </div>
-    </div>
-	<div class="form-group">
-      <label class="control-label col-sm-2" for="address">Indirizzo:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="address" ng-model="epratica.address" placeholder="Indirizzo">
-      </div>
-    </div>
-	<div class="form-group">
-      <label class="control-label col-sm-2" for="sitecode">Codice Sito:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="sitecode" ng-model="epratica.sitecode" placeholder="Codice Sito">
-      </div>
-    </div>
-	<div class="form-group">
-      <label class="control-label col-sm-2" for="tipopratica">Tipo Pratica:</label>
-      <div class="col-sm-10">
-		<select data-ng-options="g.id as g.descrizione for g in consttipipratiche" data-ng-model="epratica.tipopratica"></select>
-      </div>
-    </div>
-	<div class="form-group">
-      <label class="control-label col-sm-2" for="protoIN">Proto IN:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="protoIN" ng-model="epratica.protoIN" placeholder="Proto IN">
-      </div>
-    </div>
-	<div class="form-group">
-      <label class="control-label col-sm-2" for="dataIN">Data IN:</label>
-      <div class="col-sm-10">
-		<input rm-datepicker class="form-control" type="text" ng-model="dataIN">
-      </div>
-    </div>
-	<div class="form-group">
-      <label class="control-label col-sm-2" for="note">Note:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="note" ng-model="epratica.note" placeholder="Note">
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
-		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
-        <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
-      </div>
-    </div>
-  </form>
-</div>
+	<div ng-include="'/public/navbar.html'"></div>
+	<div class="container">
+		<h2>{{ title }}</h2>
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="gestore">Gestore:</label>
+				<div class="col-sm-10">
+					<select data-ng-options="g.id as g.name for g in gestori" data-ng-model="epratica.idGestore"></select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="comune">Comune:</label>
+				<div class="col-sm-10">
+					<select data-ng-options="g.id as g.name for g in comuni" data-ng-model="epratica.idComune"></select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="address">Indirizzo:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="address" ng-model="epratica.address" placeholder="Indirizzo">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="sitecode">Codice Sito:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="sitecode" ng-model="epratica.sitecode" placeholder="Codice Sito">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="tipopratica">Tipo Pratica:</label>
+				<div class="col-sm-10">
+					<select data-ng-options="g.id as g.descrizione for g in consttipipratiche" data-ng-model="epratica.tipopratica"></select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="protoIN">Proto IN:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="protoIN" ng-model="epratica.protoIN" placeholder="Proto IN">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="dataIN">Data IN:</label>
+				<div class="col-sm-10">
+					<input rm-datepicker class="form-control" type="text" ng-model="dataIN">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="note">Note:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="note" ng-model="epratica.note" placeholder="Note">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+					<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+					<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+					<div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+				</div>
+			</div>
+		</form>
+	</div>
 </script>
 
 <script type="text/ng-template" id="/praticaStatoDetails.html">
-<div ng-include="'/public/navbar.html'"></div>
-<div class="container">
-	<h2>{{ title }}</h2>
-	<div>{{ infoline }}</div>
-	<hr>
-	<div>
-		<span class="div-border-visible" ng-show="epratica.idStato == null || epratica.idStato == 1">
-			<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
-			<button class="btn btn-primary" ng-click="stato(2, selectedUser)" >Prendi in carico</button>
-		</span>
-		<span class="div-border-invisible" ng-show="epratica.idStato == 2">
-			<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
-		</span>
-		<span class="div-border-visible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
-			<input type="text" ng-model="integProto" placeholder="Protocollo">
-			<input rm-datepicker type="text" ng-model="integDate" placeholder="Data">
-			<button class="btn btn-warning" ng-click="integric()" >Richiedi integrazioni</button>
-		</span>
-		<span class="div-border-visible" ng-show="epratica.idStato == 7">
-			<input type="text" ng-model="integProto" placeholder="Protocollo">
-			<input rm-datepicker type="text" ng-model="integDate" placeholder="Data">
-			<button class="btn btn-warning" ng-click="integarr()">Arrivate integrazioni</button>
-		</span>
-		<span class="div-border-invisible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
-			<button class="btn btn-success" ng-click="stato(4)">Fatto</button>
-		</span>
-		<span class="div-border-visible" ng-show="epratica.idStato == 4">
-			<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
-			<button class="btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
-		</span>
-		<span class="div-border-invisible" ng-show="epratica.idStato && epratica.idStato != 1">
-			<button class="btn btn-danger pull-right" ng-click="stato(1)">Rilascia</button>
-		</span>
-<!--		<div class="clearfix"></div>	<!-- https://github.com/twbs/bootstrap/issues/8843 -->
-	</div>
-	<hr>
-		<table class="table table-hover">
-			<thead>
-				<tr>
-<!--					<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
-					<th class="text-center"><a ng-click="orderByField='descStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='descStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-					<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Modifica <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="x in history|orderBy:orderByField:reverseSort">
-<!--					<td class="text-center">{{x.id}}</td>  -->
-					<td class="text-center">{{x.descStato}}</td>
-					<td class="text-center">{{x.timePoint}}</td>
-				</tr>
-			</tbody>
-		</table>
+	<div ng-include="'/public/navbar.html'"></div>
+	<div class="container">
+		<h2>{{ title }}</h2>
+		<div>{{ infoline }}</div>
+		<hr>
+		<div>
+			<span class="div-border-visible" ng-show="epratica.idStato == null || epratica.idStato == 1">
+				<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
+				<button class="btn btn-primary" ng-click="stato(2, selectedUser)" >Prendi in carico</button>
+			</span>
+			<span class="div-border-invisible" ng-show="epratica.idStato == 2">
+				<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
+			</span>
+			<span class="div-border-visible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
+				<input type="text" ng-model="integProto" placeholder="Protocollo">
+				<input rm-datepicker type="text" ng-model="integDate" placeholder="Data">
+				<button class="btn btn-warning" ng-click="integric()" >Richiedi integrazioni</button>
+			</span>
+			<span class="div-border-visible" ng-show="epratica.idStato == 7">
+				<input type="text" ng-model="integProto" placeholder="Protocollo">
+				<input rm-datepicker type="text" ng-model="integDate" placeholder="Data">
+				<button class="btn btn-warning" ng-click="integarr()">Arrivate integrazioni</button>
+			</span>
+			<span class="div-border-invisible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
+				<button class="btn btn-success" ng-click="stato(4)">Fatto</button>
+			</span>
+			<span class="div-border-visible" ng-show="epratica.idStato == 4">
+				<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
+				<button class="btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
+			</span>
+			<span class="div-border-invisible" ng-show="epratica.idStato && epratica.idStato != 1">
+				<button class="btn btn-danger pull-right" ng-click="stato(1)">Rilascia</button>
+			</span>
+	<!--		<div class="clearfix"></div>	<!-- https://github.com/twbs/bootstrap/issues/8843 -->
+		</div>
+		<hr>
+			<table class="table table-hover">
+				<thead>
+					<tr>
+	<!--					<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
+						<th class="text-center"><a ng-click="orderByField='descStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='descStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+						<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Modifica <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="x in history|orderBy:orderByField:reverseSort">
+	<!--					<td class="text-center">{{x.id}}</td>  -->
+						<td class="text-center">{{x.descStato}}</td>
+						<td class="text-center">{{x.timePoint}}</td>
+					</tr>
+				</tbody>
+			</table>
 
-	<div>
-		<button class="btn btn-default" ng-click="cancel()">Indietro</button>
-		<div class="pull-right">
-			<button class="btn btn-default" ng-click="show()">Modifica</button>
+		<div>
+			<button class="btn btn-default" ng-click="cancel()">Indietro</button>
+			<div class="pull-right">
+				<button class="btn btn-default" ng-click="show()">Modifica</button>
+			</div>
 		</div>
 	</div>
-</div>
 </script>
-
 
 <script type="text/ng-template" id="/anagrafiche.html">
 	<div ng-include="'/public/navbar.html'"></div>
@@ -317,60 +314,60 @@
 
 <script type="text/ng-template" id="/gestoreDetails.html">
 	<div ng-include="'/public/navbar.html'"></div>
-<div class="container">
-  <h2>{{ title }}</h2>
-  <form class="form-horizontal" role="form">
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="name">Name:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="name" ng-model="egestore.name" placeholder="Nome gestore">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="pec">Pec:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="pec" ng-model="egestore.pec" placeholder="PEC gestore">
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
-		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
-        <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
-      </div>
-    </div>
-  </form>
-</div>
+	<div class="container">
+		<h2>{{ title }}</h2>
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="name">Name:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="name" ng-model="egestore.name" placeholder="Nome gestore">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="pec">Pec:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="pec" ng-model="egestore.pec" placeholder="PEC gestore">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+					<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+					<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+					<div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+				</div>
+			</div>
+		</form>
+	</div>
 </script>
 
 <script type="text/ng-template" id="/comuneDetails.html">
 	<div ng-include="'/public/navbar.html'"></div>
-<div class="container">
-  <h2>{{ title }}</h2>
-  <form class="form-horizontal" role="form">
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="name">Name:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="name" ng-model="ecomune.name" placeholder="Nome comune">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="pec">Pec:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="pec" ng-model="ecomune.pec" placeholder="PEC comune">
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
-		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
-        <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
-      </div>
-    </div>
-  </form>
-</div>
+	<div class="container">
+		<h2>{{ title }}</h2>
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="name">Name:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="name" ng-model="ecomune.name" placeholder="Nome comune">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="pec">Pec:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="pec" ng-model="ecomune.pec" placeholder="PEC comune">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+					<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+					<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+					<div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+				</div>
+			</div>
+		</form>
+	</div>
 </script>
 
 <script type="text/ng-template" id="/utenti.html">
@@ -410,95 +407,91 @@
 
 <script type="text/ng-template" id="/utenteDetails.html">
 	<div ng-include="'/public/navbar.html'"></div>
-<div class="container">
-  <h2>{{ title }}</h2>
-  <form class="form-horizontal" role="form">
-    <div class="form-group">
-      <label class="control-label col-sm-2" >Username:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" ng-model="eutente.username" placeholder="Username">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-2">Name:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" ng-model="eutente.name" placeholder="Name">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-2">Surname:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" ng-model="eutente.surname" placeholder="Surname">
-      </div>
-    </div>
-	<div class="form-group">
-      <label class="control-label col-sm-2">Email:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" ng-model="eutente.email" placeholder="Email">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-2">Phone:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" ng-model="eutente.phone" placeholder="Phone">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-2">Level:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" ng-model="eutente.userlevel" placeholder="Level">
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
-		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
-        <button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <div class="pull-right">
-			<button type="submit" class="btn btn-primary" ng-click="changepw()" ng-show="!isnew &&(me.userlevel == 0 || me.id == eutente.id)">Cambia Password</button>
-			<button type="submit" class="btn btn-danger" ng-click="remove()" ng-show="!isnew && me.userlevel == 0 && me.id != eutente.id">Remove</button>
-		</div>
-      </div>
-    </div>
-  </form>
-</div>
+	<div class="container">
+		<h2>{{ title }}</h2>
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="control-label col-sm-2">Username:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" ng-model="eutente.username" placeholder="Username">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2">Name:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" ng-model="eutente.name" placeholder="Name">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2">Surname:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" ng-model="eutente.surname" placeholder="Surname">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2">Email:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" ng-model="eutente.email" placeholder="Email">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2">Phone:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" ng-model="eutente.phone" placeholder="Phone">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2">Level:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" ng-model="eutente.userlevel" placeholder="Level">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+					<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+					<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+					<div class="pull-right">
+						<button type="submit" class="btn btn-primary" ng-click="changepw()" ng-show="!isnew &&(me.userlevel == 0 || me.id == eutente.id)">Cambia Password</button>
+						<button type="submit" class="btn btn-danger" ng-click="remove()" ng-show="!isnew && me.userlevel == 0 && me.id != eutente.id">Remove</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
 </script>
 
 <script type="text/ng-template" id="/utentePass.html">
 	<div ng-include="'/public/navbar.html'"></div>
 	<div class="container">
-	<h2>{{ title }} - {{eutente.username}}</h2>
-	<form class="form-horizontal" role="form">
-
-		<div class="form-group">
-		  <label class="control-label col-sm-2">Vecchia Password:</label>
-		  <div class="col-sm-10">
-			<input type="password" class="form-control" ng-model="eutente.oldpassword">
-		  </div>
-		</div>
-
-		<div class="form-group">
-		  <label class="control-label col-sm-2">Password:</label>
-		  <div class="col-sm-10">
-			<input type="password" class="form-control" ng-model="eutente.password1">
-		  </div>
-		</div>
-
-		<div class="form-group">
-		  <label class="control-label col-sm-2">Ripeti Password:</label>
-		  <div class="col-sm-10">
-			<input type="password" class="form-control" ng-model="eutente.password2">
-		  </div>
-		</div>
-
-		<div class="form-group">
-		  <div class="col-sm-offset-2 col-sm-10">
-			<button type="submit" class="btn btn-success" ng-click="update()">Update</button>
-			<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
-		  </div>
-		</div>
-	</form>
-</div>
+		<h2>{{ title }} - {{eutente.username}}</h2>
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="control-label col-sm-2">Vecchia Password:</label>
+				<div class="col-sm-10">
+					<input type="password" class="form-control" ng-model="eutente.oldpassword">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2">Password:</label>
+				<div class="col-sm-10">
+					<input type="password" class="form-control" ng-model="eutente.password1">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2">Ripeti Password:</label>
+				<div class="col-sm-10">
+					<input type="password" class="form-control" ng-model="eutente.password2">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-success" ng-click="update()">Update</button>
+					<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+				</div>
+			</div>
+		</form>
+	</div>
 </script>
 
 
@@ -657,7 +650,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				$location.path("/pratiche-all");	// ridirigi a da correggere
 		});
 	}])
-
 	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'Gestori', '$location', 'ModalService', function($scope, $routeParams, Me, Gestori, $location, ModalService) {
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
@@ -693,8 +685,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('gestori');
 		}
 	}])
-
-
 	.controller('ComuneController', ['$scope', 'Me', 'Comuni', '$location', function($scope, Me, Comuni, $location) {
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -743,7 +733,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('comuni');
 		}
 	}])
-
 	.controller('UtentiController', ['$scope', 'Me', 'Utenti', '$location', function($scope, Me, Utenti, $location) {
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -796,7 +785,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('utenti/pass/'+$scope.eutente.id);
 		}
 	}])
-
 	.controller('UtentePassCtrl', ['$scope', '$http', '$routeParams', 'Me', 'Utenti', '$location', function($scope, $http, $routeParams, Me, Utenti, $location) {
 		$scope.me = Me.get();
 		$scope.eutente = Utenti.get({id: $routeParams.id });
@@ -831,7 +819,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('utenti');
 		}
 	}])
-
 	.controller('PraticheController', ['$scope', 'Me', 'Pratiche', '$location', function($scope, Me, Pratiche, $location) {
 		$scope.orderByField = 'dataIN';
 		$scope.reverseSort = false;
@@ -876,7 +863,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('pratiche/'+id);
 		}
 	}])
-
 	.controller('PraticheAllController', ['$scope', 'Me', 'PraticheAll', '$location', function($scope, Me, PraticheAll, $location) {
 		$scope.orderByField = 'dataIN';
 		$scope.reverseSort = false;
@@ -894,7 +880,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.startDate = new Date();
 		$scope.endDate = new Date();
 	}])
-
 	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PraticheCorreggere', '$location', function($scope, Me, PraticheCorreggere, $location) {
 		$scope.orderByField = 'dataIN';
 		$scope.reverseSort = false;
@@ -937,7 +922,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			});
 		}
 	}])
-
 	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
 
 		$scope.dataIN = new Date();
@@ -1146,17 +1130,17 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 	}]);
 
 app.config(['rmDatepickerConfig', function(rmDatepickerConfig) {
-    rmDatepickerConfig.mondayStart = true;
+	rmDatepickerConfig.mondayStart = true;
     rmDatepickerConfig.initState = "month";
 }]);
 </script>
 
 <!-- Update navbar active
 <script>
-$(".nav a").on("click", function(){
-   $(".nav").find(".active").removeClass("active");
-   $(this).parent().addClass("active");
-});
+	$(".nav a").on("click", function(){
+		$(".nav").find(".active").removeClass("active");
+		$(this).parent().addClass("active");
+	});
 </script> -->
 
 <footer class="container-fluid bg-4 text-center">
