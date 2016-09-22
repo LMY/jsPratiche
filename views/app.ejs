@@ -27,7 +27,7 @@
 	}
 	.time-green {
 		color: green;
-	}	
+	}
 	.time-orange {
 		color: orange;
 	}
@@ -42,18 +42,18 @@
 
 	<script src="public/js/jquery/dist/jquery.min.js"></script>
 
-	<script src="public/js/angular/angular.min.js"></script> 
-	<script src="public/js/angular-route/angular-route.min.js"></script> 
-	<script src="public/js/angular-resource/angular-resource.min.js"></script> 
-	
+	<script src="public/js/angular/angular.min.js"></script>
+	<script src="public/js/angular-route/angular-route.min.js"></script>
+	<script src="public/js/angular-resource/angular-resource.min.js"></script>
+
 	<script src="public/js/bootstrap/dist/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="public/js/bootstrap/dist/css/bootstrap.min.css" />
-	
+
 	<script type="text/javascript" src="public/js/moment/min/moment.min.js"></script>
-  
+
 	<script src="public/js/rm-datepicker/dist/rm-datepicker.min.js"></script>
 	<link rel="stylesheet"  type="text/css" href="public/js/rm-datepicker/dist/rm-datepicker.min.css" />
-	
+
 	<script src="public/js/angular-modal-service/dst/angular-modal-service.min.js"></script>
 </head>
 <body>
@@ -81,7 +81,7 @@
 		<thead>
 			<tr>
 <!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
-				<th class="text-center"><a ng-click="orderByField='stringGestore'; reverseSort=!reverseSort">Gestore <span ng-show="orderByField=='stringGestore'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
+				<th class="text-center"><a ng-click="orderByField='stringGestore'; reverseSort=!reverseSort">Gestore <span ng-show="orderByField=='stringGestore'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringComune'; reverseSort=!reverseSort">Comune <span ng-show="orderByField=='stringComune'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th><a ng-click="orderByField='address'; reverseSort=!reverseSort">Indirizzo <span ng-show="orderByField=='address'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='sitecode'; reverseSort=!reverseSort">CodiceSito <span ng-show="orderByField=='sitecode'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
@@ -91,7 +91,7 @@
 				<th class="text-center"><a ng-click="orderByField='stringStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='stringStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				<th class="text-center"><a ng-click="orderByField='scadenzaData'; reverseSort=!reverseSort">Scadenza Data<span ng-show="orderByField=='scadenzaData'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
+				<th class="text-center"><a ng-click="orderByField='scadenzaData'; reverseSort=!reverseSort">Scadenza Data<span ng-show="orderByField=='scadenzaData'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th><a ng-click="orderByField='note'; reverseSort=!reverseSort">note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
@@ -105,12 +105,12 @@
 				<td class="text-center">{{x.stringTipo}}</td>
 				<td class="text-center">{{x.protoIN}}</td>
 				<td class="text-center">{{x.dataIN}}</td>
-				
+
 				<td class="text-center">{{x.stringStato}}</td>
 				<td class="text-center">{{x.stringUser}}</td>
 				<td class="text-center {{x.scadenzaType}}">{{x.scadenza}}</td>
 				<td class="text-center {{x.scadenzaType}}">{{x.scadenzaData}}</td>
-				
+
 				<td>{{x.note}}</td>
 			</tr>
 		</tbody>
@@ -118,21 +118,14 @@
 </script>
 
 
-
 <script type="text/ng-template" id="/pratiche-storico.html">
 <div ng-include="'/public/navbar.html'"></div>
-		
-<!--
-	<div class="form-group center">
-		Da:<input rm-datepicker type="text" ng-model="startDate">
-		A:<input rm-datepicker type="text" ng-model="endDate">
-	</div>
--->
+
 	<table class="table table-hover">
 		<thead>
 			<tr>
 <!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
-				<th class="text-center"><a ng-click="orderByField='stringGestore'; reverseSort=!reverseSort">Gestore <span ng-show="orderByField=='stringGestore'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
+				<th class="text-center"><a ng-click="orderByField='stringGestore'; reverseSort=!reverseSort">Gestore <span ng-show="orderByField=='stringGestore'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringComune'; reverseSort=!reverseSort">Comune <span ng-show="orderByField=='stringComune'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th><a ng-click="orderByField='address'; reverseSort=!reverseSort">Indirizzo <span ng-show="orderByField=='address'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='sitecode'; reverseSort=!reverseSort">CodiceSito <span ng-show="orderByField=='sitecode'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
@@ -156,20 +149,17 @@
 				<td class="text-center">{{x.stringTipo}}</td>
 				<td class="text-center">{{x.protoIN}}</td>
 				<td class="text-center">{{x.dataIN}}</td>
-				
+
 				<td class="text-center">{{x.stringStato}}</td>
 				<td class="text-center">{{x.stringUser}}</td>
 				<td class="text-center">{{x.protoOUT}}</td>
 				<td class="text-center">{{x.dataOUT}}</td>
-				
+
 				<td>{{x.note}}</td>
 			</tr>
 		</tbody>
 	</table>
-	
-
 </script>
-
 
 <script type="text/ng-template" id="/praticaDetails.html">
 <div ng-include="'/public/navbar.html'"></div>
@@ -190,53 +180,41 @@
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="address">Indirizzo:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" id="address" ng-model="epratica.address" placeholder="Indirizzo">
       </div>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="sitecode">Codice Sito:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" id="sitecode" ng-model="epratica.sitecode" placeholder="Codice Sito">
       </div>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="tipopratica">Tipo Pratica:</label>
       <div class="col-sm-10">
-		<select data-ng-options="g.id as g.descrizione for g in consttipipratiche" data-ng-model="epratica.tipopratica"></select> 
+		<select data-ng-options="g.id as g.descrizione for g in consttipipratiche" data-ng-model="epratica.tipopratica"></select>
       </div>
-    </div>	
+    </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="protoIN">Proto IN:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" id="protoIN" ng-model="epratica.protoIN" placeholder="Proto IN">
       </div>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="dataIN">Data IN:</label>
-      <div class="col-sm-10">     
-		<input rm-datepicker class="form-control" type="text" ng-model="dataIN" placeholder="Data IN">
-      </div>
-    </div>
-	<div class="form-group">
-      <label class="control-label col-sm-2" for="protoOUT">Proto OUT:</label>
-      <div class="col-sm-10">          
-        <input type="text" class="form-control" id="protoOUT" ng-model="epratica.protoOUT" placeholder="Proto OUT">
-      </div>
-    </div>
-	<div class="form-group">
-      <label class="control-label col-sm-2" for="dataOUT">Data OUT:</label>
-      <div class="col-sm-10">          
-		<input rm-datepicker class="form-control" type="text" ng-model="dataOUT" placeholder="Data OUT">
+      <div class="col-sm-10">
+		<input rm-datepicker class="form-control" type="text" ng-model="dataIN">
       </div>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="note">Note:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" id="note" ng-model="epratica.note" placeholder="Note">
       </div>
     </div>
-    <div class="form-group">        
+    <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
@@ -249,7 +227,7 @@
 </script>
 
 <script type="text/ng-template" id="/praticaStatoDetails.html">
-<div ng-include="'/public/navbar.html'"></div>	
+<div ng-include="'/public/navbar.html'"></div>
 <div class="container">
 	<h2>{{ title }}</h2>
 	<div>{{ infoline }}</div>
@@ -262,7 +240,7 @@
 		<span class="div-border-invisible" ng-show="epratica.idStato == 2">
 			<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
 		</span>
-		<span class="div-border-visible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">		
+		<span class="div-border-visible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
 			<input type="text" ng-model="integProto" placeholder="Protocollo">
 			<input rm-datepicker type="text" ng-model="integDate" placeholder="Data">
 			<button class="btn btn-warning" ng-click="integric()" >Richiedi integrazioni</button>
@@ -302,14 +280,12 @@
 			</tbody>
 		</table>
 
-	
 	<div>
 		<button class="btn btn-default" ng-click="cancel()">Indietro</button>
 		<div class="pull-right">
 			<button class="btn btn-default" ng-click="show()">Modifica</button>
 		</div>
 	</div>
-
 </div>
 </script>
 
@@ -340,7 +316,7 @@
 </script>
 
 <script type="text/ng-template" id="/gestoreDetails.html">
-	<div ng-include="'/public/navbar.html'"></div>	
+	<div ng-include="'/public/navbar.html'"></div>
 <div class="container">
   <h2>{{ title }}</h2>
   <form class="form-horizontal" role="form">
@@ -352,11 +328,11 @@
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2" for="pec">Pec:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" id="pec" ng-model="egestore.pec" placeholder="PEC gestore">
       </div>
     </div>
-    <div class="form-group">        
+    <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
@@ -381,11 +357,11 @@
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2" for="pec">Pec:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" id="pec" ng-model="ecomune.pec" placeholder="PEC comune">
       </div>
     </div>
-    <div class="form-group">        
+    <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
@@ -445,35 +421,35 @@
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2">Name:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" ng-model="eutente.name" placeholder="Name">
       </div>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2">Surname:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" ng-model="eutente.surname" placeholder="Surname">
       </div>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2">Email:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" ng-model="eutente.email" placeholder="Email">
       </div>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2">Phone:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" ng-model="eutente.phone" placeholder="Phone">
       </div>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2">Level:</label>
-      <div class="col-sm-10">          
+      <div class="col-sm-10">
         <input type="text" class="form-control" ng-model="eutente.userlevel" placeholder="Level">
       </div>
-    </div>	
-    <div class="form-group">        
+    </div>
+    <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
 		<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
@@ -496,26 +472,26 @@
 
 		<div class="form-group">
 		  <label class="control-label col-sm-2">Vecchia Password:</label>
-		  <div class="col-sm-10">          
+		  <div class="col-sm-10">
 			<input type="password" class="form-control" ng-model="eutente.oldpassword">
 		  </div>
 		</div>
-		
+
 		<div class="form-group">
 		  <label class="control-label col-sm-2">Password:</label>
-		  <div class="col-sm-10">          
+		  <div class="col-sm-10">
 			<input type="password" class="form-control" ng-model="eutente.password1">
 		  </div>
 		</div>
-		
+
 		<div class="form-group">
 		  <label class="control-label col-sm-2">Ripeti Password:</label>
-		  <div class="col-sm-10">          
+		  <div class="col-sm-10">
 			<input type="password" class="form-control" ng-model="eutente.password2">
 		  </div>
 		</div>
-		
-		<div class="form-group">        
+
+		<div class="form-group">
 		  <div class="col-sm-offset-2 col-sm-10">
 			<button type="submit" class="btn btn-success" ng-click="update()">Update</button>
 			<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
@@ -524,7 +500,6 @@
 	</form>
 </div>
 </script>
-
 
 
 <script>
@@ -542,7 +517,7 @@ var getTableRowClass = function(id) {
 		return "success";
 	else if (id==10 || id==11)				// cancellata/non-si-fa
 		return "danger";
-		
+
 	return "";
 }
 
@@ -588,7 +563,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		return $resource('/pratiche/protoout/:id', null, {
 			'update': { method:'PUT' }
 		});
-	}])	
+	}])
 	.factory('PraticheCorreggere', ['$resource', function($resource){
 		return $resource('/pratiche/:id', null, {
 			'query': { isArray: true, method:'GET', url:'/pratiche/correggere' },
@@ -606,7 +581,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			'query': { isArray: true, method:'GET', url:'/pratiche/all' },
 			'update': { method:'PUT' }
 		});
-	}])	
+	}])
 	.factory('Integrazioni', ['$resource', function($resource){
 		return $resource('/integrazioni/:id', null, {
 			'update': { method:'PUT' }
@@ -617,7 +592,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 	}])
 	.factory('ConstTipiPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/tipi', null);
-	}])		
+	}])
 	.factory('StatoPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/current/:id', null, {
 			'update': { method:'PUT' }
@@ -634,11 +609,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			'get' : { method:'GET', url:'/integrazioni/:id', isArray:true },
 			'update': { method:'PUT' }
 		});
-	}])	
+	}])
 	.factory('Me', ['$resource', function($resource){
 		return $resource('/utenti/me', null);
-	}])	
-	
+	}])
+
 	// helper controllers
 	.controller('YesNoController', ['$scope', 'message', 'close', function($scope, message, close) {
 		$scope.message = message;
@@ -659,13 +634,13 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$element.modal('hide');
 		};
 	}])
-	
+
 	.controller('GestoriController', ['$scope', 'Me', 'Gestori', '$location', function($scope, Me, Gestori, $location) {
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.anagrafiche = Gestori.query();
-		
+
 		$scope.new = function() {
 			$location.url('gestori/new');
 		}
@@ -675,29 +650,29 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		}
 	}])
   	.controller('MainController', ['$scope', 'Me', '$location', function($scope, Me, $location) {
-		$scope.me = Me.get(function() { 
+		$scope.me = Me.get(function() {
 			if ($scope.me.pareri == 1)				// se l'utente è esecutore
 				$location.path("/pratiche");		// ridirigi a pratiche da fare
 			else if ($scope.me.correzioni == 1)		// se è un correttore
 				$location.path("/pratiche-all");	// ridirigi a da correggere
 		});
 	}])
-	
+
 	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'Gestori', '$location', 'ModalService', function($scope, $routeParams, Me, Gestori, $location, ModalService) {
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.egestore = $scope.isnew ? {} : Gestori.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Gestore" : "Gestore "+$routeParams.id;
-		
+
 		$scope.update = function( ){
 			if ($scope.isnew) {
 				if (!$scope.egestore || $scope.egestore.length < 1) return;
 				if (!$scope.egestore.name || $scope.egestore.name.length < 1) { alert('Specificare nome!'); return; }
 				if (!$scope.egestore.pec || $scope.egestore.pec.length < 1) { alert('Specificare PEC!'); return; }
-				
+
 				var gestore = new Gestori({ name: $scope.egestore.name, pec: $scope.egestore.pec });
 				gestore.$save(function(){
-					$location.url('gestori');					
+					$location.url('gestori');
 				});
 			}
 			else
@@ -705,7 +680,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 					$location.url('gestori');
 				});
 		}
-		
+
 		$scope.remove = function() {
 			askconfirm(ModalService, function() {
 				Gestori.remove({id: $scope.egestore.id}, function() {
@@ -713,19 +688,19 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				});
 			}, "Sei sicuro di voler rimovere "+$scope.egestore.name+"?");
 		}
-		
+
 		$scope.cancel = function() {
 			$location.url('gestori');
 		}
 	}])
-	
-	
+
+
 	.controller('ComuneController', ['$scope', 'Me', 'Comuni', '$location', function($scope, Me, Comuni, $location) {
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.anagrafiche = Comuni.query();
-		
+
 		$scope.new = function() {
 			$location.url('comuni/new');
 		}
@@ -734,20 +709,20 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		}
 	}])
 	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Me', 'Comuni', '$location', 'ModalService', function($scope, $routeParams, Me, Comuni, $location, ModalService) {
-		$scope.me = Me.get();	
+		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecomune = $scope.isnew ? {} : Comuni.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Comune" : "Comune "+$routeParams.id;
-		
+
 		$scope.update = function( ){
 			if ($scope.isnew) {
 				if (!$scope.ecomune || $scope.ecomune.length < 1) return;
 				if (!$scope.ecomune.name || $scope.ecomune.name.length < 1) { alert('Specificare nome!'); return; }
 				if (!$scope.ecomune.pec || $scope.ecomune.pec.length < 1) { alert('Specificare PEC!'); return; }
-				
+
 				var comune = new Comuni({ name: $scope.ecomune.name, pec: $scope.ecomune.pec });
 				comune.$save(function(){
-					$location.url('comuni');					
+					$location.url('comuni');
 				});
 			}
 			else
@@ -755,15 +730,15 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 					$location.url('comuni');
 				});
 		}
-		
+
 		$scope.remove = function() {
 			askconfirm(ModalService, function() {
 				Comuni.remove({id: $scope.ecomune.id}, function() {
 					$location.url('comuni');
 				});
-			}, "Sei sicuro di voler rimovere "+$scope.ecomune.name+"?");	
+			}, "Sei sicuro di voler rimovere "+$scope.ecomune.name+"?");
 		}
-		
+
 		$scope.cancel = function() {
 			$location.url('comuni');
 		}
@@ -774,7 +749,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.utenti = Utenti.query();
-		
+
 		$scope.new = function() {
 			$location.url('utenti/new');
 		}
@@ -788,15 +763,15 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.eutente = $scope.isnew ? {} : Utenti.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Utente" : "Utente "+$routeParams.id;
-		
+
 		$scope.update = function() {
 			if ($scope.isnew) {
 				if (!$scope.eutente || $scope.eutente.length < 1) return;
 				if (!$scope.eutente.username || $scope.eutente.username.length < 1) { alert('Specificare username!'); return; }
-				
+
 				var utente = new Utenti({ username: $scope.eutente.username, name: $scope.eutente.name, surname: $scope.eutente.surname, email: $scope.eutente.email, phone: $scope.eutente.phone });
 				utente.$save(function(){
-					$location.url('utenti');					
+					$location.url('utenti');
 				});
 			}
 			else
@@ -804,7 +779,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 					$location.url('utenti');
 				});
 		}
-		
+
 		$scope.remove = function() {
 			askconfirm(ModalService, function() {
 				Utenti.remove({id: $scope.eutente.id}, function() {
@@ -812,40 +787,40 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				})
 			}, "Sei sicuro di voler rimovere "+$scope.eutente.name+"?");
 		}
-		
+
 		$scope.cancel = function() {
 			$location.url('utenti');
 		}
-		
+
 		$scope.changepw = function() {
 			$location.url('utenti/pass/'+$scope.eutente.id);
 		}
 	}])
-	
+
 	.controller('UtentePassCtrl', ['$scope', '$http', '$routeParams', 'Me', 'Utenti', '$location', function($scope, $http, $routeParams, Me, Utenti, $location) {
 		$scope.me = Me.get();
 		$scope.eutente = Utenti.get({id: $routeParams.id });
 		$scope.title = "Utente "+$routeParams.id;
-		
+
 		$scope.update = function(){
 			if (!$scope.eutente.password1 || $scope.eutente.password1.length < 1) {
 				alert("Devi specificare una password con almeno 2 maiuscole, 3 minuscole, 6 numeri, 4 animali, 2 colori e una tortiera.");
 				return;
 			}
-			
+
 			if ($scope.eutente.password1 != $scope.eutente.password2) {
 				alert("Le password non corrispondono");
 				return;
 			}
-			
+
 			var data = $.param({
                 oldpassword: $scope.eutente.oldpassword,
                 password: $scope.eutente.password1
             });
-			
-			$http({ method: 'PUT', url: '/utenti/password/'+$routeParams.id, 
+
+			$http({ method: 'PUT', url: '/utenti/password/'+$routeParams.id,
 				data: data,
-				headers: {'Content-Type': 'application/x-www-form-urlencoded'}			
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).then(
 				function(res) { $location.url('utenti'); },
 				function(err) { alert("Error: "+err); }
@@ -856,24 +831,24 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('utenti');
 		}
 	}])
-	
+
 	.controller('PraticheController', ['$scope', 'Me', 'Pratiche', '$location', function($scope, Me, Pratiche, $location) {
 		$scope.orderByField = 'dataIN';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = Pratiche.query(function() {
-			
+
 			var today = moment();
-		
+
 			$scope.pratiche.forEach(function(x) {
 				x.rowClass = getTableRowClass(x.idStato);
-				
+
 				if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
-				
+
 				var arrivo = moment(x.dataIN);
 				var diff = moment.duration(today.diff(arrivo)).asDays();
 				var integDiff = (x.diff?x.diff:0);
-								
+
 				if (x.stringStato == "Attesa Integrazione") {
 					x.scadenza = "";
 					x.scadenzaData = "";
@@ -881,7 +856,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				else {
 					x.scadenza = ((30-diff + integDiff )|0);
 					x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
-					
+
 					if (x.scadenza < 0)
 						x.scadenzaType = "time-danger";
 					else if (x.scadenza < 7)
@@ -893,7 +868,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				}
 			});
 		});
-		
+
 		$scope.new = function() {
 			$location.url('pratiche/detail/new');
 		}
@@ -901,13 +876,13 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('pratiche/'+id);
 		}
 	}])
-	
+
 	.controller('PraticheAllController', ['$scope', 'Me', 'PraticheAll', '$location', function($scope, Me, PraticheAll, $location) {
 		$scope.orderByField = 'dataIN';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = PraticheAll.query(function() {
-			$scope.pratiche.forEach(function(x) {			
+			$scope.pratiche.forEach(function(x) {
 				x.rowClass = getTableRowClass(x.idStato);
 				if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
 			});
@@ -919,27 +894,27 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.startDate = new Date();
 		$scope.endDate = new Date();
 	}])
-	
+
 	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PraticheCorreggere', '$location', function($scope, Me, PraticheCorreggere, $location) {
 		$scope.orderByField = 'dataIN';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = PraticheCorreggere.query(function() {
-			$scope.pratiche.forEach(function(x) {			
+			$scope.pratiche.forEach(function(x) {
 				x.rowClass = getTableRowClass(x.idStato);
 			});
 		});
 		$scope.show = function(id) {
 			$location.url('pratiche/'+id);
 		}
-	}])	
+	}])
 	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PraticheProtocollare', 'PraticheProtoOUT', '$route', "ModalService", function($scope, Me, PraticheProtocollare, PraticheProtoOUT, $route, ModalService) {
 		$scope.orderByField = 'dataIN';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
-			
+
 		$scope.pratiche = PraticheProtocollare.query(function() {
-			$scope.pratiche.forEach(function(x) {			
+			$scope.pratiche.forEach(function(x) {
 				x.rowClass = getTableRowClass(x.idStato);
 			});
 		});
@@ -954,7 +929,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				modal.element.modal();
 				modal.close.then(function(result) {
 					var protoOUT = new PraticheProtoOUT({ id: id, protoOUT: result.protoout, dataOUT: result.date });
-					
+
 					PraticheProtoOUT.update({id: id}, protoOUT, function() {
 						$route.reload();
 					});
@@ -962,31 +937,31 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			});
 		}
 	}])
-	
+
 	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
 
 		$scope.dataIN = new Date();
-		$scope.dataOUT = new Date();
+		$scope.dataOUT = null;
 
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id }, function(x) {
 
 			x.dataIN = x.dataIN ? new Date(x.dataIN.substring(0, 10)) : null;
-			x.dataOUT = x.dataOUT ? new Date(x.dataOUT.substring(0, 10)) : null;
 			$scope.dataIN = x.dataIN ? x.dataIN : new Date();
-			$scope.dataOUT = x.dataOUT ? x.dataOUT : new Date();
+			x.dataOUT =  null;
+			x.protoOUT = null;
 		});
-		
+
 		$scope.title = $scope.isnew ? "Nuova Pratica" : "Pratica "+$routeParams.id;
-		
+
 		$scope.gestori = Gestori.query();
 		$scope.comuni = Comuni.query();
 		$scope.utenti = Utenti.query();
 
 		$scope.conststatipratiche = ConstStatiPratiche.query();
 		$scope.consttipipratiche = ConstTipiPratiche.query();
-		
+
 		$scope.update = function( ){
 			if ($scope.isnew) {
 				if (!$scope.epratica) return;
@@ -995,7 +970,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				if (!$scope.epratica.tipopratica) { alert('Specificare il tipo di pratica!'); return; }
 
 				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dataIN: $scope.dataIN, protoOUT: $scope.epratica.protoOUT, dataOUT: $scope.dataOUT, note: $scope.epratica.note });
-				
+
 				pratica.$save(function(){
 					$location.url('pratiche');
 				});
@@ -1009,7 +984,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.cancel = function() {
 			$location.url('pratiche');
 		}
-		
+
 		$scope.remove = function() {
 			askconfirm(ModalService, function() {
 				Pratiche.remove({id: $scope.epratica.id}, function() {
@@ -1035,13 +1010,13 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 
 			$scope.conststatipratiche = ConstStatiPratiche.query();
 			$scope.consttipipratiche = ConstTipiPratiche.query();
-			
+
 			$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id});
-			
+
 			$scope.history = StoricoStatoPratiche.get({id: $routeParams.id}, function(array) {
-				
+
 				var integ=$scope.integrazioni.length-1;
-				
+
 				for (var i=0; i<array.length; i++) {
 					if (array[i].descStato == "Lavorazione") {
 						if (array[i].usernameAss)
@@ -1055,7 +1030,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 						array[i].descStato +=  " - " + $scope.integrazioni[integ].protoOUT + " - "+ $scope.integrazioni[integ].dateOUT;
 						--integ;
 					}
-					
+
 					array[i].timePoint += " - "+array[i].usernameMod;
 				}
 			});
@@ -1063,25 +1038,25 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$scope.cancel = function() {
 				$window.history.back();
 			}
-			
+
 			$scope.show = function() {
 				$location.url('pratiche/detail/'+$scope.epratica.id);
 			}
-			
+
 			$scope.integDate = new Date();
 			$scope.integProto = '';
-					
+
 			$scope.integric = function() {
 				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 7, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
-				
+
 				newstate.$save(function(){
 					$window.history.back();
 				});
 			}
-			
+
 			$scope.integarr = function() {
 				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
-				
+
 				newstate.$save(function(){
 					$window.history.back();
 				});
@@ -1091,7 +1066,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				if (state == 1) {
 					askconfirm(ModalService, function() {
 						var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
-						
+
 						newstate.$save(function(){
 							$window.history.back();
 						});
@@ -1099,14 +1074,14 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				}
 				else {
 					var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
-					
+
 					newstate.$save(function(){
 						$window.history.back();
 					});
 				}
 			}
 	}])
-	
+
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider
 			.when('/', {
@@ -1129,7 +1104,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				templateUrl: '/comuneDetails.html',
 				controller: 'ComuneDetailCtrl'
 			})
-			
+
 			.when('/pratiche', {
 				templateUrl: '/pratiche.html',
 				controller: 'PraticheController'
@@ -1141,12 +1116,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			.when('/pratiche-protocollare', {
 				templateUrl: '/pratiche-storico.html',
 				controller: 'PraticheProtocollareController'
-			})			
+			})
 			.when('/pratiche-all', {
 				templateUrl: '/pratiche-storico.html',
 				controller: 'PraticheAllController'
 			})
-			
+
 			.when('/pratiche/detail/:id', {
 				templateUrl: '/praticaDetails.html',
 				controller: 'PraticaDetailController'
@@ -1174,19 +1149,18 @@ app.config(['rmDatepickerConfig', function(rmDatepickerConfig) {
     rmDatepickerConfig.mondayStart = true;
     rmDatepickerConfig.initState = "month";
 }]);
-
 </script>
 
-<!-- Update navbar active -->
+<!-- Update navbar active
 <script>
 $(".nav a").on("click", function(){
    $(".nav").find(".active").removeClass("active");
    $(this).parent().addClass("active");
 });
-</script>
+</script> -->
 
 <footer class="container-fluid bg-4 text-center">
-  <p>jsPratiche <!--made by <a href="http://www.miro.ovh">Miro Salvagni</a>--></p> 
+	<p>jsPratiche <!--made by <a href="http://www.miro.ovh">Miro Salvagni</a>--></p>
 </footer>
 
 </body>
