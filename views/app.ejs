@@ -64,8 +64,29 @@
 	<div ng-include="'/public/navbar.html'"></div>
 	<div class = "container">
 	<div class = "jumbotron">
-		<h1>Welcome to jsPratiche!</h1>
-		<p>Scegli dal menu in alto una voce.</p>
+		<h1>Benvenuto</h1>
+		<p>Avvisi, istruzioni e modifiche al software</p>
+		
+<!--		<p>Modifiche al software:
+		</p>
+-->	
+		
+		<p>Pratiche:
+			<ul>
+				<li><u>Da Fare</u>: qui vengono inserite nuove pratiche, vengono prese in carico e segnate "Fatte".</li>
+				<li><u>Da Correggere</u>: qui le pratiche "Fatte" vengono (corrette e) segnate "Uscite"</li>
+				<li><u>Da Protocollare</u>: qui alle pratiche "Uscite" viene assegnato un protocollo e una data di uscita, e diventano "Archiviate"</li>
+			</ul>
+		</p>
+		
+		<p>Strumenti: ancora in sviluppo
+			<ul>
+				<li><u>Registro</u>: ogni utente registra quando e da che sede ha preso uno strumento e quando e dove lo restituisce</li>
+				<li><u>Strumenti, Catene</u>: qui si inseriscono/modificano dati degli strumenti/catene e si consultano le calibrazioni</li>
+				<li><u>Storico</u>: storico del registro, per ogni strumento si vede (chi,quando,dove) l'ha preso e riposto</li>
+			</ul>
+		</p>
+		
 	</div>
 </script>
 
@@ -91,7 +112,6 @@
 				<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='scadenzaData'; reverseSort=!reverseSort">Scadenza Data<span ng-show="orderByField=='scadenzaData'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				<th><a ng-click="orderByField='note'; reverseSort=!reverseSort">note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -109,8 +129,6 @@
 				<td class="text-center">{{x.stringUser}}</td>
 				<td class="text-center {{x.scadenzaType}}">{{x.scadenza}}</td>
 				<td class="text-center {{x.scadenzaType}}">{{x.scadenzaData}}</td>
-
-				<td>{{x.note}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -134,7 +152,6 @@
 				<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='protoOUT'; reverseSort=!reverseSort">ProtoOUT <span ng-show="orderByField=='protoOUT'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='dataOUT'; reverseSort=!reverseSort">DataOUT <span ng-show="orderByField=='dataOUT'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				<th><a ng-click="orderByField='note'; reverseSort=!reverseSort">note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -152,8 +169,6 @@
 				<td class="text-center">{{x.stringUser}}</td>
 				<td class="text-center">{{x.protoOUT}}</td>
 				<td class="text-center">{{x.dataOUT}}</td>
-
-				<td>{{x.note}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -620,7 +635,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.title = title;
 
 		$scope.close = function() {
-			close({ protoout: $scope.protoout, date: $scope.date }, 500);
+			close({ protoout: $scope.protoout, date: $scope.date, approved: true }, 500);
 		};
 
 		$scope.cancel = function() {
@@ -644,10 +659,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 	}])
   	.controller('MainController', ['$scope', 'Me', '$location', function($scope, Me, $location) {
 		$scope.me = Me.get(function() {
-			if ($scope.me.pareri == 1)				// se l'utente è esecutore
-				$location.path("/pratiche");		// ridirigi a pratiche da fare
-			else if ($scope.me.correzioni == 1)		// se è un correttore
-				$location.path("/pratiche-all");	// ridirigi a da correggere
+//			if ($scope.me.pareri == 1)				// se l'utente è esecutore
+//				$location.path("/pratiche");		// ridirigi a pratiche da fare
+//			else if ($scope.me.correzioni == 1)		// se è un correttore
+//				$location.path("/pratiche-all");	// ridirigi a da correggere
 		});
 	}])
 	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'Gestori', '$location', 'ModalService', function($scope, $routeParams, Me, Gestori, $location, ModalService) {
@@ -913,6 +928,18 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			}).then(function(modal) {
 				modal.element.modal();
 				modal.close.then(function(result) {
+					if (!result.approved)	// user switched to another /resource
+						return;
+			
+					if (!result.protoout || result.protoout == "") {
+						alert("Protocollo di uscita non valido!");
+						return;
+					}
+					if (!result.date || result.date == "") {
+						alert("Data di uscita non valida!");
+						return;
+					}
+				
 					var protoOUT = new PraticheProtoOUT({ id: id, protoOUT: result.protoout, dataOUT: result.date });
 
 					PraticheProtoOUT.update({id: id}, protoOUT, function() {
