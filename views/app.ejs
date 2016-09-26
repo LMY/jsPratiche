@@ -67,10 +67,12 @@
 		<h1>Benvenuto</h1>
 		<p>Avvisi, istruzioni e modifiche al software</p>
 		
-<!--		<p>Modifiche al software:
+		<p>Modifiche al software:
+			<ul>
+				<li>Doppio click per modificare la riga di una tabella!!</li>
+			</ul>
 		</p>
--->	
-		
+			
 		<p>Pratiche:
 			<ul>
 				<li><u>Da Fare</u>: qui vengono inserite nuove pratiche, vengono prese in carico e segnate "Fatte".</li>
@@ -115,7 +117,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="x in pratiche|orderBy:orderByField:reverseSort" ng-click="show(x.id)" class="{{x.rowClass}}">
+			<tr ng-repeat="x in pratiche|orderBy:orderByField:reverseSort" ng-dblclick="show(x.id)" class="{{x.rowClass}}">
 <!--				<td class="text-center">{{x.id}}</td> -->
 				<td class="text-center">{{x.stringGestore}}</td>
 				<td class="text-center">{{x.stringComune}}</td>
@@ -155,7 +157,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="x in pratiche|orderBy:orderByField:reverseSort" ng-click="show(x.id)"class="{{x.rowClass}}" >
+			<tr ng-repeat="x in pratiche|orderBy:orderByField:reverseSort" ng-dblclick="show(x.id)"class="{{x.rowClass}}" >
 <!--				<td class="text-center">{{x.id}}</td> -->
 				<td class="text-center">{{x.stringGestore}}</td>
 				<td class="text-center">{{x.stringComune}}</td>
@@ -221,6 +223,18 @@
 					<input rm-datepicker class="form-control" type="text" ng-model="dataIN">
 				</div>
 			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="protoOUT">Proto OUT:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="protoIN" ng-model="epratica.protoIN" placeholder="Proto OUT" ng-disabled="true">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="dataOUT">Data OUT:</label>
+				<div class="col-sm-10">
+					<input rm-datepicker class="form-control" type="text" ng-model="dataOUT" ng-disabled="true">
+				</div>
+			</div>			
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="note">Note:</label>
 				<div class="col-sm-10">
@@ -318,7 +332,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="x in anagrafiche|orderBy:orderByField:reverseSort" ng-click="show(x.id)">
+			<tr ng-repeat="x in anagrafiche|orderBy:orderByField:reverseSort" ng-dblclick="show(x.id)">
 				<td class="text-center">{{x.id}}</td>
 				<td class="text-center">{{x.name}}</td>
 				<td class="text-center">{{x.pec}}</td>
@@ -406,7 +420,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="utente in utenti|orderBy:orderByField:reverseSort" ng-click="show(utente.id)">
+			<tr ng-repeat="utente in utenti|orderBy:orderByField:reverseSort" ng-dblclick="show(utente.id)">
 <!--				<td class="text-center">{{utente.id}}</td> -->
 				<td class="text-center">{{utente.username}}</td>
 				<td class="text-center">{{utente.name}}</td>
