@@ -129,3 +129,85 @@ CREATE TABLE Integrazioni (
   PRIMARY KEY (idPratica, dateOUT),
   FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON UPDATE CASCADE ON DELETE NO ACTION
 ) DEFAULT CHARSET=utf8;
+
+
+/* Registro Strumenti */
+CREATE TABLE Strumenti (
+  id int(11) NOT NULL AUTO_INCREMENT,
+
+  name varchar(256),
+  
+  marca varchar(50),
+  modello varchar(50),
+  serial varchar(50),
+  inventario varchar(50),
+  
+  tipo varchar(50),
+  
+  taratura varchar(256),
+  
+  note varchar(256),
+
+  PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE Catene (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  name varchar(50),
+  note varchar(256),
+  
+  PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE StrumentiDelleCatene (
+  idCatena int(11) NOT NULL,
+  idStrumento int(11) NOT NULL,
+
+  PRIMARY KEY (idCatena, idStrumento),
+  FOREIGN KEY (idCatena) REFERENCES Catene(id) ON UPDATE CASCADE ON DELETE NO ACTION,
+  FOREIGN KEY (idStrumento) REFERENCES Strumenti(id) ON UPDATE CASCADE ON DELETE NO ACTION
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE Sedi (
+  id int(11) NOT NULL AUTO_INCREMENT,
+
+  nome varchar(50),
+  telefono varchar(50),
+  note varchar(256),
+
+  PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE Calibrazioni (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  idCatena int(11) NOT NULL,
+
+  lab varchar(256),
+  certn varchar(256),
+  dateCal date NOT NULL,
+  note varchar(256),
+  
+  scadenza date NOT NULL,
+  
+  PRIMARY KEY (id),
+  FOREIGN KEY (idCatena) REFERENCES Catene(id) ON UPDATE CASCADE ON DELETE NO ACTION
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE RegistroStrumenti (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  idCatena int(11) NOT NULL,
+
+  idUtente int(11),
+  
+  timePointFrom TIMESTAMP,
+  timePointTo TIMESTAMP,
+  idSedeTo int(11),
+  
+  PRIMARY KEY (id),
+  FOREIGN KEY (idCatena) REFERENCES Catene(id) ON UPDATE CASCADE ON DELETE NO ACTION,
+  FOREIGN KEY (idUtente) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION,  
+  FOREIGN KEY (idSedeTo) REFERENCES Sedi(id) ON UPDATE CASCADE ON DELETE NO ACTION  
+) DEFAULT CHARSET=utf8;
+
+
+/* Misure(idRegistro, comune, impianto, idDBMisure) */

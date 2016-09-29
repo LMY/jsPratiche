@@ -35,6 +35,9 @@ module.exports = function(app, passport) {
 	app.use('/integrazioni', isAuthenticated, require('./integrazioni'));
 	app.use('/statopratiche', isAuthenticated, require('./statopratiche'));
 	
+	app.use('/strumenti', isAuthenticated, require('./strumenti'));
+	app.use('/catene', isAuthenticated, require('./catene'));
+	
 	app.get("/home", isAuthenticated, function(req, res) {
 		res.render('app');
 	});
