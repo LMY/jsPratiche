@@ -523,7 +523,6 @@
 	</div>
 </script>
 
-
 <script type="text/ng-template" id="/strumenti.html">
 	<div ng-include="'/public/navbar.html'"></div>
 	<div class="form-group">
@@ -626,6 +625,65 @@
 	</div>
 </script>
 
+
+<script type="text/ng-template" id="/catene.html">
+	<div ng-include="'/public/navbar.html'"></div>
+	<div class="form-group">
+		<div class="span7 text-center">
+			<button class="btn btn-primary" ng-click="new()">Nuovo Catena</button>
+		</div>
+	</div>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+<!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
+				<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Nome <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='note'; reverseSort=!reverseSort">Note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="catena in catene|orderBy:orderByField:reverseSort" ng-dblclick="show(catena.id)">
+<!--				<td class="text-center">{{catena.id}}</td> -->
+				<td class="text-center">{{catena.name}}</td>
+				<td class="text-center">{{catena.note}}</td>
+			</tr>
+		</tbody>
+	</table>
+</script>
+
+
+<script type="text/ng-template" id="/catenaDetails.html">
+	<div ng-include="'/public/navbar.html'"></div>
+	<div class="container">
+		<h2>{{ title }}</h2>
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="control-label col-sm-2">Nome:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" ng-model="ecatena.name" placeholder="Nome">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2">Note:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" ng-model="ecatena.note" placeholder="Note">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+					<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+					<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+					<div class="pull-right">
+						<button type="submit" class="btn btn-danger" ng-click="remove()">Remove</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+
 <script>
 var getTableRowClass = function(id) {
 
@@ -685,6 +743,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 	}])
 	.factory('Strumenti', ['$resource', function($resource){
 		return $resource('/strumenti/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])	
+	.factory('Catene', ['$resource', function($resource){
+		return $resource('/catene/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])	
@@ -1267,6 +1330,53 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		}
 	}])
 	
+	.controller('CateneController', ['$scope', 'Me', 'Catene', '$location', function($scope, Me, Catene, $location) {
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
+		$scope.me = Me.get();
+		$scope.catene = Catene.query();
+
+		$scope.new = function() {
+			$location.url('catene/new');
+		}
+		$scope.show = function(id) {
+			if ($scope.me.userlevel == 0 || $scope.me.id == id)
+				$location.url('catene/'+id);
+		}
+	}])
+	.controller('CatenaDetailCtrl', ['$scope', '$routeParams', 'Me', 'Catene', '$location', 'ModalService', function($scope, $routeParams, Me, Catene, $location, ModalService) {
+		$scope.me = Me.get();
+		$scope.isnew = ($routeParams.id === "new");
+		$scope.ecatena = $scope.isnew ? {} : Catene.get({id: $routeParams.id });
+		$scope.title = $scope.isnew ? "Nuova Catena" : "Catena "+$routeParams.id;
+
+		$scope.update = function() {
+			if ($scope.isnew) {
+				if (!$scope.ecatena || $scope.ecatena.length < 1) return;
+
+				var catena = new Catene({ name: $scope.ecatena.name, note: $scope.ecatena.note });
+				catena.$save(function(){
+					$location.url('strumenti-catene');
+				});
+			}
+			else
+				Catene.update({id: $scope.ecatena.id}, $scope.ecatena, function() {
+					$location.url('strumenti-catene');
+				});
+		}
+
+		$scope.remove = function() {
+			askconfirm(ModalService, function() {
+				Catene.remove({id: $scope.ecatena.id}, function() {
+					$location.url('strumenti-catene');
+				})
+			}, "Sei sicuro di voler rimovere "+$scope.ecatena.name+"?");
+		}
+
+		$scope.cancel = function() {
+			$location.url('strumenti-catene');
+		}
+	}])
 	
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider
@@ -1338,7 +1448,14 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				controller: 'StrumentoDetailCtrl'
 			})
 			
-			
+			.when('/strumenti-catene', {
+				templateUrl: '/catene.html',
+				controller: 'CateneController'
+			})
+			.when('/catene/:id', {
+				templateUrl: '/catenaDetails.html',
+				controller: 'CatenaDetailCtrl'
+			})
 			;
 	}]);
 

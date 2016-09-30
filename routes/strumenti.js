@@ -8,6 +8,7 @@ var router = express.Router();
 
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
+		
         connection.query('SELECT * FROM '+tableName, function(err, data) {
             if (err) rest.error500(res, err);
 			else res.json(data);
@@ -19,7 +20,7 @@ router.get('/', function(req, res, next) {
 router.get('/catena/:id', function(req, res, next) {
     sql(function(err,connection) {
 		var query = mysql.format('SELECT * FROM ?? WHERE id IN (SELECT DISTINCT idStrumento FROM StrumentiDelleCatene WHERE idCatena=?)', [tableName, req.params.id]);
-				
+
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
 			else res.json(data.length == 1 ? data[0] : []);
@@ -30,10 +31,10 @@ router.get('/catena/:id', function(req, res, next) {
 router.get('/free', function(req, res, next) {
     sql(function(err,connection) {
 		var query = mysql.format('SELECT * FROM ?? WHERE id NOT IN (SELECT DISTINCT idStrumento FROM StrumentiDelleCatene)', [tableName]);
-				
+
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
-			else res.json(data.length == 1 ? data[0] : []);
+			else res.json(data);
 		});
     });
 });
@@ -51,7 +52,7 @@ router.post('/catena/remove', function(req, res, next) {
 
 router.post('/catena/add', function(req, res, next) {
     sql(function (err, connection) {
-		var query =  mysql.format("INSERT INTO StrumentiDelleCatene(??,??) VALUES (?,?)", [tableName, "idCatena", "idStrumento", "req.body.idCatena, req.body.idStrumento ]);
+		var query =  mysql.format("INSERT INTO StrumentiDelleCatene(??,??) VALUES (?,?)", [tableName, "idCatena", "idStrumento", req.body.idCatena, req.body.idStrumento ]);
 
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
@@ -67,7 +68,7 @@ router.post('/catena/add', function(req, res, next) {
 router.get('/:id', function(req, res, next) {
     sql(function(err,connection) {
 		var query = mysql.format('SELECT * FROM ?? WHERE id=?', [tableName, req.params.id]);
-				
+		
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
 			else res.json(data.length == 1 ? data[0] : []);
