@@ -1175,10 +1175,13 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 					$location.url('pratiche');
 				});
 			}
-			else
+			else {
+				$scope.epratica.dataIN = $scope.dataIN;
+			
 				Pratiche.update({id: $scope.epratica.id}, $scope.epratica, function() {
 					$location.url('pratiche');
 				});
+			}
 		}
 
 		$scope.cancel = function() {
