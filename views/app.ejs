@@ -1133,7 +1133,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			});
 		}
 	}])
-	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
+	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Me', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche,  Me, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
 
 		$scope.dataIN = new Date();
 		$scope.dataOUT = null;
@@ -1152,10 +1152,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		});
 
 		$scope.title = $scope.isnew ? "Nuova Pratica" : "Pratica "+$routeParams.id;
-
-		$scope.gestori = Gestori.query();
-		$scope.comuni = Comuni.query();
-		$scope.utenti = Utenti.query();
 
 		$scope.conststatipratiche = ConstStatiPratiche.query();
 		$scope.consttipipratiche = ConstTipiPratiche.query();
@@ -1196,23 +1192,17 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			}, "Sei sicuro di voler rimovere la pratica?");
 		}
 	}])
-	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Gestori', 'Me', 'Utenti', 'Comuni', 'ConstStatiPratiche', 'ConstTipiPratiche', 'IntegrazioniPratica', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Gestori, Me, Utenti, Comuni, ConstStatiPratiche, ConstTipiPratiche, IntegrazioniPratica, StoricoStatoPratiche, $location, ModalService) {
+	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'IntegrazioniPratica', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, IntegrazioniPratica, StoricoStatoPratiche, $location, ModalService) {
 			$scope.me = Me.get(function(x) {
 				$scope.selectedUser = $scope.me.id
 			});
+			
 			$scope.epratica = Pratiche.get({id: $routeParams.id }, function(x) {
 				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
 				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
 
 				$scope.title = x.stringGestore + '-' +x.sitecode + ' / ' + x.stringComune + ' - ' + x.address;
 			});
-
-			$scope.gestori = Gestori.query();
-			$scope.comuni = Comuni.query();
-			$scope.utenti = Utenti.query();
-
-			$scope.conststatipratiche = ConstStatiPratiche.query();
-			$scope.consttipipratiche = ConstTipiPratiche.query();
 
 			$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id});
 
