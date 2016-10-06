@@ -66,13 +66,13 @@
 	<div class = "jumbotron">
 		<h1>Benvenuto</h1>
 		<p>Avvisi, istruzioni e modifiche al software</p>
-		
+
 		<p>Modifiche al software:
 			<ul>
 				<li>Doppio click per modificare la riga di una tabella!!</li>
 			</ul>
 		</p>
-			
+
 		<p>Pratiche:
 			<ul>
 				<li><u>Da Fare</u>: qui vengono inserite nuove pratiche, vengono prese in carico e segnate "Fatte".</li>
@@ -80,7 +80,7 @@
 				<li><u>Da Protocollare</u>: qui alle pratiche "Uscite" viene assegnato un protocollo e una data di uscita, e diventano "Archiviate"</li>
 			</ul>
 		</p>
-		
+
 		<p>Strumenti: ancora in sviluppo
 			<ul>
 				<li><u>Registro</u>: ogni utente registra quando e da che sede ha preso uno strumento e quando e dove lo restituisce</li>
@@ -88,7 +88,7 @@
 				<li><u>Storico</u>: storico del registro, per ogni strumento si vede (chi,quando,dove) l'ha preso e riposto</li>
 			</ul>
 		</p>
-		
+
 	</div>
 </script>
 
@@ -234,7 +234,7 @@
 				<div class="col-sm-10">
 					<input rm-datepicker class="form-control" type="text" ng-model="dataOUT" ng-disabled="true">
 				</div>
-			</div>			
+			</div>
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="note">Note:</label>
 				<div class="col-sm-10">
@@ -681,6 +681,44 @@
 			</div>
 		</form>
 	</div>
+	
+	<div class="container" ng-show="!isnew">
+		<div>Strumenti della catena:</div>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th class="text-center"><a ng-click="orderByField1='id'; reverseSort1=!reverseSort1">ID <span ng-show="orderByField1=='id'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> 
+					<th class="text-center"><a ng-click="orderByField1='name'; reverseSort1=!reverseSort1">Nome <span ng-show="orderByField1=='name'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField1='note'; reverseSort1=!reverseSort1">Note <span ng-show="orderByField1=='note'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="strumento in strumenticatena|orderBy:orderByField1:reverseSort1" ng-dblclick="remove(strumento.id)">
+					<td class="text-center">{{strumento.id}}</td>
+					<td class="text-center">{{strumento.name}}</td>
+					<td class="text-center">{{strumento.note}}</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<div>Strumenti Liberi:</div>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th class="text-center"><a ng-click="orderByField2='id'; reverseSort2=!reverseSort2">ID <span ng-show="orderByField2=='id'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> 
+					<th class="text-center"><a ng-click="orderByField2='name'; reverseSort2=!reverseSort2">Nome <span ng-show="orderByField2=='name'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField2='note'; reverseSort2=!reverseSort2">Note <span ng-show="orderByField2=='note'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="strumento in strumenti|orderBy:orderByField2:reverseSort2" ng-dblclick="add(strumento.id)">
+					<td class="text-center">{{strumento.id}}</td>
+					<td class="text-center">{{strumento.name}}</td>
+					<td class="text-center">{{strumento.note}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </script>
 
 
@@ -745,12 +783,23 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		return $resource('/strumenti/:id', null, {
 			'update': { method:'PUT' }
 		});
+	}])
+	.factory('StrumentiFree', ['$resource', function($resource){
+		return $resource('/strumenti/free/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	.factory('StrumentiCatena', ['$resource', function($resource){
+		return $resource('/strumenti/:id', null, {
+			'get' : { method:'GET', url:'/strumenti/catena/:id', isArray:true },
+			'update': { method:'PUT' }
+		});
 	}])	
 	.factory('Catene', ['$resource', function($resource){
 		return $resource('/catene/:id', null, {
 			'update': { method:'PUT' }
 		});
-	}])	
+	}])
 	.factory('PraticheProtoOUT', ['$resource', function($resource){
 		return $resource('/pratiche/protoout/:id', null, {
 			'update': { method:'PUT' }
@@ -1114,7 +1163,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				modal.close.then(function(result) {
 					if (!result.approved)	// user switched to another /resource
 						return;
-			
+
 					if (!result.protoout || result.protoout == "") {
 						alert("Protocollo di uscita non valido!");
 						return;
@@ -1123,7 +1172,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 						alert("Data di uscita non valida!");
 						return;
 					}
-				
+
 					var protoOUT = new PraticheProtoOUT({ id: id, protoOUT: result.protoout, dataOUT: result.date });
 
 					PraticheProtoOUT.update({id: id}, protoOUT, function() {
@@ -1144,7 +1193,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 
 			x.dataIN = x.dataIN ? new Date(x.dataIN.substring(0, 10)) : null;
 			$scope.dataIN = x.dataIN ? x.dataIN : new Date();
-			
+
 			if (!$scope.isnew) {
 				$scope.dataOUT = x.dataOUT ? x.dataOUT.substring(0, 10) : null;
 				x.dataOUT = x.dataOUT ? new Date(x.dataOUT.substring(0, 10)) : null;
@@ -1173,7 +1222,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			}
 			else {
 				$scope.epratica.dataIN = $scope.dataIN;
-			
+
 				Pratiche.update({id: $scope.epratica.id}, $scope.epratica, function() {
 					$location.url('pratiche');
 				});
@@ -1196,7 +1245,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$scope.me = Me.get(function(x) {
 				$scope.selectedUser = $scope.me.id
 			});
-			
+
 			$scope.epratica = Pratiche.get({id: $routeParams.id }, function(x) {
 				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
 				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
@@ -1288,7 +1337,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				$location.url('strumenti/'+id);
 		}
 	}])
-	
+
 	.controller('StrumentoDetailCtrl', ['$scope', '$routeParams', 'Me', 'Strumenti', '$location', 'ModalService', function($scope, $routeParams, Me, Strumenti, $location, ModalService) {
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
@@ -1322,7 +1371,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('strumenti-strumenti');
 		}
 	}])
-	
+
 	.controller('CateneController', ['$scope', 'Me', 'Catene', '$location', function($scope, Me, Catene, $location) {
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -1337,12 +1386,20 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				$location.url('catene/'+id);
 		}
 	}])
-	.controller('CatenaDetailCtrl', ['$scope', '$routeParams', 'Me', 'Catene', '$location', 'ModalService', function($scope, $routeParams, Me, Catene, $location, ModalService) {
+	.controller('CatenaDetailCtrl', ['$scope', '$routeParams', 'Me', 'Catene', 'StrumentiCatena', 'StrumentiFree', '$location', '$route', 'ModalService', function($scope, $routeParams, Me, Catene, StrumentiCatena, StrumentiFree, $location, $route, ModalService) {
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecatena = $scope.isnew ? {} : Catene.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuova Catena" : "Catena "+$routeParams.id;
+		$scope.strumenticatena = StrumentiCatena.get({id: $routeParams.id });
+		$scope.strumenti = StrumentiFree.query();
 
+		$scope.orderByField1 = "id";
+		$scope.reverseSort1 = false;
+		
+		$scope.orderByField2 = "id";
+		$scope.reverseSort2 = false;
+		
 		$scope.update = function() {
 			if ($scope.isnew) {
 				if (!$scope.ecatena || $scope.ecatena.length < 1) return;
@@ -1369,8 +1426,24 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.cancel = function() {
 			$location.url('strumenti-catene');
 		}
+		
+		$scope.add = function(id) {
+			if ($scope.isnew) { alert("Prima crea la catena, poi aggiungi/rimuovi gli strumenti"); return; }
+		
+			StrumentiFree.update({id: $scope.ecatena.id}, new StrumentiFree({verb: "add", idStrumento: id}), function() {
+				$route.reload();
+			});
+		}
+		
+		$scope.remove = function(id) {
+			if ($scope.isnew) { alert("Prima crea la catena, poi aggiungi/rimuovi gli strumenti"); return; }
+		
+			StrumentiFree.update({id: $scope.ecatena.id}, new StrumentiFree({verb: "remove", idStrumento: id}), function() {
+				$route.reload();
+			});
+		}
 	}])
-	
+
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider
 			.when('/', {
@@ -1431,7 +1504,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				templateUrl: '/utentePass.html',
 				controller: 'UtentePassCtrl'
 			})
-			
+
 			.when('/strumenti-strumenti', {
 				templateUrl: '/strumenti.html',
 				controller: 'StrumentiController'
@@ -1440,7 +1513,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				templateUrl: '/strumentoDetails.html',
 				controller: 'StrumentoDetailCtrl'
 			})
-			
+
 			.when('/strumenti-catene', {
 				templateUrl: '/catene.html',
 				controller: 'CateneController'

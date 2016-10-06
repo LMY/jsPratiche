@@ -3,21 +3,21 @@ var path = require('path');
 //var favicon = require('serve-favicon');
 
 module.exports = function(app, passport) {
-	
+
 	var isAuthenticated = function(req, res, next) {
 		if (req.isAuthenticated())
 			return next();
 
 		res.redirect('/login');
 	}
-		
+
 	//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));	// public/favicon.ico
 	app.use("/public", isAuthenticated, express.static(path.join(__dirname, '../public')));
 
 	app.get('/', function(req, res) {
 		res.render('index', { message: req.flash('message') });
 	});
-	
+
 	app.get('/login', function(req, res) {
 		res.render('login', { message: req.flash('message') });
 	});
@@ -27,17 +27,18 @@ module.exports = function(app, passport) {
         failureRedirect : '/login',
         failureFlash : true
     }));
-	
+
 	app.use('/utenti', isAuthenticated, require('./utenti'));
 	app.use('/gestori', isAuthenticated, require('./gestori'));
 	app.use('/comuni', isAuthenticated, require('./comuni'));
 	app.use('/pratiche', isAuthenticated, require('./pratiche'));
 	app.use('/integrazioni', isAuthenticated, require('./integrazioni'));
 	app.use('/statopratiche', isAuthenticated, require('./statopratiche'));
-	
+
 	app.use('/strumenti', isAuthenticated, require('./strumenti'));
 	app.use('/catene', isAuthenticated, require('./catene'));
-	
+	app.use('/strumentiregistro', isAuthenticated, require('./strumentiregistro'));
+
 	app.get("/home", isAuthenticated, function(req, res) {
 		res.render('app');
 	});
@@ -45,7 +46,7 @@ module.exports = function(app, passport) {
 	app.get("/test", isAuthenticated, function(req, res) {
 		res.render('test');
 	});
-	
+
 	app.get('/logout', function(req, res) {
 		req.logout();
 		res.redirect('/');

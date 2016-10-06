@@ -46,7 +46,7 @@ CREATE TABLE Utenti (
 CREATE TABLE ConstTipoPratiche (
   id int(11) NOT NULL AUTO_INCREMENT,
   descrizione varchar(50),
-  
+
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
@@ -54,7 +54,7 @@ CREATE TABLE ConstStatoPratiche (
   id int(11) NOT NULL AUTO_INCREMENT,
   descrizione varchar(50),
   final BOOLEAN,
-  
+
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
@@ -66,15 +66,15 @@ CREATE TABLE Pratiche (
   sitecode varchar(50),
 
   tipopratica int(11),
-  
+
   protoIN varchar(50),
   dataIN date,
 
   protoOUT varchar(50),
   dataOUT date,
-  
+
   note varchar(256),
-  
+
   PRIMARY KEY (id),
   FOREIGN KEY (tipopratica) REFERENCES ConstTipoPratiche(id) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (idGestore) REFERENCES Gestori(id) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -86,27 +86,27 @@ CREATE TABLE StatoPratiche (
   idPratica int(11),
   idUtente int(11),
   idStato int(11),
-  
+
   idUtenteModifica int(11),
   timePoint TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
+
   PRIMARY KEY (idPratica),
   FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON DELETE NO ACTION ON UPDATE CASCADE,
   FOREIGN KEY (idUtente) REFERENCES Utenti(id) ON DELETE NO ACTION ON UPDATE CASCADE,
-  FOREIGN KEY (idUtenteModifica) REFERENCES Utenti(id) ON DELETE NO ACTION ON UPDATE CASCADE,  
+  FOREIGN KEY (idUtenteModifica) REFERENCES Utenti(id) ON DELETE NO ACTION ON UPDATE CASCADE,
   FOREIGN KEY (idStato) REFERENCES ConstStatoPratiche(id) ON DELETE NO ACTION ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE StoricoStatoPratiche (
   id int(11) NOT NULL AUTO_INCREMENT,
-    
+
   idPratica int(11),
   idUtente int(11),
   idStato int(11),
-  
+
   idUtenteModifica int(11),
   timePoint TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
+
   PRIMARY KEY (id),
   FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON DELETE NO ACTION ON UPDATE CASCADE,
   FOREIGN KEY (idUtente) REFERENCES Utenti(id) ON DELETE NO ACTION ON UPDATE CASCADE,
@@ -120,10 +120,10 @@ CREATE TABLE Integrazioni (
 
   dateOUT date NOT NULL,
   dateIN date,
-  
+
   protoOUT varchar(50),
   protoIN varchar(50),
-  
+
   note varchar(256),
 
   PRIMARY KEY (idPratica, dateOUT),
@@ -136,16 +136,16 @@ CREATE TABLE Strumenti (
   id int(11) NOT NULL AUTO_INCREMENT,
 
   name varchar(256),
-  
+
   marca varchar(50),
   modello varchar(50),
   serial varchar(50),
   inventario varchar(50),
-  
+
   tipo varchar(50),
-  
+
   taratura varchar(256),
-  
+
   note varchar(256),
 
   PRIMARY KEY (id)
@@ -155,7 +155,7 @@ CREATE TABLE Catene (
   id int(11) NOT NULL AUTO_INCREMENT,
   name varchar(50),
   note varchar(256),
-  
+
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
@@ -186,9 +186,9 @@ CREATE TABLE Calibrazioni (
   certn varchar(256),
   dateCal date NOT NULL,
   note varchar(256),
-  
+
   scadenza date NOT NULL,
-  
+
   PRIMARY KEY (id),
   FOREIGN KEY (idCatena) REFERENCES Catene(id) ON UPDATE CASCADE ON DELETE NO ACTION
 ) DEFAULT CHARSET=utf8;
@@ -198,15 +198,15 @@ CREATE TABLE RegistroStrumenti (
   idCatena int(11) NOT NULL,
 
   idUtente int(11),
-  
+
   timePointFrom TIMESTAMP,
   timePointTo TIMESTAMP,
   idSedeTo int(11),
-  
+
   PRIMARY KEY (id),
   FOREIGN KEY (idCatena) REFERENCES Catene(id) ON UPDATE CASCADE ON DELETE NO ACTION,
-  FOREIGN KEY (idUtente) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION,  
-  FOREIGN KEY (idSedeTo) REFERENCES Sedi(id) ON UPDATE CASCADE ON DELETE NO ACTION  
+  FOREIGN KEY (idUtente) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION,
+  FOREIGN KEY (idSedeTo) REFERENCES Sedi(id) ON UPDATE CASCADE ON DELETE NO ACTION
 ) DEFAULT CHARSET=utf8;
 
 
