@@ -1182,7 +1182,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			});
 		}
 	}])
-	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Me', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche,  Me, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
+	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Me', 'Comuni', 'Gestori', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Me, Comuni, Gestori, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
 
 		$scope.dataIN = new Date();
 		$scope.dataOUT = null;
@@ -1199,6 +1199,9 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				x.dataOUT = x.dataOUT ? new Date(x.dataOUT.substring(0, 10)) : null;
 			}
 		});
+		
+		$scope.comuni = Comuni.query();
+		$scope.gestori = Gestori.query();
 
 		$scope.title = $scope.isnew ? "Nuova Pratica" : "Pratica "+$routeParams.id;
 
@@ -1241,87 +1244,88 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			}, "Sei sicuro di voler rimovere la pratica?");
 		}
 	}])
-	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'IntegrazioniPratica', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, IntegrazioniPratica, StoricoStatoPratiche, $location, ModalService) {
-			$scope.me = Me.get(function(x) {
-				$scope.selectedUser = $scope.me.id
-			});
+	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'Utenti', 'IntegrazioniPratica', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, Utenti, IntegrazioniPratica, StoricoStatoPratiche, $location, ModalService) {
+		$scope.me = Me.get(function(x) {
+			$scope.selectedUser = $scope.me.id
+		});
+		$scope.utenti = Utenti.query();
 
-			$scope.epratica = Pratiche.get({id: $routeParams.id }, function(x) {
-				if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
-				if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
+		$scope.epratica = Pratiche.get({id: $routeParams.id }, function(x) {
+			if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
+			if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
 
-				$scope.title = x.stringGestore + '-' +x.sitecode + ' / ' + x.stringComune + ' - ' + x.address;
-			});
+			$scope.title = x.stringGestore + '-' +x.sitecode + ' / ' + x.stringComune + ' - ' + x.address;
+		});
 
-			$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id});
+		$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id});
 
-			$scope.history = StoricoStatoPratiche.get({id: $routeParams.id}, function(array) {
+		$scope.history = StoricoStatoPratiche.get({id: $routeParams.id}, function(array) {
 
-				var integ=$scope.integrazioni.length-1;
+			var integ=$scope.integrazioni.length-1;
 
-				for (var i=0; i<array.length; i++) {
-					if (array[i].descStato == "Lavorazione") {
-						if (array[i].usernameAss)
-							array[i].descStato +=  " ("+array[i].usernameAss+")";
-						else {	// arrivata integrazione
-							if (integ >= 0)
-								array[i].descStato +=  " - " + $scope.integrazioni[integ].protoIN + " - "+ $scope.integrazioni[integ].dateIN;
-						}
+			for (var i=0; i<array.length; i++) {
+				if (array[i].descStato == "Lavorazione") {
+					if (array[i].usernameAss)
+						array[i].descStato +=  " ("+array[i].usernameAss+")";
+					else {	// arrivata integrazione
+						if (integ >= 0)
+							array[i].descStato +=  " - " + $scope.integrazioni[integ].protoIN + " - "+ $scope.integrazioni[integ].dateIN;
 					}
-					else if (array[i].descStato ==  "Attesa Integrazione" && integ >= 0) {
-						array[i].descStato +=  " - " + $scope.integrazioni[integ].protoOUT + " - "+ $scope.integrazioni[integ].dateOUT;
-						--integ;
-					}
-
-					array[i].timePoint += " - "+array[i].usernameMod;
 				}
-			});
+				else if (array[i].descStato ==  "Attesa Integrazione" && integ >= 0) {
+					array[i].descStato +=  " - " + $scope.integrazioni[integ].protoOUT + " - "+ $scope.integrazioni[integ].dateOUT;
+					--integ;
+				}
 
-			$scope.cancel = function() {
+				array[i].timePoint += " - "+array[i].usernameMod;
+			}
+		});
+
+		$scope.cancel = function() {
+			$window.history.back();
+		}
+
+		$scope.show = function() {
+			$location.url('pratiche/detail/'+$scope.epratica.id);
+		}
+
+		$scope.integDate = new Date();
+		$scope.integProto = '';
+
+		$scope.integric = function() {
+			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 7, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
+
+			newstate.$save(function(){
 				$window.history.back();
-			}
+			});
+		}
 
-			$scope.show = function() {
-				$location.url('pratiche/detail/'+$scope.epratica.id);
-			}
+		$scope.integarr = function() {
+			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
 
-			$scope.integDate = new Date();
-			$scope.integProto = '';
+			newstate.$save(function(){
+				$window.history.back();
+			});
+		}
 
-			$scope.integric = function() {
-				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 7, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
-
-				newstate.$save(function(){
-					$window.history.back();
-				});
-			}
-
-			$scope.integarr = function() {
-				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
-
-				newstate.$save(function(){
-					$window.history.back();
-				});
-			}
-
-			$scope.stato = function(state, user) {
-				if (state == 1) {
-					askconfirm(ModalService, function() {
-						var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
-
-						newstate.$save(function(){
-							$window.history.back();
-						});
-					}, "Sei sicuro di voler rilasciare la pratica?");
-				}
-				else {
+		$scope.stato = function(state, user) {
+			if (state == 1) {
+				askconfirm(ModalService, function() {
 					var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
 
 					newstate.$save(function(){
 						$window.history.back();
 					});
-				}
+				}, "Sei sicuro di voler rilasciare la pratica?");
 			}
+			else {
+				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
+
+				newstate.$save(function(){
+					$window.history.back();
+				});
+			}
+		}
 	}])
 	.controller('StrumentiController', ['$scope', 'Me', 'Strumenti', '$location', function($scope, Me, Strumenti, $location) {
 		$scope.orderByField = 'id';
@@ -1333,8 +1337,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('strumenti/new');
 		}
 		$scope.show = function(id) {
-			if ($scope.me.userlevel == 0 || $scope.me.id == id)
-				$location.url('strumenti/'+id);
+			$location.url('strumenti/'+id);
 		}
 	}])
 
@@ -1382,8 +1385,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('catene/new');
 		}
 		$scope.show = function(id) {
-			if ($scope.me.userlevel == 0 || $scope.me.id == id)
-				$location.url('catene/'+id);
+			$location.url('catene/'+id);
 		}
 	}])
 	.controller('CatenaDetailCtrl', ['$scope', '$routeParams', 'Me', 'Catene', 'StrumentiCatena', 'StrumentiFree', '$location', '$route', 'ModalService', function($scope, $routeParams, Me, Catene, StrumentiCatena, StrumentiFree, $location, $route, ModalService) {
