@@ -1257,29 +1257,39 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$scope.title = x.stringGestore + '-' +x.sitecode + ' / ' + x.stringComune + ' - ' + x.address;
 		});
 
-		$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id});
+		$scope.readyInteg = false;
+		$scope.readyHistory = false;
+		
+		$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id}, function() {
+			$scope.readyInteg = true;
+			if ($scope.readyHistory && $scope.readyInteg) $scope.doStuff();
+		});
 
-		$scope.history = StoricoStatoPratiche.get({id: $routeParams.id}, function(array) {
-
+		$scope.history = StoricoStatoPratiche.get({id: $routeParams.id}, function() {
+			$scope.readyHistory = true;
+			if ($scope.readyHistory && $scope.readyInteg) $scope.doStuff();
+		});
+		
+		$scope.doStuff = function() {
 			var integ=$scope.integrazioni.length-1;
 
-			for (var i=0; i<array.length; i++) {
-				if (array[i].descStato == "Lavorazione") {
-					if (array[i].usernameAss)
-						array[i].descStato +=  " ("+array[i].usernameAss+")";
+			for (var i=0; i<$scope.history.length; i++) {
+				if ($scope.history[i].descStato == "Lavorazione") {
+					if ($scope.history[i].usernameAss)
+						$scope.history[i].descStato +=  " ("+$scope.history[i].usernameAss+")";
 					else {	// arrivata integrazione
 						if (integ >= 0)
-							array[i].descStato +=  " - " + $scope.integrazioni[integ].protoIN + " - "+ $scope.integrazioni[integ].dateIN;
+							$scope.history[i].descStato +=  " - " + $scope.integrazioni[integ].protoIN + " - "+ $scope.integrazioni[integ].dateIN;
 					}
 				}
-				else if (array[i].descStato ==  "Attesa Integrazione" && integ >= 0) {
-					array[i].descStato +=  " - " + $scope.integrazioni[integ].protoOUT + " - "+ $scope.integrazioni[integ].dateOUT;
+				else if ($scope.history[i].descStato ==  "Attesa Integrazione" && integ >= 0) {
+					$scope.history[i].descStato +=  " - " + $scope.integrazioni[integ].protoOUT + " - "+ $scope.integrazioni[integ].dateOUT;
 					--integ;
 				}
 
-				array[i].timePoint += " - "+array[i].usernameMod;
+				$scope.history[i].timePoint += " - "+$scope.history[i].usernameMod;
 			}
-		});
+		};
 
 		$scope.cancel = function() {
 			$window.history.back();
