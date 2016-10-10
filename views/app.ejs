@@ -639,6 +639,8 @@
 <!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
 				<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Nome <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='note'; reverseSort=!reverseSort">Note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='calib'; reverseSort=!reverseSort">Calibrazione <span ng-show="orderByField=='calib'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza Calibrazione <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
 			</tr>
 		</thead>
 		<tbody>
@@ -646,6 +648,8 @@
 <!--				<td class="text-center">{{catena.id}}</td> -->
 				<td class="text-center">{{catena.name}}</td>
 				<td class="text-center">{{catena.note}}</td>
+				<td class="text-center">{{catena.certn}}</td>
+				<td class="text-center">{{catena.scadenza}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -681,9 +685,9 @@
 			</div>
 		</form>
 	</div>
-	
+			<hr>
 	<div class="container" ng-show="!isnew">
-		<div>Strumenti della catena:</div>
+		<h3>Strumenti della catena:</h3>
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -700,8 +704,8 @@
 				</tr>
 			</tbody>
 		</table>
-		
-		<div>Strumenti Liberi:</div>
+		<hr>
+		<h3>Strumenti Liberi:</h3>
 		<table class="table table-hover">
 			<thead>
 				<tr>
