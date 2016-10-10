@@ -38,6 +38,7 @@ module.exports = function(app, passport) {
 	app.use('/strumenti', isAuthenticated, require('./strumenti'));
 	app.use('/catene', isAuthenticated, require('./catene'));
 	app.use('/strumentiregistro', isAuthenticated, require('./strumentiregistro'));
+	app.use('/strumenticalibrazioni', isAuthenticated, require('./strumenticalibrazioni'));
 
 	app.get("/home", isAuthenticated, function(req, res) {
 		res.render('app');
