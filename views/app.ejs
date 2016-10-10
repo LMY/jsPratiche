@@ -70,6 +70,7 @@
 		<p>Modifiche al software:
 			<ul>
 				<li>Doppio click per modificare la riga di una tabella!!</li>
+				<li>Strumenti, Catene. WIP: Calibrazioni</li>
 			</ul>
 		</p>
 
@@ -81,14 +82,13 @@
 			</ul>
 		</p>
 
-		<p>Strumenti: ancora in sviluppo
+		<p>Strumenti:
 			<ul>
-				<li><u>Registro</u>: ogni utente registra quando e da che sede ha preso uno strumento e quando e dove lo restituisce</li>
+				<li><u>Registro</u>: WIP! ogni utente registra quando e da che sede ha preso uno strumento e quando e dove lo restituisce</li>
 				<li><u>Strumenti, Catene</u>: qui si inseriscono/modificano dati degli strumenti/catene e si consultano le calibrazioni</li>
 				<li><u>Storico</u>: storico del registro, per ogni strumento si vede (chi,quando,dove) l'ha preso e riposto</li>
 			</ul>
 		</p>
-
 	</div>
 </script>
 
@@ -640,7 +640,7 @@
 				<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Nome <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='note'; reverseSort=!reverseSort">Note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='calib'; reverseSort=!reverseSort">Calibrazione <span ng-show="orderByField=='calib'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza Calibrazione <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>				
+				<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza Calibrazione <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -685,13 +685,14 @@
 			</div>
 		</form>
 	</div>
-			<hr>
+	<hr>
+	
 	<div class="container" ng-show="!isnew">
 		<h3>Strumenti della catena:</h3>
 		<table class="table table-hover">
 			<thead>
 				<tr>
-					<th class="text-center"><a ng-click="orderByField1='id'; reverseSort1=!reverseSort1">ID <span ng-show="orderByField1=='id'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> 
+					<th class="text-center"><a ng-click="orderByField1='id'; reverseSort1=!reverseSort1">ID <span ng-show="orderByField1=='id'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 					<th class="text-center"><a ng-click="orderByField1='name'; reverseSort1=!reverseSort1">Nome <span ng-show="orderByField1=='name'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 					<th class="text-center"><a ng-click="orderByField1='note'; reverseSort1=!reverseSort1">Note <span ng-show="orderByField1=='note'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				</tr>
@@ -704,27 +705,108 @@
 				</tr>
 			</tbody>
 		</table>
+		
+		<center><button type="submit" class="btn btn-success" ng-click="addstrum=!addstrum">Aggiungi Strumenti</button></center>
+		
+		<div ng-show="addstrum">
+			<hr>
+			<h3>Strumenti Liberi:</h3>
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th class="text-center"><a ng-click="orderByField2='id'; reverseSort2=!reverseSort2">ID <span ng-show="orderByField2=='id'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+						<th class="text-center"><a ng-click="orderByField2='name'; reverseSort2=!reverseSort2">Nome <span ng-show="orderByField2=='name'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+						<th class="text-center"><a ng-click="orderByField2='note'; reverseSort2=!reverseSort2">Note <span ng-show="orderByField2=='note'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="strumento in strumenti|orderBy:orderByField2:reverseSort2" ng-dblclick="add(strumento.id)">
+						<td class="text-center">{{strumento.id}}</td>
+						<td class="text-center">{{strumento.name}}</td>
+						<td class="text-center">{{strumento.note}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
 		<hr>
-		<h3>Strumenti Liberi:</h3>
+		<h3>Calibrazioni:</h3>
 		<table class="table table-hover">
 			<thead>
 				<tr>
-					<th class="text-center"><a ng-click="orderByField2='id'; reverseSort2=!reverseSort2">ID <span ng-show="orderByField2=='id'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> 
-					<th class="text-center"><a ng-click="orderByField2='name'; reverseSort2=!reverseSort2">Nome <span ng-show="orderByField2=='name'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-					<th class="text-center"><a ng-click="orderByField2='note'; reverseSort2=!reverseSort2">Note <span ng-show="orderByField2=='note'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField3='lab'; reverseSort3=!reverseSort3">Laboratorio <span ng-show="orderByField3=='lab'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField3='certn'; reverseSort3=!reverseSort3">#certificato <span ng-show="orderByField3=='certn'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField3='dateCal'; reverseSort3=!reverseSort3">Data Calibrazione <span ng-show="orderByField3=='dateCal'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField3='note'; reverseSort3=!reverseSort3">Note <span ng-show="orderByField3=='note'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField3='scadenza'; reverseSort3=!reverseSort3">Scadenza <span ng-show="orderByField3=='scadenza'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="strumento in strumenti|orderBy:orderByField2:reverseSort2" ng-dblclick="add(strumento.id)">
-					<td class="text-center">{{strumento.id}}</td>
-					<td class="text-center">{{strumento.name}}</td>
-					<td class="text-center">{{strumento.note}}</td>
+				<tr ng-repeat="calibrazione in calibrazioni|orderBy:orderByField3:reverseSort3" ng-dblclick="showcalib(calibrazione.id)">
+					<td class="text-center">{{calibrazione.lab}}</td>
+					<td class="text-center">{{calibrazione.certn}}</td>
+					<td class="text-center">{{calibrazione.dateCal}}</td>
+					<td class="text-center">{{calibrazione.note}}</td>
+					<td class="text-center">{{calibrazione.scadenza}}</td>
 				</tr>
 			</tbody>
 		</table>
+		<center><button type="submit" class="btn btn-success" ng-click="addcalib()">Aggiungi Calibrazione</button></center>
 	</div>
 </script>
 
+<script type="text/ng-template" id="/calibrazioneDetails.html">
+	<div ng-include="'/public/navbar.html'"></div>
+	<div class="container">
+		<h2>{{ title }}</h2>
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="gestore">Catena:</label>
+				<div class="col-sm-10">
+					<select data-ng-options="g.id as g.name for g in catene" data-ng-model="ecalibrazione.idCatena"></select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="address">Laboratorio:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="address" ng-model="ecalibrazione.lab" placeholder="Laboratorio">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="sitecode">Numero certificato:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="sitecode" ng-model="ecalibrazione.certn" placeholder="####">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="dataIN">Data calibrazione:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="protoIN" ng-model="ecalibrazione.dateCal" placeholder="YYYY-MM-DD">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="note">Note:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="note" ng-model="ecalibrazione.note" placeholder="Note">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="dataIN">Data Scadenza:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="protoIN" ng-model="ecalibrazione.scadenza" placeholder="YYYY-MM-DD">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+					<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+					<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+					<div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
 
 <script>
 var getTableRowClass = function(id) {
@@ -798,7 +880,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			'get' : { method:'GET', url:'/strumenti/catena/:id', isArray:true },
 			'update': { method:'PUT' }
 		});
-	}])	
+	}])
 	.factory('Catene', ['$resource', function($resource){
 		return $resource('/catene/:id', null, {
 			'update': { method:'PUT' }
@@ -832,6 +914,17 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			'update': { method:'PUT' }
 		});
 	}])
+	.factory('Calibrazioni', ['$resource', function($resource){
+		return $resource('/strumenticalibrazioni/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	.factory('CalibrazioniCatena', ['$resource', function($resource){
+		return $resource('/strumenticalibrazioni/:id', null, {
+			'get' : { method:'GET', url:'/strumenticalibrazioni/catena/:id', isArray:true },
+			'update': { method:'PUT' }
+		});
+	}])	
 	.factory('ConstStatiPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/stati', null);
 	}])
@@ -1203,7 +1296,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				x.dataOUT = x.dataOUT ? new Date(x.dataOUT.substring(0, 10)) : null;
 			}
 		});
-		
+
 		$scope.comuni = Comuni.query();
 		$scope.gestori = Gestori.query();
 
@@ -1263,7 +1356,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 
 		$scope.readyInteg = false;
 		$scope.readyHistory = false;
-		
+
 		$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id}, function() {
 			$scope.readyInteg = true;
 			if ($scope.readyHistory && $scope.readyInteg) $scope.doStuff();
@@ -1273,7 +1366,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$scope.readyHistory = true;
 			if ($scope.readyHistory && $scope.readyInteg) $scope.doStuff();
 		});
-		
+
 		$scope.doStuff = function() {
 			var integ=$scope.integrazioni.length-1;
 
@@ -1402,20 +1495,23 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('catene/'+id);
 		}
 	}])
-	.controller('CatenaDetailCtrl', ['$scope', '$routeParams', 'Me', 'Catene', 'StrumentiCatena', 'StrumentiFree', '$location', '$route', 'ModalService', function($scope, $routeParams, Me, Catene, StrumentiCatena, StrumentiFree, $location, $route, ModalService) {
+	.controller('CatenaDetailCtrl', ['$scope', '$routeParams', 'Me', 'Catene', 'StrumentiCatena', 'StrumentiFree', 'CalibrazioniCatena', '$location', '$route', 'ModalService', function($scope, $routeParams, Me, Catene, StrumentiCatena, StrumentiFree, CalibrazioniCatena, $location, $route, ModalService) {
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
-		$scope.ecatena = $scope.isnew ? {} : Catene.get({id: $routeParams.id });
+		$scope.ecatena = $scope.isnew ? {} : Catene.get({ id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuova Catena" : "Catena "+$routeParams.id;
-		$scope.strumenticatena = StrumentiCatena.get({id: $routeParams.id });
+		$scope.strumenticatena = StrumentiCatena.get({ id: $routeParams.id });
 		$scope.strumenti = StrumentiFree.query();
+		$scope.calibrazioni = CalibrazioniCatena.get({ id: $routeParams.id });
 
+		$scope.addstrum = false;
 		$scope.orderByField1 = "id";
 		$scope.reverseSort1 = false;
-		
 		$scope.orderByField2 = "id";
 		$scope.reverseSort2 = false;
-		
+		$scope.orderByField3 = "id";
+		$scope.reverseSort3 = false;
+
 		$scope.update = function() {
 			if ($scope.isnew) {
 				if (!$scope.ecatena || $scope.ecatena.length < 1) return;
@@ -1442,21 +1538,63 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.cancel = function() {
 			$location.url('strumenti-catene');
 		}
-		
+
 		$scope.add = function(id) {
 			if ($scope.isnew) { alert("Prima crea la catena, poi aggiungi/rimuovi gli strumenti"); return; }
-		
+
 			StrumentiFree.update({id: $scope.ecatena.id}, new StrumentiFree({verb: "add", idStrumento: id}), function() {
 				$route.reload();
 			});
 		}
-		
+
 		$scope.remove = function(id) {
 			if ($scope.isnew) { alert("Prima crea la catena, poi aggiungi/rimuovi gli strumenti"); return; }
-		
+
 			StrumentiFree.update({id: $scope.ecatena.id}, new StrumentiFree({verb: "remove", idStrumento: id}), function() {
 				$route.reload();
 			});
+		}
+		
+		$scope.addcalib = function() {
+			$location.url('calibrazione/new');
+		}
+		
+		$scope.showcalib = function(id) {
+			$location.url('calibrazione/'+id);
+		}
+	}])
+	.controller('CalibrazioneDetailCtrl', ['$scope', '$routeParams', 'Me', 'Catene', 'Calibrazioni', '$window', 'ModalService', function($scope, $routeParams, Me, Catene, Calibrazioni, $window, ModalService) {
+		$scope.me = Me.get();
+		$scope.isnew = ($routeParams.id === "new");
+		$scope.ecalibrazione = $scope.isnew ? {} : Calibrazioni.get({id: $routeParams.id });
+		$scope.title = $scope.isnew ? "Nuova Calibrazione" : "Calibrazione "+$routeParams.id;
+		$scope.catene = Catene.query();
+
+		$scope.update = function() {
+			if ($scope.isnew) {
+				if (!$scope.ecalibrazione || $scope.ecalibrazione.length < 1) return;
+
+				var calibrazione = new Calibrazioni({ idCatena: $scope.ecalibrazione.idCatena, lab: $scope.ecalibrazione.lab, certn: $scope.ecalibrazione.certn, dateCal: $scope.ecalibrazione.dateCal, note: $scope.ecalibrazione.note, scadenza: $scope.ecalibrazione.scadenza });
+				calibrazione.$save(function(){
+					$window.history.back();
+				});
+			}
+			else
+				Calibrazioni.update({id: $scope.ecalibrazione.id}, $scope.ecalibrazione, function() {
+					$window.history.back();
+				});
+		}
+
+		$scope.remove = function() {
+			askconfirm(ModalService, function() {
+				Calibrazioni.remove({id: $scope.ecalibrazione.id}, function() {
+					$window.history.back();
+				})
+			}, "Sei sicuro di voler rimovere questa calibrazione?");
+		}
+
+		$scope.cancel = function() {
+			$window.history.back();
 		}
 	}])
 
@@ -1537,6 +1675,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			.when('/catene/:id', {
 				templateUrl: '/catenaDetails.html',
 				controller: 'CatenaDetailCtrl'
+			})
+			.when('/calibrazione/:id', {
+				templateUrl: '/calibrazioneDetails.html',
+				controller: 'CalibrazioneDetailCtrl'
 			})
 			;
 	}]);
