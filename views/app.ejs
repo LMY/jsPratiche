@@ -70,7 +70,7 @@
 		<p>Modifiche al software:
 			<ul>
 				<li>Doppio click per modificare la riga di una tabella!!</li>
-				<li>Strumenti, Catene. WIP: Calibrazioni</li>
+				<li>Strumenti, Catene, Calibrazioni</li>
 			</ul>
 		</p>
 
@@ -85,7 +85,7 @@
 		<p>Strumenti:
 			<ul>
 				<li><u>Registro</u>: WIP! ogni utente registra quando e da che sede ha preso uno strumento e quando e dove lo restituisce</li>
-				<li><u>Strumenti, Catene</u>: qui si inseriscono/modificano dati degli strumenti/catene e si consultano le calibrazioni</li>
+				<li><u>Strumenti, Catene</u>: qui si inseriscono i dati degli strumenti, delle catene e delle calibrazioni</li>
 				<li><u>Storico</u>: storico del registro, per ogni strumento si vede (chi,quando,dove) l'ha preso e riposto</li>
 			</ul>
 		</p>
@@ -686,7 +686,7 @@
 		</form>
 	</div>
 	<hr>
-	
+
 	<div class="container" ng-show="!isnew">
 		<h3>Strumenti della catena:</h3>
 		<table class="table table-hover">
@@ -705,9 +705,9 @@
 				</tr>
 			</tbody>
 		</table>
-		
+
 		<center><button type="submit" class="btn btn-success" ng-click="addstrum=!addstrum">Aggiungi Strumenti</button></center>
-		
+
 		<div ng-show="addstrum">
 			<hr>
 			<h3>Strumenti Liberi:</h3>
@@ -728,7 +728,7 @@
 				</tbody>
 			</table>
 		</div>
-		
+
 		<hr>
 		<h3>Calibrazioni:</h3>
 		<table class="table table-hover">
@@ -806,6 +806,59 @@
 			</div>
 		</form>
 	</div>
+</script>
+
+<script type="text/ng-template" id="/strumentiRegistro.html">
+	<div ng-include="'/public/navbar.html'"></div>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th class="text-center"><a ng-click="orderByField='catena'; reverseSort=!reverseSort">Catena <span ng-show="orderByField=='catena'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='username'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='username'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='timePointFrom'; reverseSort=!reverseSort">Dalle <span ng-show="orderByField=='timePointFrom'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='timePointTo'; reverseSort=!reverseSort">Alle <span ng-show="orderByField=='timePointTo'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='sede'; reverseSort=!reverseSort">Sede <span ng-show="orderByField=='sede'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center">Azione</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="x in registro|orderBy:orderByField:reverseSort">
+				<td class="text-center">{{x.catena}}</td>
+				<td class="text-center">{{x.username}}</td>
+				<td class="text-center">{{x.timePointFrom}}</td>
+				<td class="text-center">{{x.timePointTo}}</td>
+				<td class="text-center">{{x.sede}}</td>
+				<td class="text-center">
+					<button type="submit" class="btn btn-success" ng-click="open(x.id)" ng-show="!x.isopen">Open</button>
+					<button type="submit" class="btn btn-danger" ng-click="close(x.id)" ng-show="x.isopen">Close</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</script>
+
+<script type="text/ng-template" id="/strumentiStorico.html">
+	<div ng-include="'/public/navbar.html'"></div>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th class="text-center"><a ng-click="orderByField='catena'; reverseSort=!reverseSort">Catena <span ng-show="orderByField=='catena'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='username'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='username'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='timePointFrom'; reverseSort=!reverseSort">Dalle <span ng-show="orderByField=='timePointFrom'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='timePointTo'; reverseSort=!reverseSort">Alle <span ng-show="orderByField=='timePointTo'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='sede'; reverseSort=!reverseSort">Sede <span ng-show="orderByField=='sede'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="x in registro|orderBy:orderByField:reverseSort">
+				<td class="text-center">{{x.catena}}</td>
+				<td class="text-center">{{x.username}}</td>
+				<td class="text-center">{{x.timePointFrom}}</td>
+				<td class="text-center">{{x.timePointTo}}</td>
+				<td class="text-center">{{x.sede}}</td>
+			</tr>
+		</tbody>
+	</table>
 </script>
 
 <script>
@@ -924,7 +977,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			'get' : { method:'GET', url:'/strumenticalibrazioni/catena/:id', isArray:true },
 			'update': { method:'PUT' }
 		});
-	}])	
+	}])
 	.factory('ConstStatiPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/stati', null);
 	}])
@@ -950,6 +1003,16 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 	}])
 	.factory('Me', ['$resource', function($resource){
 		return $resource('/utenti/me', null);
+	}])
+	.factory('RegistroStrumenti', ['$resource', function($resource){
+		return $resource('/strumentiregistro/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
+	.factory('RegistroStrumentiLatest', ['$resource', function($resource){
+		return $resource('/strumentiregistro/latest/:id', null, {
+			'update': { method:'PUT' }
+		});
 	}])
 
 	// helper controllers
@@ -1554,11 +1617,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				$route.reload();
 			});
 		}
-		
+
 		$scope.addcalib = function() {
 			$location.url('calibrazione/new');
 		}
-		
+
 		$scope.showcalib = function(id) {
 			$location.url('calibrazione/'+id);
 		}
@@ -1595,6 +1658,30 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 
 		$scope.cancel = function() {
 			$window.history.back();
+		}
+	}])
+	.controller('StrumentiStoricoCtrl', ['$scope', 'Me', 'RegistroStrumenti', '$location', function($scope, Me, RegistroStrumenti, $location) {
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
+		$scope.me = Me.get();
+		$scope.registro = RegistroStrumenti.query();
+
+		$scope.show = function(id) {
+			$location.url('catene/'+id);
+		}
+	}])
+	.controller('StrumentiRegistroCtrl', ['$scope', 'Me', 'RegistroStrumentiLatest', '$location', function($scope, Me, RegistroStrumentiLatest, $location) {
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
+		$scope.me = Me.get();
+		$scope.registro = RegistroStrumentiLatest.query();
+
+		$scope.open = function(id) {
+			alert("open "+id);
+		}
+
+		$scope.close = function(id) {
+			alert("close "+id);
 		}
 	}])
 
@@ -1679,6 +1766,14 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			.when('/calibrazione/:id', {
 				templateUrl: '/calibrazioneDetails.html',
 				controller: 'CalibrazioneDetailCtrl'
+			})
+			.when('/strumenti-storico', {
+				templateUrl: '/strumentiStorico.html',
+				controller: 'StrumentiStoricoCtrl'
+			})
+			.when('/strumenti-registro', {
+				templateUrl: '/strumentiRegistro.html',
+				controller: 'StrumentiRegistroCtrl'
 			})
 			;
 	}]);
