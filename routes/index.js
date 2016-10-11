@@ -31,6 +31,7 @@ module.exports = function(app, passport) {
 	app.use('/utenti', isAuthenticated, require('./utenti'));
 	app.use('/gestori', isAuthenticated, require('./gestori'));
 	app.use('/comuni', isAuthenticated, require('./comuni'));
+	app.use('/sedi', isAuthenticated, require('./sedi'));
 	app.use('/pratiche', isAuthenticated, require('./pratiche'));
 	app.use('/integrazioni', isAuthenticated, require('./integrazioni'));
 	app.use('/statopratiche', isAuthenticated, require('./statopratiche'));

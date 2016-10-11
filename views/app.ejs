@@ -70,7 +70,7 @@
 		<p>Modifiche al software:
 			<ul>
 				<li>Doppio click per modificare la riga di una tabella!!</li>
-				<li>Strumenti, Catene, Calibrazioni</li>
+				<li>Strumenti, Catene, Calibrazioni, RegistroStrumenti</li>
 			</ul>
 		</p>
 
@@ -84,7 +84,7 @@
 
 		<p>Strumenti:
 			<ul>
-				<li><u>Registro</u>: WIP! ogni utente registra quando e da che sede ha preso uno strumento e quando e dove lo restituisce</li>
+				<li><u>Registro</u>: ogni utente registra quando prende uno strumento e dove&quando lo restituisce</li>
 				<li><u>Strumenti, Catene</u>: qui si inseriscono i dati degli strumenti, delle catene e delle calibrazioni</li>
 				<li><u>Storico</u>: storico del registro, per ogni strumento si vede (chi,quando,dove) l'ha preso e riposto</li>
 			</ul>
@@ -827,10 +827,13 @@
 				<td class="text-center">{{x.username}}</td>
 				<td class="text-center">{{x.timePointFrom}}</td>
 				<td class="text-center">{{x.timePointTo}}</td>
-				<td class="text-center">{{x.sede}}</td>
+				<td class="text-center">
+				{{x.sede}}
+				<select data-ng-options="g.id as g.nome for g in sedi" data-ng-model="x.idSede" ng-show="x.isopen"></select>
+				</td>
 				<td class="text-center">
 					<button type="submit" class="btn btn-success" ng-click="open(x.id)" ng-show="!x.isopen">Open</button>
-					<button type="submit" class="btn btn-danger" ng-click="close(x.id)" ng-show="x.isopen">Close</button>
+					<button type="submit" class="btn btn-danger" ng-click="close(x.id, x.idSede)" ng-show="x.isopen">Close</button>
 				</td>
 			</tr>
 		</tbody>
@@ -908,6 +911,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			'update': { method:'PUT' }
 		});
 	}])
+	.factory('Sedi', ['$resource', function($resource){
+		return $resource('/sedi/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])	
 	.factory('Utenti', ['$resource', function($resource){
 		return $resource('/utenti/:id', null, {
 			'update': { method:'PUT' }
@@ -1670,18 +1678,54 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('catene/'+id);
 		}
 	}])
-	.controller('StrumentiRegistroCtrl', ['$scope', 'Me', 'RegistroStrumentiLatest', '$location', function($scope, Me, RegistroStrumentiLatest, $location) {
+	.controller('StrumentiRegistroCtrl', ['$scope', 'Me', 'RegistroStrumentiLatest', 'Sedi', '$location', '$route', function($scope, Me, RegistroStrumentiLatest, Sedi, $location, $route) {
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
-		$scope.registro = RegistroStrumentiLatest.query();
+		$scope.sedi = Sedi.query();
+		$scope.registro = RegistroStrumentiLatest.query(function(data) {
+
+			$scope.registro.forEach(function(x) {
+				var dateFrom = moment(x.timePointFrom);
+				var dateTo = moment(x.timePointTo);
+				
+				if (!dateFrom.isValid()) x.timePointFrom = "";
+				if (!dateTo.isValid()) x.timePointTo = "";
+				
+				if (!dateTo.isValid() && !dateFrom.isValid()) {			// never taken
+					x.isopen = false;
+					x.sede = "Mai Preso!";
+				}
+				else if (!dateTo.isValid() && dateFrom.isValid()) {		// open
+					x.isopen = true;
+				}
+				else if (dateTo.isValid() && dateFrom.isValid()) {		// closed
+					x.isopen = false;
+				}
+				
+				x.catena = x.name;
+			});
+		});
 
 		$scope.open = function(id) {
-			alert("open "+id);
+			var entry = new RegistroStrumentiLatest({ verb: 'open', idUtente:$scope.me.id, timePointFrom: moment().format() });
+
+			RegistroStrumentiLatest.update({id: id}, entry, function(){
+				$route.reload();
+			});
 		}
 
-		$scope.close = function(id) {
-			alert("close "+id);
+		$scope.close = function(id, idSede) {
+			if (!idSede || idSede == 0) {
+				alert("Specificare sede!");
+				return;
+			}
+		
+			var entry = new RegistroStrumentiLatest({ verb: 'close', idUtente:$scope.me.id, timePointTo: moment().format(), idSedeTo:idSede });
+
+			RegistroStrumentiLatest.update({id: id}, entry, function(){
+				$route.reload();
+			});
 		}
 	}])
 

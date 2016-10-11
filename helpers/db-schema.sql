@@ -199,7 +199,7 @@ CREATE TABLE RegistroStrumenti (
 
   idUtente int(11),
 
-  timePointFrom TIMESTAMP,
+  timePointFrom TIMESTAMP NOT NULL,
   timePointTo TIMESTAMP,
   idSedeTo int(11),
 
