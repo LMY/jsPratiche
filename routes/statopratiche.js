@@ -71,12 +71,6 @@ router.get('/:id', function(req, res, next) {
 router.post('/', function(req, res, next) {
 	var userid = req.user.id;
 
-/*	if (req.body.idStato == 2 && !req.body.idUtente) {
-		console.log("STATOPRATICHE::POST::empty req.body.idUtente?!");
-		rest.error500(res, err);
-		return;
-	}*/
-
     sql(function (err, connection) {
 		connection.query('START TRANSACTION;', function(err, data) {
 			if (err) rest.error500(res, err);
