@@ -38,7 +38,7 @@ router.get('/history/:id', function(req, res, next) {
     sql(function(err,connection) {
 		//idPratica, idUtente, idStato, idUtenteModifica, timePoint)
 		var query = mysql.format('SELECT A.*, Utenti.username as usernameMod FROM (SELECT StoricoStatoPratiche.id, StoricoStatoPratiche.idPratica, StoricoStatoPratiche.idUtente, StoricoStatoPratiche.idStato, StoricoStatoPratiche.idUtenteModifica, StoricoStatoPratiche.timePoint, Utenti.username as usernameAss, ConstStatoPratiche.descrizione as descStato FROM StoricoStatoPratiche LEFT JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) LEFT JOIN ConstStatoPratiche on (StoricoStatoPratiche.idStato = ConstStatoPratiche.id) WHERE StoricoStatoPratiche.idPratica=? ORDER BY StoricoStatoPratiche.id DESC) AS A LEFT JOIN Utenti on (A.idUtenteModifica = Utenti.id)', [req.params.id]);
-				
+
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
 			else res.json(data);
@@ -49,7 +49,7 @@ router.get('/history/:id', function(req, res, next) {
 router.get('/current/:id', function(req, res, next) {
     sql(function(err,connection) {
 		var query = mysql.format('SELECT A.*, Utenti.username as usernameMod FROM (SELECT StoricoStatoPratiche.id, StoricoStatoPratiche.idPratica, StoricoStatoPratiche.idUtente, StoricoStatoPratiche.idStato, StoricoStatoPratiche.idUtenteModifica, StoricoStatoPratiche.timePoint, Utenti.username as usernameAss, ConstStatoPratiche.descrizione as descStato FROM StoricoStatoPratiche LEFT JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) LEFT JOIN ConstStatoPratiche on (StoricoStatoPratiche.idStato = ConstStatoPratiche.id) WHERE StoricoStatoPratiche.idPratica=? ORDER BY StoricoStatoPratiche.id DESC) AS A LEFT JOIN Utenti on (A.idUtenteModifica = Utenti.id)', [req.params.id]);
-				
+
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
 			else res.json(data);
@@ -60,7 +60,7 @@ router.get('/current/:id', function(req, res, next) {
 router.get('/:id', function(req, res, next) {
     sql(function(err,connection) {
 		var query = mysql.format('SELECT * FROM StoricoStatoPratiche WHERE id=?', [req.params.id]);
-		
+
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
 			else res.json(data.length == 1 ? data[0] : []);
@@ -76,20 +76,25 @@ router.post('/', function(req, res, next) {
 		rest.error500(res, err);
 		return;
 	}*/
-	
+
     sql(function (err, connection) {
 		connection.query('START TRANSACTION;', function(err, data) {
 			if (err) rest.error500(res, err);
 			else {
-				var query =  mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, req.body.idPratica, req.body.idUtente, req.body.idStato, userid ]);
+				if (!req.body.dataOUT) {
+					rest.error500(res, "dataOUT not specified");
+					return;
+				}
 				
+				var query =  mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, req.body.idPratica, req.body.idUtente, req.body.idStato, userid ]);
+
 				connection.query(query, function(err, data) {
 					if (err) rest.error500(res, err);
 
 					// if OK, update Current table
 					var query2 = mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE idUtente=?, idStato=?", [tableNameCurrent, req.body.idPratica, req.body.idUtente, req.body.idStato, userid, req.body.idUtente, req.body.idStato ]);
-				
-					connection.query(query2, function(err, data) {			
+
+					connection.query(query2, function(err, data) {
 						if (err) rest.error500(res, err);
 						else {
 							if (req.body.idStato == 7) {	// richiedi integrazioni
@@ -97,7 +102,7 @@ router.post('/', function(req, res, next) {
 
 								connection.query(query3, function(err, data) {
 									if (err) rest.error500(res, err);
-									else {						
+									else {
 										connection.query('COMMIT;', function(err, data) {
 											if (err) rest.error500(res, err);
 											else rest.created(res, data);
@@ -106,11 +111,11 @@ router.post('/', function(req, res, next) {
 								});//Integrazioni(idPratica, dateOUT, dateIN, protoOUT, protoIN, note)
 							}
 							else if (req.body.idStato == 2 && req.body.integData) {	// lavorazione (arrivate integrazioni)
-								var query3 = mysql.format("UPDATE Integrazioni SET dateIN=?,protoIN=? WHERE idPratica=?", [ req.body.integData, req.body.integProto, req.body.idPratica]);
-					
+								var query3 = mysql.format("UPDATE Integrazioni SET dateIN=?,protoIN=? WHERE idPratica=? AND dateOUT=?", [ req.body.integData, req.body.integProto, req.body.idPratica, req.body.dataOUT]);
+
 								connection.query(query3, function(err, data) {
 									if (err) rest.error500(res, err);
-									else {						
+									else {
 										connection.query('COMMIT;', function(err, data) {
 											if (err) rest.error500(res, err);
 											else rest.created(res, data);
@@ -118,7 +123,7 @@ router.post('/', function(req, res, next) {
 									}
 								});
 							}
-							else {				
+							else {
 								connection.query('COMMIT;', function(err, data) {
 									if (err) rest.error500(res, err);
 									else rest.created(res, data);
@@ -145,7 +150,7 @@ router.delete('/:id', function(req, res, next) {
 router.put('/:id', function(req, res, next) {
     sql(function (err, connection) {
 		var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ? AND ?? = ?", [tableNameHistory, "dateIN", req.body.dateIN, "protoOUT", req.body.protoOUT, "protoIN", req.body.protoIN, "note", req.body.note, "idPratica", req.params.id, "dateOUT", req.body.dateout ];
-	
+
         connection.query(query, function(err, data) {
             if (err) rest.error500(err);
             else rest.updated(res, data);

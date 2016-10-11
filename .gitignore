@@ -1,6 +1,7 @@
 node_modules
 helpers/db-data.sql
 npm-debug.log
+backup/
 *~
 helpers/*~
 routes/*~
