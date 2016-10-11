@@ -645,11 +645,11 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="catena in catene|orderBy:orderByField:reverseSort" ng-dblclick="show(catena.id)">
-<!--				<td class="text-center">{{catena.id}}</td> -->
-				<td class="text-center">{{catena.name}}</td>
-				<td class="text-center">{{catena.note}}</td>
-				<td class="text-center">{{catena.certn}}</td>
-				<td class="text-center">{{catena.scadenza}}</td>
+<!--				<td class="text-center {{catena.scadenzaType}}">{{catena.id}}</td> -->
+				<td class="text-center {{catena.scadenzaType}}">{{catena.name}}</td>
+				<td class="text-center {{catena.scadenzaType}}">{{catena.note}}</td>
+				<td class="text-center {{catena.scadenzaType}}">{{catena.certn}}</td>
+				<td class="text-center {{catena.scadenzaType}}">{{catena.scadenza}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -1557,7 +1557,27 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
-		$scope.catene = Catene.query();
+		$scope.catene = Catene.query(function() {
+			var today = moment();
+
+			$scope.catene.forEach(function(x) {
+				if (!x.scadenza) {
+					x.scadenzaType = "time-danger";
+					return;
+				}
+			
+				var diff = (moment.duration(moment(x.scadenza).diff(today)).asDays())|0;
+
+				if (diff < 0)
+					x.scadenzaType = "time-danger";
+				else if (diff < 7)
+					x.scadenzaType = "time-red";
+				else if (diff < 30)
+					x.scadenzaType = "time-orange";
+				else
+					x.scadenzaType = "time-green";
+			});
+		});
 
 		$scope.new = function() {
 			$location.url('catene/new');
