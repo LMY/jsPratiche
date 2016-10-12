@@ -993,11 +993,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 	.factory('ConstTipiPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/tipi', null);
 	}])
-	.factory('StatoPratiche', ['$resource', function($resource){
-		return $resource('/statopratiche/current/:id', null, {
-			'update': { method:'PUT' }
-		});
-	}])
 	.factory('StoricoStatoPratiche', ['$resource', function($resource){
 		return $resource('/statopratiche/:id', null, {
 			'get' : { method:'GET', url:'/statopratiche/history/:id', isArray:true },

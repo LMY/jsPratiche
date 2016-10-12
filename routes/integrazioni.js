@@ -17,8 +17,8 @@ router.get('/', function(req, res, next) {
 
 router.get('/:id', function(req, res, next) {
     sql(function(err,connection) {
-		var query = mysql.format('SELECT * FROM ?? WHERE idPratica=?', [tableName, req.params.id]);
-		
+		var query = mysql.format('SELECT * FROM ?? WHERE id=?', [tableName, req.params.id]);
+
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
 			else res.json(data);	// return ARRAY of integrazioni
@@ -28,9 +28,9 @@ router.get('/:id', function(req, res, next) {
 
 router.delete('/:id', function(req, res, next) {
     sql(function (err, connection) {
-		var query = mysql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);		
-		
-        connection.query(query, function(err, data) {		
+		var query = mysql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
+
+        connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
             else rest.deleted(res, data);
         });
@@ -39,10 +39,10 @@ router.delete('/:id', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
     sql(function (err, connection) {
-		var query = mysql.format("INSERT INTO ??(??,??,??,??,??,??) VALUES (?,?,?,?,?,?)",
-						[tableName, "idPratica", "dateOUT", "dateIN", "protoOUT", "protoIN", "note", req.body.id, req.body.dateOUT, req.body.dateIN, req.body.protoOUT, req.body.protoIN, req.body.note ]);
-	
-        connection.query(query, function(err, data) {			
+		var query = mysql.format("INSERT INTO ??(??,??,??,??,??) VALUES (?,?,?,?,?)",
+						[tableName, "dateOUT", "dateIN", "protoOUT", "protoIN", "note", req.body.dateOUT, req.body.dateIN, req.body.protoOUT, req.body.protoIN, req.body.note ]);
+
+        connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
             else rest.created(res, data);
         });
@@ -51,10 +51,10 @@ router.post('/', function(req, res, next) {
 
 router.put('/:id', function(req, res, next) {
     sql(function (err, connection) {
-		var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ? AND ?? = ?",
-						[tableName, "dateIN", req.body.dateIN, "protoOUT", req.body.protoOUT, "protoIN", req.body.protoIN, "note", req.body.note, "idPratica", req.params.id, "dateOUT", req.body.dateout ]);
+		var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?",
+						[tableName, "dateOUT", req.body.dateOUT, "dateIN", req.body.dateIN, "protoOUT", req.body.protoOUT, "protoIN", req.body.protoIN, "note", req.body.note, "id", req.params.id ]);
 
-        connection.query(query, function(err, data) {		
+        connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
             else rest.updated(res, data);
         });
@@ -62,4 +62,3 @@ router.put('/:id', function(req, res, next) {
 });
 
 module.exports = router;
-

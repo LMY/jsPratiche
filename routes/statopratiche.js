@@ -1,7 +1,6 @@
 var rest = require('../helpers/rest.js');
 var mysql = require('mysql');
 var sql = require('../helpers/db.js');
-var tableNameHistory = 'StoricoStatoPratiche';
 var tableNameCurrent = 'StatoPratiche';
 
 var express = require('express');
@@ -9,7 +8,7 @@ var router = express.Router();
 
 router.get('/', function(req, res, next) {
     sql(function(err,connection) {
-        connection.query('SELECT * FROM StoricoStatoPratiche', function(err, data) {
+        connection.query('SELECT * FROM StatoPratiche', function(err, data) {
             if (err) rest.error500(res, err);
 			else res.json(data);
 		});
@@ -36,19 +35,7 @@ router.get('/tipi', function(req, res, next) {
 
 router.get('/history/:id', function(req, res, next) {
     sql(function(err,connection) {
-		//idPratica, idUtente, idStato, idUtenteModifica, timePoint)
-		var query = mysql.format('SELECT A.*, Utenti.username as usernameMod FROM (SELECT StoricoStatoPratiche.id, StoricoStatoPratiche.idPratica, StoricoStatoPratiche.idUtente, StoricoStatoPratiche.idStato, StoricoStatoPratiche.idUtenteModifica, StoricoStatoPratiche.timePoint, Utenti.username as usernameAss, ConstStatoPratiche.descrizione as descStato FROM StoricoStatoPratiche LEFT JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) LEFT JOIN ConstStatoPratiche on (StoricoStatoPratiche.idStato = ConstStatoPratiche.id) WHERE StoricoStatoPratiche.idPratica=? ORDER BY StoricoStatoPratiche.id DESC) AS A LEFT JOIN Utenti on (A.idUtenteModifica = Utenti.id)', [req.params.id]);
-
-        connection.query(query, function(err, data) {
-            if (err) rest.error500(res, err);
-			else res.json(data);
-		});
-    });
-});
-
-router.get('/current/:id', function(req, res, next) {
-    sql(function(err,connection) {
-		var query = mysql.format('SELECT A.*, Utenti.username as usernameMod FROM (SELECT StoricoStatoPratiche.id, StoricoStatoPratiche.idPratica, StoricoStatoPratiche.idUtente, StoricoStatoPratiche.idStato, StoricoStatoPratiche.idUtenteModifica, StoricoStatoPratiche.timePoint, Utenti.username as usernameAss, ConstStatoPratiche.descrizione as descStato FROM StoricoStatoPratiche LEFT JOIN Utenti on (StoricoStatoPratiche.idUtente = Utenti.id) LEFT JOIN ConstStatoPratiche on (StoricoStatoPratiche.idStato = ConstStatoPratiche.id) WHERE StoricoStatoPratiche.idPratica=? ORDER BY StoricoStatoPratiche.id DESC) AS A LEFT JOIN Utenti on (A.idUtenteModifica = Utenti.id)', [req.params.id]);
+		var query = mysql.format('SELECT StatoPratiche.*, ConstStatoPratiche.descrizione as descStato, A.username as usernameAss, B.username as usernameMod FROM StatoPratiche LEFT JOIN ConstStatoPratiche on StatoPratiche.idStato=ConstStatoPratiche.id LEFT JOIN AssStatoPraticheUtenti on StatoPratiche.id = AssStatoPraticheUtenti.idStato LEFT JOIN Utenti AS A on idUtente=A.id LEFT JOIN Utenti AS B on idUtenteModifica=B.id WHERE idPratica=?', [req.params.id]);
 
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
@@ -59,7 +46,7 @@ router.get('/current/:id', function(req, res, next) {
 
 router.get('/:id', function(req, res, next) {
     sql(function(err,connection) {
-		var query = mysql.format('SELECT * FROM StoricoStatoPratiche WHERE id=?', [req.params.id]);
+		var query = mysql.format('SELECT * FROM StatoPratiche WHERE id=?', [req.params.id]);
 
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
@@ -68,6 +55,7 @@ router.get('/:id', function(req, res, next) {
     });
 });
 
+// todo
 router.post('/', function(req, res, next) {
 	var userid = req.user.id;
 
@@ -79,77 +67,49 @@ router.post('/', function(req, res, next) {
 					rest.error500(res, "dataOUT not specified");
 					return;
 				}
-				
-				var query =  mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, req.body.idPratica, req.body.idUtente, req.body.idStato, userid ]);
 
+				var query =  mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?)", [tableNameHistory, req.body.idPratica, req.body.idUtente, req.body.idStato, userid ]);
+console.log(query);
 				connection.query(query, function(err, data) {
 					if (err) rest.error500(res, err);
-
-					// if OK, update Current table
-					var query2 = mysql.format("INSERT INTO ??(idPratica,idUtente,idStato,idUtenteModifica) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE idUtente=?, idStato=?", [tableNameCurrent, req.body.idPratica, req.body.idUtente, req.body.idStato, userid, req.body.idUtente, req.body.idStato ]);
-
-					connection.query(query2, function(err, data) {
-						if (err) rest.error500(res, err);
-						else {
-							if (req.body.idStato == 7) {	// richiedi integrazioni
-								var query3 = mysql.format("INSERT INTO Integrazioni(idPratica, dateOUT, dateIN, protoOUT, protoIN, note) VALUES (?,?,NULL,?,NULL,?)", [ req.body.idPratica, req.body.integData, req.body.integProto, req.body.integNote]);
-
-								connection.query(query3, function(err, data) {
-									if (err) rest.error500(res, err);
-									else {
-										connection.query('COMMIT;', function(err, data) {
-											if (err) rest.error500(res, err);
-											else rest.created(res, data);
-										});
-									}
-								});//Integrazioni(idPratica, dateOUT, dateIN, protoOUT, protoIN, note)
-							}
-							else if (req.body.idStato == 2 && req.body.integData) {	// lavorazione (arrivate integrazioni)
-								var query3 = mysql.format("UPDATE Integrazioni SET dateIN=?,protoIN=? WHERE idPratica=? AND dateOUT=?", [ req.body.integData, req.body.integProto, req.body.idPratica, req.body.dataOUT]);
-
-								connection.query(query3, function(err, data) {
-									if (err) rest.error500(res, err);
-									else {
-										connection.query('COMMIT;', function(err, data) {
-											if (err) rest.error500(res, err);
-											else rest.created(res, data);
-										});
-									}
-								});
-							}
-							else {
-								connection.query('COMMIT;', function(err, data) {
-									if (err) rest.error500(res, err);
-									else rest.created(res, data);
-								});
-							}
+					else {
+						if (req.body.idStato == 7) {	// richiedi integrazioni
+							var query3 = mysql.format("INSERT INTO Integrazioni(idPratica, dateOUT, dateIN, protoOUT, protoIN, note) VALUES (?,?,NULL,?,NULL,?)", [ req.body.idPratica, req.body.integData, req.body.integProto, req.body.integNote]);
+console.log(query3);
+							connection.query(query3, function(err, data) {
+								if (err) rest.error500(res, err);
+								else {
+									connection.query('COMMIT;', function(err, data) {
+										if (err) rest.error500(res, err);
+										else rest.created(res, data);
+									});
+								}
+							});//Integrazioni(idPratica, dateOUT, dateIN, protoOUT, protoIN, note)
 						}
-					});
+						else if (req.body.idStato == 2 && req.body.integData) {	// lavorazione (arrivate integrazioni)
+							var query3 = mysql.format("UPDATE Integrazioni SET dateIN=?,protoIN=? WHERE idPratica=? AND dateOUT=?", [ req.body.integData, req.body.integProto, req.body.idPratica, req.body.dataOUT]);
+
+							connection.query(query3, function(err, data) {
+								if (err) rest.error500(res, err);
+								else {
+									connection.query('COMMIT;', function(err, data) {
+										if (err) rest.error500(res, err);
+										else rest.created(res, data);
+									});
+								}
+							});
+						}
+						else {
+							connection.query('COMMIT;', function(err, data) {
+								if (err) rest.error500(res, err);
+								else rest.created(res, data);
+							});
+						}
+					}
 				});
 			}
 		});
     });
 });
-
-/*
-router.delete('/:id', function(req, res, next) {
-    sql(function (err, connection) {
-        connection.query('DELETE FROM '+tableNameHistory+' WHERE id = '+req.params.id, function(err, data) {
-            if (err) throw err;
-			res.json(data);
-        });
-    });
-});*/
-/*
-router.put('/:id', function(req, res, next) {
-    sql(function (err, connection) {
-		var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ? AND ?? = ?", [tableNameHistory, "dateIN", req.body.dateIN, "protoOUT", req.body.protoOUT, "protoIN", req.body.protoIN, "note", req.body.note, "idPratica", req.params.id, "dateOUT", req.body.dateout ];
-
-        connection.query(query, function(err, data) {
-            if (err) rest.error500(err);
-            else rest.updated(res, data);
-        });
-    });
-});*/
 
 module.exports = router;
