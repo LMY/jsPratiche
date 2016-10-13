@@ -1481,7 +1481,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		$scope.integProto = '';
 
 		$scope.integric = function() {
-			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 7, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
+			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 7, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
 
 			newstate.$save(function(){
 				$window.history.back();
@@ -1490,7 +1490,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 
 		$scope.integarr = function() {
 					
-			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: null, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '', dataOUT: $scope.latestInteg.format() });
+			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '', dataOUT: $scope.latestInteg.format() });
 
 			newstate.$save(function(){
 				$window.history.back();
