@@ -1423,7 +1423,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 
 		$scope.readyInteg = false;
 		$scope.readyHistory = false;
-		$scope.latestInteg = null;
 
 		$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id}, function() {
 			$scope.readyInteg = true;
@@ -1452,11 +1451,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				else if ($scope.history[i].descStato ==  "Attesa Integrazione" && integ >= 0) {
 					$scope.history[i].descStato +=  " - " + $scope.integrazioni[integ].protoOUT + " - "+ $scope.integrazioni[integ].dateOUT;
 					$scope.history[i].dateOUT = $scope.integrazioni[integ].dateOUT;
-					
-					var thisdateout = moment($scope.history[i].dateOUT);
-					if (!$scope.latestInteg || thisdateout.isAfter($scope.latestInteg))
-						$scope.latestInteg = thisdateout;
-					
 					--integ;
 				}
 
@@ -1490,7 +1484,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 
 		$scope.integarr = function() {
 					
-			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '', dataOUT: $scope.latestInteg.format() });
+			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
 
 			newstate.$save(function(){
 				$window.history.back();

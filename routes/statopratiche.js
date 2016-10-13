@@ -103,21 +103,32 @@ router.post('/', function(req, res, next) {
 						}
 						// TODO
 						else if (req.body.idStato == 2 && req.body.integData) {	// lavorazione (arrivate integrazioni)
-							if (!req.body.dataOUT) {
-								rest.error500(res, "dataOUT not specified");
-								return;
-							}
+
 							connection.query("SELECT LAST_INSERT_ID() AS id", function(err, laststatoid) {
 								if (err) rest.error500(res, err);
 								else {
-									var query3 = mysql.format("UPDATE Integrazioni SET dateIN=?,protoIN=? WHERE idPratica=? AND dateOUT=?", [ req.body.integData, req.body.integProto, req.body.idPratica, req.body.dataOUT]);
+									var querygetlastidinteg = mysql.format("SELECT idInteg as id FROM (SELECT MAX(id) as id FROM StatoPratiche WHERE idPratica=? AND idStato=7 GROUP BY idPratica) as T1 LEFT JOIN AssStatoPraticheIntegrazioni on T1.id = AssStatoPraticheIntegrazioni.idStato", [ req.body.idPratica ]);	// 1.get id last integ -> lastintegid
 
-									connection.query(query3, function(err, data) {
+									connection.query(querygetlastidinteg, function(err, lastintegid) {
 										if (err) rest.error500(res, err);
 										else {
-											connection.query('COMMIT;', function(err, data) {
+
+											var query3 = mysql.format("UPDATE Integrazioni SET dateIN=?, protoIN=? WHERE id=?", [ req.body.integData, req.body.integProto, lastintegid[0].id ]);	// 2.update that integ
+
+											connection.query(query3, function(err, data) {
 												if (err) rest.error500(res, err);
-												else rest.created(res, data);
+												else {
+													var query4 = mysql.format("INSERT INTO AssStatoPraticheIntegrazioni(idStato,idInteg) VALUES (?,?)", [ laststatoid[0].id, lastintegid[0].id ]);	// 3.add AssStatoPraticheIntegrazioni(laststatoid, lastintegid)
+
+													connection.query(query4, function(err, data) {
+														if (err) rest.error500(res, err);
+														else
+															connection.query('COMMIT;', function(err, data) {
+																if (err) rest.error500(res, err);
+																else rest.created(res, data);
+															});
+													});
+												}
 											});
 										}
 									});

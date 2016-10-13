@@ -12,7 +12,7 @@ module.exports = function(passport) {
 			});
 		});
 	}
-	
+
 	// http://stackoverflow.com/questions/17415579/how-to-iso-8601-format-a-date-with-timezone-offset-in-javascript
 	var formatLocalDate = function() {
 		var now = new Date(),
@@ -22,13 +22,13 @@ module.exports = function(passport) {
 			var norm = Math.abs(Math.floor(num));
 			return (norm < 10 ? '0' : '') + norm;
 		};
-		return now.getFullYear() 
+		return now.getFullYear()
 			+ '-' + pad(now.getMonth()+1)
 			+ '-' + pad(now.getDate())
 			+ 'T' + pad(now.getHours())
-			+ ':' + pad(now.getMinutes()) 
-			+ ':' + pad(now.getSeconds()) 
-			+ dif + pad(tzo / 60) 
+			+ ':' + pad(now.getMinutes())
+			+ ':' + pad(now.getSeconds())
+			+ dif + pad(tzo / 60)
 			+ ':' + pad(tzo % 60);
 	}
 
@@ -36,18 +36,18 @@ module.exports = function(passport) {
     passport.serializeUser(function(user, done) {
 		done(null, user.id);
     });
-	
+
 	passport.deserializeUser(function(id, done) {
 		sql(function(err, connection) {
 			var query = mysql.format('SELECT id,username,userlevel,pareri,correzioni FROM Utenti WHERE id=?', [id]);
-			
+
 			connection.query(query, function(err, user) {
 				done(err, user[0]);
 			});
 		});
 	});
-	
-	passport.use('login', new LocalStrategy({ passReqToCallback : true }, function(req, username, password, done) { 
+
+	passport.use('login', new LocalStrategy({ passReqToCallback : true }, function(req, username, password, done) {
 		sql(function(err, connection) {
 			var query = mysql.format('SELECT * FROM Utenti WHERE username=?', [username]);
 			connection.query(query, function(err, data) {
@@ -57,7 +57,7 @@ module.exports = function(passport) {
 
 				if (!data || data.length != 1) {
 //					console.log('User Not Found with username '+username);
-					return done(null, false, req.flash('message', 'User Not found.'));                 
+					return done(null, false, req.flash('message', 'User Not found.'));
 				}
 
 				if (!bCrypt.compareSync(password, data[0].hash)) {
@@ -85,9 +85,8 @@ module.exports = function(passport) {
 
 						return done(null, data[0]);
 					});
-				});	
+				});
 			});
 		});
 	}));
-
 }

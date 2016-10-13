@@ -110,7 +110,6 @@ router.put('/:id', function(req, res, next) {
     });
 });
 
-// NOT TESTED (but should work)
 /* PUT /pratiche/protoout/:id */
 router.put('/protoout/:id', function(req, res, next) {
 
