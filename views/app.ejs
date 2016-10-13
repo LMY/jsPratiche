@@ -51,9 +51,6 @@
 
 	<script type="text/javascript" src="public/js/moment/min/moment.min.js"></script>
 
-	<script src="public/js/rm-datepicker/dist/rm-datepicker.min.js"></script>
-	<link rel="stylesheet"  type="text/css" href="public/js/rm-datepicker/dist/rm-datepicker.min.css" />
-
 	<script src="public/js/angular-modal-service/dst/angular-modal-service.min.js"></script>
 </head>
 <body>
@@ -221,7 +218,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dataIN">Data IN:</label>
 				<div class="col-sm-10">
-					<input rm-datepicker class="form-control" type="text" ng-model="dataIN">
+					<input class="form-control" type="text" ng-model="epratica.dataIN" placeholder="YYYY-MM-DD">
 				</div>
 			</div>
 			<div class="form-group">
@@ -233,7 +230,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dataOUT">Data OUT:</label>
 				<div class="col-sm-10">
-					<input rm-datepicker class="form-control" type="text" ng-model="dataOUT" ng-disabled="true">
+					<input class="form-control" type="text" ng-model="epratica.dataOUT" placeholder="YYYY-MM-DD" ng-disabled="true">
 				</div>
 			</div>
 			<div class="form-group">
@@ -270,12 +267,12 @@
 			</span>
 			<span class="div-border-visible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
 				<input type="text" ng-model="integProto" placeholder="Protocollo">
-				<input rm-datepicker type="text" ng-model="integDate" placeholder="Data">
+				<input type="text" ng-model="integDate" placeholder="Data">
 				<button class="btn btn-warning" ng-click="integric()" >Richiedi integrazioni</button>
 			</span>
 			<span class="div-border-visible" ng-show="epratica.idStato == 7">
 				<input type="text" ng-model="integProto" placeholder="Protocollo">
-				<input rm-datepicker type="text" ng-model="integDate" placeholder="Data">
+				<input type="text" ng-model="integDate" placeholder="Data">
 				<button class="btn btn-warning" ng-click="integarr()">Arrivate integrazioni</button>
 			</span>
 			<span class="div-border-invisible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
@@ -385,7 +382,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dataOUT">Data OUT:</label>
 				<div class="col-sm-10">
-					<input class="form-control" type="text" ng-model="eintegrazione.dateOUT">
+					<input class="form-control" type="text" ng-model="eintegrazione.dateOUT" placeholder="YYYY-MM-DD">
 				</div>
 			</div>
 			<div class="form-group">
@@ -397,7 +394,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dataIN">Data IN:</label>
 				<div class="col-sm-10">
-					<input class="form-control" type="text" ng-model="eintegrazione.dateIN">
+					<input class="form-control" type="text" ng-model="eintegrazione.dateIN" placeholder="YYYY-MM-DD">
 				</div>
 			</div>
 			<div class="form-group">
@@ -946,7 +943,7 @@ var askconfirm = function(ModalService, next, textmessage) {
 	});
 }
 
-var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angularModalService'])
+var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService'])
 	.factory('Gestori', ['$resource', function($resource){
 		return $resource('/gestori/:id', null, {
 			'update': { method:'PUT' }
@@ -1412,20 +1409,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 	}])
 	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Me', 'Comuni', 'Gestori', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Me, Comuni, Gestori, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
 
-		$scope.dataIN = new Date();
-		$scope.dataOUT = null;
-
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id }, function(x) {
-
-			x.dataIN = x.dataIN ? new Date(x.dataIN.substring(0, 10)) : null;
-			$scope.dataIN = x.dataIN ? x.dataIN : new Date();
-
-			if (!$scope.isnew) {
-				$scope.dataOUT = x.dataOUT ? x.dataOUT.substring(0, 10) : null;
-				x.dataOUT = x.dataOUT ? new Date(x.dataOUT.substring(0, 10)) : null;
-			}
+			x.dataIN = x.dataIN ? moment(x.dataIN.substring(0, 10)).format("YYYY-MM-DD") : null;
+			x.dataOUT = x.dataOUT ? moment(x.dataOUT.substring(0, 10)).format("YYYY-MM-DD") : null;
 		});
 
 		$scope.comuni = Comuni.query();
@@ -1443,18 +1431,14 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				if (!$scope.epratica.idComune) { alert('Specificare il Comune!'); return; }
 				if (!$scope.epratica.tipopratica) { alert('Specificare il tipo di pratica!'); return; }
 
-				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dataIN: $scope.dataIN,
-					protoOUT: null, dataOUT: null,
-					note: $scope.epratica.note });
+				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dataIN: $scope.epratica.dataIN,
+					protoOUT: $scope.epratica.protoOUT, dataOUT: $scope.epratica.dataOUT, note: $scope.epratica.note });
 
 				pratica.$save(function(){
 					$location.url('pratiche');
 				});
 			}
 			else {
-				$scope.epratica.dataIN = $scope.dataIN;
-				$scope.epratica.dataOUT = $scope.dataOUT;
-
 				Pratiche.update({id: $scope.epratica.id}, $scope.epratica, function() {
 					$location.url('pratiche');
 				});
@@ -1473,11 +1457,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			}, "Sei sicuro di voler rimovere la pratica?");
 		}
 	}])
-	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, StoricoStatoPratiche, $location, ModalService) {
+	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'Utenti', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, Utenti, StoricoStatoPratiche, $location, ModalService) {
 		$scope.me = Me.get(function(x) {
 			$scope.selectedUser = $scope.me.id
 		});
 
+		$scope.utenti = Utenti.query();
 		$scope.orderByField = "timePoint";
 		$scope.reverseSort = true;
 
@@ -1517,7 +1502,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$location.url('pratiche/detail/'+$scope.epratica.id);
 		}
 
-		$scope.integDate = new Date();
+		$scope.integDate = moment(new Date()).format("YYYY-MM-DD");
 		$scope.integProto = '';
 
 		$scope.integric = function() {
@@ -1897,11 +1882,6 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			})
 			;
 	}]);
-
-app.config(['rmDatepickerConfig', function(rmDatepickerConfig) {
-	rmDatepickerConfig.mondayStart = true;
-    rmDatepickerConfig.initState = "month";
-}]);
 </script>
 
 <!-- Update navbar active
