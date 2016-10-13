@@ -64,9 +64,9 @@ CREATE TABLE Pratiche (
   sitecode varchar(50),
   tipopratica int(11),
   protoIN varchar(50),
-  dataIN date,
+  dateIN date,
   protoOUT varchar(50),
-  dataOUT date,
+  dateOUT date,
   note varchar(256),
 
   PRIMARY KEY (id),

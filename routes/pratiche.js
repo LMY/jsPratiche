@@ -71,7 +71,7 @@ router.post('/', function(req, res, next) {
 		connection.query('START TRANSACTION;', function(err, data) {
 			if (err) rest.error500(res, err);
 			else {
-				var query = mysql.format('INSERT INTO ??(idGestore, idComune, address, sitecode, tipopratica, protoIN, dataIN, protoOUT, dataOUT, note) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dataIN, req.body.protoOUT, req.body.dataOUT, req.body.note]);
+				var query = mysql.format('INSERT INTO ??(idGestore, idComune, address, sitecode, tipopratica, protoIN, dateIN, protoOUT, dateOUT, note) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note]);
 
 				connection.query(query, function(err, data) {
 					if (err) rest.error500(res, err);
@@ -101,7 +101,7 @@ router.post('/', function(req, res, next) {
 
 router.put('/:id', function(req, res, next) {
     sql(function (err, connection) {
-        var query = mysql.format('UPDATE ?? SET idGestore = ?, idComune = ?, address = ?, sitecode = ?, tipopratica = ?, protoIN = ?, dataIN = ?, protoOUT = ?, dataOUT = ?, note = ? WHERE id = ?', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dataIN, req.body.protoOUT, req.body.dataOUT, req.body.note, req.params.id]);
+        var query = mysql.format('UPDATE ?? SET idGestore = ?, idComune = ?, address = ?, sitecode = ?, tipopratica = ?, protoIN = ?, dateIN = ?, protoOUT = ?, dateOUT = ?, note = ? WHERE id = ?', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note, req.params.id]);
 
         connection.query(query, function(err, data) {
             if (err) rest.error500(res, err);
@@ -117,7 +117,7 @@ router.put('/protoout/:id', function(req, res, next) {
 		connection.query('START TRANSACTION;', function(err, data) {
 			if (err) rest.error500(res, err);
 			else
-				connection.query(mysql.format('UPDATE ?? SET protoOUT = ?, dataOUT = ? WHERE id = ?', [tableName, req.body.protoOUT, req.body.dataOUT, req.params.id]), function(err, data) {
+				connection.query(mysql.format('UPDATE ?? SET protoOUT = ?, dateOUT = ? WHERE id = ?', [tableName, req.body.protoOUT, req.body.dateOUT, req.params.id]), function(err, data) {
 					if (err) rest.error500(res, err);
 					else
 						connection.query(mysql.format("INSERT INTO StatoPratiche(idPratica,idStato,idUtenteModifica) VALUES (?,?,?)", [ req.params.id, 12, req.user.id ]), function(err, datares2) {

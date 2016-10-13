@@ -107,7 +107,7 @@
 				<th class="text-center"><a ng-click="orderByField='sitecode'; reverseSort=!reverseSort">CodiceSito <span ng-show="orderByField=='sitecode'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringTipo'; reverseSort=!reverseSort">TipoPratica <span ng-show="orderByField=='stringTipo'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='protoIN'; reverseSort=!reverseSort">ProtoIN <span ng-show="orderByField=='protoIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				<th class="text-center"><a ng-click="orderByField='dataIN'; reverseSort=!reverseSort">DateIN <span ng-show="orderByField=='dataIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='dateIN'; reverseSort=!reverseSort">DateIN <span ng-show="orderByField=='dateIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='stringStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
@@ -123,7 +123,7 @@
 				<td class="text-center">{{x.sitecode}}</td>
 				<td class="text-center">{{x.stringTipo}}</td>
 				<td class="text-center">{{x.protoIN}}</td>
-				<td class="text-center">{{x.dataIN}}</td>
+				<td class="text-center">{{x.dateIN}}</td>
 
 				<td class="text-center">{{x.stringStato}}</td>
 				<td class="text-center">{{x.stringUser}}</td>
@@ -147,11 +147,11 @@
 				<th class="text-center"><a ng-click="orderByField='sitecode'; reverseSort=!reverseSort">CodiceSito <span ng-show="orderByField=='sitecode'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringTipo'; reverseSort=!reverseSort">TipoPratica <span ng-show="orderByField=='stringTipo'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='protoIN'; reverseSort=!reverseSort">ProtoIN <span ng-show="orderByField=='protoIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				<th class="text-center"><a ng-click="orderByField='dataIN'; reverseSort=!reverseSort">DateIN <span ng-show="orderByField=='dataIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='dateIN'; reverseSort=!reverseSort">DateIN <span ng-show="orderByField=='dateIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='stringStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='protoOUT'; reverseSort=!reverseSort">ProtoOUT <span ng-show="orderByField=='protoOUT'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				<th class="text-center"><a ng-click="orderByField='dataOUT'; reverseSort=!reverseSort">DataOUT <span ng-show="orderByField=='dataOUT'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='dateOUT'; reverseSort=!reverseSort">dateOUT <span ng-show="orderByField=='dateOUT'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -163,12 +163,12 @@
 				<td class="text-center">{{x.sitecode}}</td>
 				<td class="text-center">{{x.stringTipo}}</td>
 				<td class="text-center">{{x.protoIN}}</td>
-				<td class="text-center">{{x.dataIN}}</td>
+				<td class="text-center">{{x.dateIN}}</td>
 
 				<td class="text-center">{{x.stringStato}}</td>
 				<td class="text-center">{{x.stringUser}}</td>
 				<td class="text-center">{{x.protoOUT}}</td>
-				<td class="text-center">{{x.dataOUT}}</td>
+				<td class="text-center">{{x.dateOUT}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -216,9 +216,9 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="dataIN">Data IN:</label>
+				<label class="control-label col-sm-2" for="dateIN">Data IN:</label>
 				<div class="col-sm-10">
-					<input class="form-control" type="text" ng-model="epratica.dataIN" placeholder="YYYY-MM-DD">
+					<input class="form-control" type="text" ng-model="epratica.dateIN" placeholder="YYYY-MM-DD">
 				</div>
 			</div>
 			<div class="form-group">
@@ -228,9 +228,9 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="dataOUT">Data OUT:</label>
+				<label class="control-label col-sm-2" for="dateOUT">Data OUT:</label>
 				<div class="col-sm-10">
-					<input class="form-control" type="text" ng-model="epratica.dataOUT" placeholder="YYYY-MM-DD" ng-disabled="true">
+					<input class="form-control" type="text" ng-model="epratica.dateOUT" placeholder="YYYY-MM-DD" ng-disabled="true">
 				</div>
 			</div>
 			<div class="form-group">
@@ -380,7 +380,7 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="dataOUT">Data OUT:</label>
+				<label class="control-label col-sm-2" for="dateOUT">Data OUT:</label>
 				<div class="col-sm-10">
 					<input class="form-control" type="text" ng-model="eintegrazione.dateOUT" placeholder="YYYY-MM-DD">
 				</div>
@@ -392,7 +392,7 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="dataIN">Data IN:</label>
+				<label class="control-label col-sm-2" for="dateIN">Data IN:</label>
 				<div class="col-sm-10">
 					<input class="form-control" type="text" ng-model="eintegrazione.dateIN" placeholder="YYYY-MM-DD">
 				</div>
@@ -822,7 +822,7 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="dataIN">Data calibrazione:</label>
+				<label class="control-label col-sm-2" for="dateIN">Data calibrazione:</label>
 				<div class="col-sm-10">
 					<input type="text" class="form-control" id="protoIN" ng-model="ecalibrazione.dateCal" placeholder="YYYY-MM-DD">
 				</div>
@@ -834,7 +834,7 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="dataIN">Data Scadenza:</label>
+				<label class="control-label col-sm-2" for="dateIN">Data Scadenza:</label>
 				<div class="col-sm-10">
 					<input type="text" class="form-control" id="protoIN" ng-model="ecalibrazione.scadenza" placeholder="YYYY-MM-DD">
 				</div>
@@ -1293,7 +1293,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 		}
 	}])
 	.controller('PraticheController', ['$scope', 'Me', 'Pratiche', '$location', function($scope, Me, Pratiche, $location) {
-		$scope.orderByField = 'dataIN';
+		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = Pratiche.query(function() {
@@ -1305,7 +1305,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 
 				if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
 
-				var arrivo = moment(x.dataIN);
+				var arrivo = moment(x.dateIN);
 				var diff = moment.duration(today.diff(arrivo)).asDays();
 				var integDiff = (x.diff?x.diff:0);
 
@@ -1337,7 +1337,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 		}
 	}])
 	.controller('PraticheAllController', ['$scope', 'Me', 'PraticheAll', '$location', function($scope, Me, PraticheAll, $location) {
-		$scope.orderByField = 'dataIN';
+		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = PraticheAll.query(function() {
@@ -1354,7 +1354,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 		$scope.endDate = new Date();
 	}])
 	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PraticheCorreggere', '$location', function($scope, Me, PraticheCorreggere, $location) {
-		$scope.orderByField = 'dataIN';
+		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 		$scope.pratiche = PraticheCorreggere.query(function() {
@@ -1367,7 +1367,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 		}
 	}])
 	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PraticheProtocollare', 'PraticheProtoOUT', '$route', "ModalService", function($scope, Me, PraticheProtocollare, PraticheProtoOUT, $route, ModalService) {
-		$scope.orderByField = 'dataIN';
+		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
 		$scope.me = Me.get();
 
@@ -1398,7 +1398,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 						return;
 					}
 
-					var protoOUT = new PraticheProtoOUT({ id: id, protoOUT: result.protoout, dataOUT: result.date });
+					var protoOUT = new PraticheProtoOUT({ id: id, protoOUT: result.protoout, dateOUT: result.date });
 
 					PraticheProtoOUT.update({id: id}, protoOUT, function() {
 						$route.reload();
@@ -1412,8 +1412,8 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 		$scope.me = Me.get();
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id }, function(x) {
-			x.dataIN = x.dataIN ? moment(x.dataIN.substring(0, 10)).format("YYYY-MM-DD") : null;
-			x.dataOUT = x.dataOUT ? moment(x.dataOUT.substring(0, 10)).format("YYYY-MM-DD") : null;
+			x.dateIN = x.dateIN ? moment(x.dateIN.substring(0, 10)).format("YYYY-MM-DD") : null;
+			x.dateOUT = x.dateOUT ? moment(x.dateOUT.substring(0, 10)).format("YYYY-MM-DD") : null;
 		});
 
 		$scope.comuni = Comuni.query();
@@ -1431,8 +1431,8 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 				if (!$scope.epratica.idComune) { alert('Specificare il Comune!'); return; }
 				if (!$scope.epratica.tipopratica) { alert('Specificare il tipo di pratica!'); return; }
 
-				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dataIN: $scope.epratica.dataIN,
-					protoOUT: $scope.epratica.protoOUT, dataOUT: $scope.epratica.dataOUT, note: $scope.epratica.note });
+				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dateIN: $scope.epratica.dateIN,
+					protoOUT: $scope.epratica.protoOUT, dateOUT: $scope.epratica.dateOUT, note: $scope.epratica.note });
 
 				pratica.$save(function(){
 					$location.url('pratiche');
@@ -1467,8 +1467,8 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 		$scope.reverseSort = true;
 
 		$scope.epratica = Pratiche.get({id: $routeParams.id }, function(x) {
-			if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
-			if (x.dataOUT) x.dataOUT = x.dataOUT.substring(0, 10);
+			if (x.dateIN) x.dateIN = x.dateIN.substring(0, 10);
+			if (x.dateOUT) x.dateOUT = x.dateOUT.substring(0, 10);
 
 			$scope.title = x.stringGestore + '-' +x.sitecode + ' / ' + x.stringComune + ' - ' + x.address;
 		});
