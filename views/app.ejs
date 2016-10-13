@@ -294,14 +294,14 @@
 			<table class="table table-hover">
 				<thead>
 					<tr>
-	<!--					<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
+<!--						<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
 						<th class="text-center"><a ng-click="orderByField='descStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='descStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 						<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Modifica <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="x in history|orderBy:orderByField:reverseSort" ng-dblclick="showinteg(x.dateOUT)">
-	<!--					<td class="text-center">{{x.id}}</td>  -->
+					<tr ng-repeat="x in history|orderBy:orderByField:reverseSort" ng-dblclick="showinteg(x.integID)">
+<!--						<td class="text-center">{{x.id}}</td>  -->
 						<td class="text-center">{{x.descStato}}</td>
 						<td class="text-center">{{x.timePoint}}</td>
 					</tr>
@@ -365,6 +365,51 @@
 					<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
 					<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
 					<div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+<script type="text/ng-template" id="/integrazione.html">
+	<div ng-include="'/public/navbar.html'"></div>
+	<div class="container">
+		<h2>{{ title }}</h2>
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="protoOUT">Proto OUT:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="protoOUT" ng-model="eintegrazione.protoOUT" placeholder="Proto OUT">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="dataOUT">Data OUT:</label>
+				<div class="col-sm-10">
+					<input class="form-control" type="text" ng-model="eintegrazione.dateOUT">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="protoIN">Proto IN:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="protoIN" ng-model="eintegrazione.protoIN" placeholder="Proto IN">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="dataIN">Data IN:</label>
+				<div class="col-sm-10">
+					<input class="form-control" type="text" ng-model="eintegrazione.dateIN">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="note">Note:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="note" ng-model="eintegrazione.note" placeholder="Note">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-success" ng-click="update()">Update</button>
+					<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
 				</div>
 			</div>
 		</form>
@@ -916,7 +961,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		return $resource('/sedi/:id', null, {
 			'update': { method:'PUT' }
 		});
-	}])	
+	}])
 	.factory('Utenti', ['$resource', function($resource){
 		return $resource('/utenti/:id', null, {
 			'update': { method:'PUT' }
@@ -1143,6 +1188,25 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 
 		$scope.cancel = function() {
 			$location.url('comuni');
+		}
+	}])
+	.controller('IntegrazioneCtrl', ['$scope', '$routeParams', 'Me', 'Integrazioni', '$window', function($scope, $routeParams, Me, Integrazioni, $window) {
+		$scope.me = Me.get();
+
+		$scope.eintegrazione = Integrazioni.get({id: $routeParams.id }, function(x) {
+			x.dateIN = x.dateIN ? moment(x.dateIN.substring(0, 10)).format("YYYY-MM-DD") : null;
+			x.dateOUT = x.dateOUT ? moment(x.dateOUT.substring(0, 10)).format("YYYY-MM-DD") : null;
+		});
+		$scope.title = "Integrazione "+$routeParams.id;
+
+		$scope.update = function( ){
+			Integrazioni.update({id: $scope.eintegrazione.id}, $scope.eintegrazione, function() {
+				$window.history.back();
+			});
+		}
+
+		$scope.cancel = function() {
+			$window.history.back();
 		}
 	}])
 	.controller('UtentiController', ['$scope', 'Me', 'Utenti', '$location', function($scope, Me, Utenti, $location) {
@@ -1389,6 +1453,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			}
 			else {
 				$scope.epratica.dataIN = $scope.dataIN;
+				$scope.epratica.dataOUT = $scope.dataOUT;
 
 				Pratiche.update({id: $scope.epratica.id}, $scope.epratica, function() {
 					$location.url('pratiche');
@@ -1408,11 +1473,13 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			}, "Sei sicuro di voler rimovere la pratica?");
 		}
 	}])
-	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'Utenti', 'IntegrazioniPratica', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, Utenti, IntegrazioniPratica, StoricoStatoPratiche, $location, ModalService) {
+	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, StoricoStatoPratiche, $location, ModalService) {
 		$scope.me = Me.get(function(x) {
 			$scope.selectedUser = $scope.me.id
 		});
-		$scope.utenti = Utenti.query();
+
+		$scope.orderByField = "timePoint";
+		$scope.reverseSort = true;
 
 		$scope.epratica = Pratiche.get({id: $routeParams.id }, function(x) {
 			if (x.dataIN) x.dataIN = x.dataIN.substring(0, 10);
@@ -1421,48 +1488,27 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$scope.title = x.stringGestore + '-' +x.sitecode + ' / ' + x.stringComune + ' - ' + x.address;
 		});
 
-		$scope.readyInteg = false;
-		$scope.readyHistory = false;
-
-		$scope.integrazioni = IntegrazioniPratica.get({id: $routeParams.id}, function() {
-			$scope.readyInteg = true;
-			if ($scope.readyHistory && $scope.readyInteg) $scope.doStuff();
-		});
-
 		$scope.history = StoricoStatoPratiche.get({id: $routeParams.id}, function() {
-			$scope.readyHistory = true;
-			if ($scope.readyHistory && $scope.readyInteg) $scope.doStuff();
-		});
-		
-		$scope.doStuff = function() {
-			var integ=$scope.integrazioni.length-1;
-
 			for (var i=0; i<$scope.history.length; i++) {
-				if ($scope.history[i].descStato == "Lavorazione") {
+				if ($scope.history[i].idStato ==  2) {
 					if ($scope.history[i].usernameAss)
 						$scope.history[i].descStato +=  " ("+$scope.history[i].usernameAss+")";
-					else {	// arrivata integrazione
-						if (integ >= 0) {
-							$scope.history[i].descStato +=  " - " + $scope.integrazioni[integ].protoIN + " - "+ $scope.integrazioni[integ].dateIN;
-							$scope.history[i].dateOUT = $scope.integrazioni[integ].dateOUT;
-						}
-					}
+					else	// arrivata integrazione
+						$scope.history[i].descStato +=  " - " + $scope.history[i].protoIN + " - "+ $scope.history[i].dateIN;
 				}
-				else if ($scope.history[i].descStato ==  "Attesa Integrazione" && integ >= 0) {
-					$scope.history[i].descStato +=  " - " + $scope.integrazioni[integ].protoOUT + " - "+ $scope.integrazioni[integ].dateOUT;
-					$scope.history[i].dateOUT = $scope.integrazioni[integ].dateOUT;
-					--integ;
+				else if ($scope.history[i].idStato ==  7) {
+					$scope.history[i].descStato +=  " - " + $scope.history[i].protoOUT + " - "+ $scope.history[i].dateOUT;
 				}
 
 				$scope.history[i].timePoint += " - "+$scope.history[i].usernameMod;
 			}
-		};
+		});
 
-		$scope.showinteg = function(dateOUT) {
-			if (dateOUT)
-				alert("show integ: ("+$scope.epratica.id+","+dateOUT+")");
+		$scope.showinteg = function(idInteg) {
+			if (idInteg)
+				$location.url('integrazione/'+idInteg);
 		}
-		
+
 		$scope.cancel = function() {
 			$window.history.back();
 		}
@@ -1483,7 +1529,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 		}
 
 		$scope.integarr = function() {
-					
+
 			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
 
 			newstate.$save(function(){
@@ -1570,7 +1616,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 					x.scadenzaType = "time-danger";
 					return;
 				}
-			
+
 				var diff = (moment.duration(moment(x.scadenza).diff(today)).asDays())|0;
 
 				if (diff < 0)
@@ -1713,10 +1759,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 			$scope.registro.forEach(function(x) {
 				var dateFrom = moment(x.timePointFrom);
 				var dateTo = moment(x.timePointTo);
-				
+
 				if (!dateFrom.isValid()) x.timePointFrom = "";
 				if (!dateTo.isValid()) x.timePointTo = "";
-				
+
 				if (!dateTo.isValid() && !dateFrom.isValid()) {			// never taken
 					x.isopen = false;
 					x.sede = "Mai Preso!";
@@ -1727,7 +1773,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				else if (dateTo.isValid() && dateFrom.isValid()) {		// closed
 					x.isopen = false;
 				}
-				
+
 				x.catena = x.name;
 			});
 		});
@@ -1745,7 +1791,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				alert("Specificare sede!");
 				return;
 			}
-		
+
 			var entry = new RegistroStrumentiLatest({ verb: 'close', idUtente:$scope.me.id, timePointTo: moment().format(), idSedeTo:idSede });
 
 			RegistroStrumentiLatest.update({id: id}, entry, function(){
@@ -1802,6 +1848,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'rmDatepicker', 'angul
 				templateUrl: '/praticaStatoDetails.html',
 				controller: 'PraticaStatoDetailController'
 			})
+			.when('/integrazione/:id', {
+				templateUrl: '/integrazione.html',
+				controller: 'IntegrazioneCtrl'
+			})
+
 			.when('/utenti', {
 				templateUrl: '/utenti.html',
 				controller: 'UtentiController'
