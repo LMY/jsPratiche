@@ -1308,7 +1308,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 
 				var arrivo = moment(x.dateIN);
 				var diff = moment.duration(today.diff(arrivo)).asDays();
-				var integDiff = (x.diff?x.diff:0);
+				var integDiff = (x.diff?x.diff/2:0);				// /2 = fix alla query che conta doppie le integrazioni!
 
 				if (x.stringStato == "Attesa Integrazione") {
 					x.scadenza = "";
@@ -1894,7 +1894,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 </script> -->
 
 <footer class="container-fluid bg-4 text-center">
-	<p>jsPratiche <!--made by <a href="http://www.miro.ovh">Miro Salvagni</a>--></p>
+	<p>jsPratiche v1.2.1-build161020 - <a href="#">Miro Salvagni</a></p>
 </footer>
 
 </body>
