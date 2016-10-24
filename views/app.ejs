@@ -52,6 +52,11 @@
 	<script type="text/javascript" src="public/js/moment/min/moment.min.js"></script>
 
 	<script src="public/js/angular-modal-service/dst/angular-modal-service.min.js"></script>
+	
+	<script src="public/js/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+	<link rel="stylesheet" href="public/js/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+	
+	<script src="public/js/angular-bootstrap-datetimepicker-directive/angular-bootstrap-datetimepicker-directive.min.js"></script>
 </head>
 <body>
 
@@ -219,7 +224,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dateIN">Data IN:</label>
 				<div class="col-sm-10">
-					<input class="form-control" type="text" ng-model="epratica.dateIN" placeholder="YYYY-MM-DD">
+					<input class="form-control" datetimepicker type="text" ng-model="epratica.dateIN" placeholder="YYYY-MM-DD">
 				</div>
 			</div>
 			<div class="form-group">
@@ -231,7 +236,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dateOUT">Data OUT:</label>
 				<div class="col-sm-10">
-					<input class="form-control" type="text" ng-model="epratica.dateOUT" placeholder="YYYY-MM-DD" ng-disabled="true">
+					<input class="form-control" datetimepicker type="text" ng-model="epratica.dateOUT" placeholder="YYYY-MM-DD" ng-disabled="true">
 				</div>
 			</div>
 			<div class="form-group">
@@ -258,33 +263,33 @@
 		<h2>{{ title }}</h2>
 		<div>{{ infoline }}</div>
 		<hr>
-		<div>
-			<span class="div-border-visible" ng-show="epratica.idStato == null || epratica.idStato == 1">
-				<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
-				<button class="btn btn-primary" ng-click="stato(2, selectedUser)" >Prendi in carico</button>
+		<div class="row">
+			<span class="col-md-4 div-border-visible" ng-show="epratica.idStato == null || epratica.idStato == 1">
+				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
+				<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)" >Prendi in carico</button>
 			</span>
-			<span class="div-border-invisible" ng-show="epratica.idStato == 2">
+			<span class="col-md-2 div-border-invisible" ng-show="epratica.idStato == 2">
 				<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
 			</span>
-			<span class="div-border-visible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
-				<input type="text" ng-model="integProto" placeholder="Protocollo">
-				<input type="text" ng-model="integDate" placeholder="Data">
-				<button class="btn btn-warning" ng-click="integric()" >Richiedi integrazioni</button>
+			<span class="col-md-6 div-border-visible" ng-show="epratica.idStato == 2 || epratica.idStato == 3" >
+				<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo">
+				<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data">
+				<button class="col-md-4 btn btn-warning" ng-click="integric()" >Richiedi integrazioni</button>
 			</span>
-			<span class="div-border-visible" ng-show="epratica.idStato == 7">
-				<input type="text" ng-model="integProto" placeholder="Protocollo">
-				<input type="text" ng-model="integDate" placeholder="Data">
-				<button class="btn btn-warning" ng-click="integarr()">Arrivate integrazioni</button>
+			<span class="col-md-6 div-border-visible" ng-show="epratica.idStato == 7">
+				<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo">
+				<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data">
+				<button class="col-md-4 btn btn-warning" ng-click="integarr()">Arrivate integrazioni</button>
 			</span>
-			<span class="div-border-invisible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
+			<span class="col-md-2 div-border-invisible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
 				<button class="btn btn-success" ng-click="stato(4)">Fatto</button>
 			</span>
-			<span class="div-border-visible" ng-show="epratica.idStato == 4">
-				<select data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
-				<button class="btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
+			<span class="col-md-4 div-border-visible" ng-show="epratica.idStato == 4">
+				<select class="col-md-4" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
+				<button class="col-md-6 btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
 			</span>
-			<span class="div-border-invisible" ng-show="epratica.idStato && epratica.idStato != 1">
-				<button class="btn btn-danger pull-right" ng-click="stato(1)">Rilascia</button>
+			<span class="col-md-2 pull-right div-border-invisible" ng-show="epratica.idStato && epratica.idStato != 1">
+				<button class="btn btn-danger" ng-click="stato(1)">Rilascia</button>
 			</span>
 	<!--		<div class="clearfix"></div>	<!-- https://github.com/twbs/bootstrap/issues/8843 -->
 		</div>
@@ -383,7 +388,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dateOUT">Data OUT:</label>
 				<div class="col-sm-10">
-					<input class="form-control" type="text" ng-model="eintegrazione.dateOUT" placeholder="YYYY-MM-DD">
+					<input class="form-control" datetimepicker type="text" ng-model="eintegrazione.dateOUT" placeholder="YYYY-MM-DD">
 				</div>
 			</div>
 			<div class="form-group">
@@ -395,7 +400,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dateIN">Data IN:</label>
 				<div class="col-sm-10">
-					<input class="form-control" type="text" ng-model="eintegrazione.dateIN" placeholder="YYYY-MM-DD">
+					<input class="form-control" datetimepicker type="text" ng-model="eintegrazione.dateIN" placeholder="YYYY-MM-DD">
 				</div>
 			</div>
 			<div class="form-group">
@@ -825,7 +830,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dateIN">Data calibrazione:</label>
 				<div class="col-sm-10">
-					<input type="text" class="form-control" id="protoIN" ng-model="ecalibrazione.dateCal" placeholder="YYYY-MM-DD">
+					<input type="text" datetimepicker class="form-control" id="protoIN" ng-model="ecalibrazione.dateCal" placeholder="YYYY-MM-DD">
 				</div>
 			</div>
 			<div class="form-group">
@@ -837,7 +842,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="dateIN">Data Scadenza:</label>
 				<div class="col-sm-10">
-					<input type="text" class="form-control" id="protoIN" ng-model="ecalibrazione.scadenza" placeholder="YYYY-MM-DD">
+					<input type="text" datetimepicker class="form-control" id="protoIN" ng-model="ecalibrazione.scadenza" placeholder="YYYY-MM-DD">
 				</div>
 			</div>
 			<div class="form-group">
@@ -944,7 +949,7 @@ var askconfirm = function(ModalService, next, textmessage) {
 	});
 }
 
-var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService'])
+var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService', 'datetimepicker'])
 	.factory('Gestori', ['$resource', function($resource){
 		return $resource('/gestori/:id', null, {
 			'update': { method:'PUT' }
@@ -1882,7 +1887,17 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService']
 				controller: 'StrumentiRegistroCtrl'
 			})
 			;
-	}]);
+	}])
+	.config([
+		'datetimepickerProvider',
+		function (datetimepickerProvider) {
+			datetimepickerProvider.setOptions({
+				format: 'YYYY-MM-DD'
+			});
+		}
+	])	
+	;
+
 </script>
 
 <!-- Update navbar active

@@ -12,5 +12,8 @@
     "tests"
   ],
   "dependencies": {
+    "angularjs-datepicker": "^2.1.6",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.43",
+    "angular-bootstrap-datetimepicker-directive": "^0.1.3"
   }
 }
