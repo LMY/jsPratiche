@@ -52,10 +52,10 @@
 	<script type="text/javascript" src="public/js/moment/min/moment.min.js"></script>
 
 	<script src="public/js/angular-modal-service/dst/angular-modal-service.min.js"></script>
-	
+
 	<script src="public/js/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
 	<link rel="stylesheet" href="public/js/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
-	
+
 	<script src="public/js/angular-bootstrap-datetimepicker-directive/angular-bootstrap-datetimepicker-directive.min.js"></script>
 </head>
 <body>
@@ -260,38 +260,46 @@
 <script type="text/ng-template" id="/praticaStatoDetails.html">
 	<div ng-include="'/public/navbar.html'"></div>
 	<div class="container">
-		<h2>{{ title }}</h2>
-		<div>{{ infoline }}</div>
+		<div class="row">
+			<span class="col-md-10">
+				<h2>{{ title }}</h2>
+			</span>
+			<button class="col-md-2 btn btn-danger" ng-click="stato(1)" ng-show="epratica.idStato && epratica.idStato != 1"
+			style="top: 20px;" >Rilascia</button>
+		</div>
 		<hr>
 		<div class="row">
-			<span class="col-md-4 div-border-visible" ng-show="epratica.idStato == null || epratica.idStato == 1">
-				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
-				<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)" >Prendi in carico</button>
+		
+			<span class="col-md-4">
+				<div ng-show="epratica.idStato == null || epratica.idStato == 1">
+					<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
+					<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)" >Prendi in carico</button>
+				</div>
+				<div ng-show="epratica.idStato == 4">
+					<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
+					<button class="col-md-6 btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
+				</div>
+				<div class="div-border-invisible" ng-show="epratica.idStato == 2">
+					<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
+				</div>
 			</span>
-			<span class="col-md-2 div-border-invisible" ng-show="epratica.idStato == 2">
-				<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
+
+			<span class="col-md-4">
+				<div ng-show="epratica.idStato == 2 || epratica.idStato == 3">
+					<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
+					<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
+					<button class="col-md-4 btn btn-warning" ng-click="integric()">Richiedi integ</button>
+				</div>
+				<div ng-show="epratica.idStato == 7">
+					<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
+					<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
+					<button class="col-md-4 btn btn-warning" ng-click="integarr()">Arrivate integ</button>
+				</div>
 			</span>
-			<span class="col-md-6 div-border-visible" ng-show="epratica.idStato == 2 || epratica.idStato == 3" >
-				<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo">
-				<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data">
-				<button class="col-md-4 btn btn-warning" ng-click="integric()" >Richiedi integrazioni</button>
-			</span>
-			<span class="col-md-6 div-border-visible" ng-show="epratica.idStato == 7">
-				<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo">
-				<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data">
-				<button class="col-md-4 btn btn-warning" ng-click="integarr()">Arrivate integrazioni</button>
-			</span>
-			<span class="col-md-2 div-border-invisible" ng-show="epratica.idStato == 2 || epratica.idStato == 3">
-				<button class="btn btn-success" ng-click="stato(4)">Fatto</button>
-			</span>
-			<span class="col-md-4 div-border-visible" ng-show="epratica.idStato == 4">
-				<select class="col-md-4" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
-				<button class="col-md-6 btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
-			</span>
-			<span class="col-md-2 pull-right div-border-invisible" ng-show="epratica.idStato && epratica.idStato != 1">
-				<button class="btn btn-danger" ng-click="stato(1)">Rilascia</button>
-			</span>
-	<!--		<div class="clearfix"></div>	<!-- https://github.com/twbs/bootstrap/issues/8843 -->
+
+			<span class="col-md-2"><div class="spacer"></div></span>
+			
+			<button class="col-md-2 btn btn-success" ng-click="stato(4)" style="top: 12px;" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
 		</div>
 		<hr>
 			<table class="table table-hover">
@@ -1895,7 +1903,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 				format: 'YYYY-MM-DD'
 			});
 		}
-	])	
+	])
 	;
 
 </script>
