@@ -273,11 +273,11 @@
 			<span class="col-md-4">
 				<div ng-show="epratica.idStato == null || epratica.idStato == 1">
 					<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
-					<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)" >Prendi in carico</button>
+					<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)">Prendi in carico</button>
 				</div>
 				<div ng-show="epratica.idStato == 4">
 					<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
-					<button class="col-md-6 btn btn-primary" ng-click="stato(6, selectedUser)" >Corretto</button>
+					<button class="col-md-6 btn btn-primary" ng-click="stato(6, selectedUser)">Corretto</button>
 				</div>
 				<div class="div-border-invisible" ng-show="epratica.idStato == 2">
 					<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
@@ -969,7 +969,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		});
 	}])
 	.factory('Sedi', ['$resource', function($resource){
-		return $resource('/sedi/:id', null, {
+		return $resource('/pratiche/sedi/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])
@@ -979,85 +979,85 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		});
 	}])
 	.factory('Pratiche', ['$resource', function($resource){
-		return $resource('/pratiche/:id', null, {
+		return $resource('/pratiche/pratiche/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('Strumenti', ['$resource', function($resource){
-		return $resource('/strumenti/:id', null, {
+		return $resource('/pratiche/strumenti/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('StrumentiFree', ['$resource', function($resource){
-		return $resource('/strumenti/free/:id', null, {
+		return $resource('/pratiche/strumenti/free/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('StrumentiCatena', ['$resource', function($resource){
-		return $resource('/strumenti/:id', null, {
-			'get' : { method:'GET', url:'/strumenti/catena/:id', isArray:true },
+		return $resource('/pratiche/strumenti/:id', null, {
+			'get' : { method:'GET', url:'/pratiche/strumenti/catena/:id', isArray:true },
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('Catene', ['$resource', function($resource){
-		return $resource('/catene/:id', null, {
+		return $resource('/pratiche/catene/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('PraticheProtoOUT', ['$resource', function($resource){
-		return $resource('/pratiche/protoout/:id', null, {
+		return $resource('/pratiche/pratiche/protoout/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('PraticheCorreggere', ['$resource', function($resource){
-		return $resource('/pratiche/:id', null, {
-			'query': { isArray: true, method:'GET', url:'/pratiche/correggere' },
+		return $resource('/pratiche/pratiche/:id', null, {
+			'query': { isArray: true, method:'GET', url:'/pratiche/pratiche/correggere' },
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('PraticheProtocollare', ['$resource', function($resource){
-		return $resource('/pratiche/:id', null, {
-			'query': { isArray: true, method:'GET', url:'/pratiche/protocollare' },
+		return $resource('/pratiche/pratiche/:id', null, {
+			'query': { isArray: true, method:'GET', url:'/pratiche/pratiche/protocollare' },
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('PraticheAll', ['$resource', function($resource){
-		return $resource('/pratiche/:id', null, {
-			'query': { isArray: true, method:'GET', url:'/pratiche/all' },
+		return $resource('/pratiche/pratiche/:id', null, {
+			'query': { isArray: true, method:'GET', url:'/pratiche/pratiche/all' },
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('Integrazioni', ['$resource', function($resource){
-		return $resource('/integrazioni/:id', null, {
+		return $resource('/pratiche/integrazioni/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('Calibrazioni', ['$resource', function($resource){
-		return $resource('/strumenticalibrazioni/:id', null, {
+		return $resource('/pratiche/strumenticalibrazioni/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('CalibrazioniCatena', ['$resource', function($resource){
-		return $resource('/strumenticalibrazioni/:id', null, {
-			'get' : { method:'GET', url:'/strumenticalibrazioni/catena/:id', isArray:true },
+		return $resource('/pratiche/strumenticalibrazioni/:id', null, {
+			'get' : { method:'GET', url:'/pratiche/strumenticalibrazioni/catena/:id', isArray:true },
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('ConstStatiPratiche', ['$resource', function($resource){
-		return $resource('/statopratiche/stati', null);
+		return $resource('/pratiche/statopratiche/stati', null);
 	}])
 	.factory('ConstTipiPratiche', ['$resource', function($resource){
-		return $resource('/statopratiche/tipi', null);
+		return $resource('/pratiche/statopratiche/tipi', null);
 	}])
 	.factory('StoricoStatoPratiche', ['$resource', function($resource){
-		return $resource('/statopratiche/:id', null, {
-			'get' : { method:'GET', url:'/statopratiche/history/:id', isArray:true },
+		return $resource('/pratiche/statopratiche/:id', null, {
+			'get' : { method:'GET', url:'/pratiche/statopratiche/history/:id', isArray:true },
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('IntegrazioniPratica', ['$resource', function($resource){
-		return $resource('/integrazioni/:id', null, {
-			'get' : { method:'GET', url:'/integrazioni/:id', isArray:true },
+		return $resource('/pratiche/integrazioni/:id', null, {
+			'get' : { method:'GET', url:'/pratiche/integrazioni/:id', isArray:true },
 			'update': { method:'PUT' }
 		});
 	}])
@@ -1065,12 +1065,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		return $resource('/utenti/me', null);
 	}])
 	.factory('RegistroStrumenti', ['$resource', function($resource){
-		return $resource('/strumentiregistro/:id', null, {
+		return $resource('/pratiche/strumentiregistro/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])
 	.factory('RegistroStrumentiLatest', ['$resource', function($resource){
-		return $resource('/strumentiregistro/latest/:id', null, {
+		return $resource('/pratiche/strumentiregistro/latest/:id', null, {
 			'update': { method:'PUT' }
 		});
 	}])

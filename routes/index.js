@@ -1,8 +1,28 @@
-var express = require('express');
 var path = require('path');
 //var favicon = require('serve-favicon');
 
-module.exports = function(app, passport) {
+module.exports = function(config, dirpath) {
+
+	var listDirs = function(path) {
+		const fs = require('fs');
+		
+		const files = fs.readdirSync(path);
+		const ret = [];
+		var k=0;
+		
+		if (!path.endsWith('/'))
+			path += '/';
+		
+		for (var i=0; i<files.length; i++) {
+			if (files[i].startsWith('.'))
+				continue;
+			
+			if (fs.statSync(path+files[i]).isDirectory())
+				ret[k++] = files[i];
+		}
+		
+		return ret;
+	}
 
 	var isAuthenticated = function(req, res, next) {
 		if (req.isAuthenticated())
@@ -11,45 +31,44 @@ module.exports = function(app, passport) {
 		res.redirect('/login');
 	}
 
-	//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));	// public/favicon.ico
-	app.use("/public", isAuthenticated, express.static(path.join(__dirname, '../public')));
+	//config.app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));	// public/favicon.ico
+	config.app.use("/public", isAuthenticated, config.deps.express.static(path.join(__dirname, '../public')));
 
-	app.get('/', function(req, res) {
+	config.app.get('/', function(req, res) {
 		res.render('index', { message: req.flash('message') });
 	});
 
-	app.get('/login', function(req, res) {
+	config.app.get('/login', function(req, res) {
 		res.render('login', { message: req.flash('message') });
 	});
 
-    app.post('/login', passport.authenticate('login', {
+    config.app.post('/login', config.deps.passport.authenticate('login', {
         successRedirect : '/home',
         failureRedirect : '/login',
         failureFlash : true
     }));
 
-	app.use('/utenti', isAuthenticated, require('./utenti'));
-	app.use('/gestori', isAuthenticated, require('./gestori'));
-	app.use('/comuni', isAuthenticated, require('./comuni'));
-	app.use('/sedi', isAuthenticated, require('./sedi'));
-	app.use('/pratiche', isAuthenticated, require('./pratiche'));
-	app.use('/integrazioni', isAuthenticated, require('./integrazioni'));
-	app.use('/statopratiche', isAuthenticated, require('./statopratiche'));
+	// app router
+	config.app.use('/utenti', isAuthenticated, require('./utenti'));
+	config.app.use('/gestori', isAuthenticated, require('./gestori'));
+	config.app.use('/comuni', isAuthenticated, require('./comuni'));
+	
+	// for each subfolder, route it
+	listDirs(dirpath).forEach(f => { 
+//		console.log("use("+'/'+f+", "+'./'+f+'/index.js' +");");
+		config.app.use('/'+f, isAuthenticated, require('./'+f+'/index.js')(config, './'+f));
+	});
 
-	app.use('/strumenti', isAuthenticated, require('./strumenti'));
-	app.use('/catene', isAuthenticated, require('./catene'));
-	app.use('/strumentiregistro', isAuthenticated, require('./strumentiregistro'));
-	app.use('/strumenticalibrazioni', isAuthenticated, require('./strumenticalibrazioni'));
 
-	app.get("/home", isAuthenticated, function(req, res) {
+	config.app.get("/home", isAuthenticated, function(req, res) {
 		res.render('app');
 	});
 
-	app.get("/test", isAuthenticated, function(req, res) {
+	config.app.get("/test", isAuthenticated, function(req, res) {
 		res.render('test');
 	});
 
-	app.get('/logout', function(req, res) {
+	config.app.get('/logout', function(req, res) {
 		req.logout();
 		res.redirect('/');
 	});

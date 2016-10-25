@@ -1,12 +1,12 @@
-var rest = require('../helpers/rest.js');
-var sql = require('../helpers/db.js');
-var tableName = 'Comuni';
+var rest = require('../../helpers/rest.js');
+var sql = require('../../helpers/db.js');
+var tableName = 'Integrazioni';
 
 var express = require('express');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-    sql.query('SELECT * FROM '+tableName, function(err, data) {
+	sql.query('SELECT * FROM '+tableName, function(err, data) {
 		if (err) rest.error500(res, err);
 		else res.json(data);
 	});
@@ -31,7 +31,8 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var query =  sql.format("INSERT INTO ??(??,??) VALUES (?,?)", [tableName, "name", "pec", req.body.name, req.body.pec ]);
+	var query = sql.format("INSERT INTO ??(??,??,??,??,??) VALUES (?,?,?,?,?)",
+					[tableName, "dateOUT", "dateIN", "protoOUT", "protoIN", "note", req.body.dateOUT, req.body.dateIN, req.body.protoOUT, req.body.protoIN, req.body.note ]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -40,7 +41,8 @@ router.post('/', function(req, res, next) {
 });
 
 router.put('/:id', function(req, res, next) {
-	var query = sql.format("UPDATE ?? SET ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "name", req.body.name, "pec", req.body.pec, "id", req.params.id]);
+	var query = sql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?",
+					[tableName, "dateOUT", req.body.dateOUT, "dateIN", req.body.dateIN, "protoOUT", req.body.protoOUT, "protoIN", req.body.protoIN, "note", req.body.note, "id", req.params.id ]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);

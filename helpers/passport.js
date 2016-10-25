@@ -1,6 +1,5 @@
 var bCrypt = require('bcrypt');
 var LocalStrategy = require('passport-local').Strategy;
-var mysql = require('mysql');
 var sql = require('../helpers/db.js');
 
 module.exports = function(passport) {
@@ -38,54 +37,47 @@ module.exports = function(passport) {
     });
 
 	passport.deserializeUser(function(id, done) {
-		sql(function(err, connection) {
-			var query = mysql.format('SELECT id,username,userlevel,pareri,correzioni FROM Utenti WHERE id=?', [id]);
+		var query = sql.format('SELECT id,username,userlevel,pareri,correzioni FROM Utenti WHERE id=?', [id]);
 
-			connection.query(query, function(err, user) {
-				done(err, user[0]);
-			});
+		sql.query(query, function(err, user) {
+			done(err, user[0]);
 		});
 	});
 
 	passport.use('login', new LocalStrategy({ passReqToCallback : true }, function(req, username, password, done) {
-		sql(function(err, connection) {
-			var query = mysql.format('SELECT * FROM Utenti WHERE username=?', [username]);
-			connection.query(query, function(err, data) {
 
-				if (err)
-					return done(err);
+		var query = sql.format('SELECT * FROM Utenti WHERE username=?', [username]);
+		sql.query(query, function(err, data) {
 
-				if (!data || data.length != 1) {
+			if (err)
+				return done(err);
+
+			if (!data || data.length != 1) {
 //					console.log('User Not Found with username '+username);
-					return done(null, false, req.flash('message', 'User Not found.'));
-				}
+				return done(null, false, req.flash('message', 'User Not found.'));
+			}
 
-				if (!bCrypt.compareSync(password, data[0].hash)) {
+			if (!bCrypt.compareSync(password, data[0].hash)) {
 /*
-					// because sometimes you forget your hashes
-					console.log('Invalid Password');
-					console.log("data[0].hash: "+data[0].hash);
-					console.log("password given: "+password);
-					calculatehash(password);
+				// because sometimes you forget your hashes
+				console.log('Invalid Password');
+				console.log("data[0].hash: "+data[0].hash);
+				console.log("password given: "+password);
+				calculatehash(password);
 */
-					return done(null, false, req.flash('message', 'Invalid Password'));
+				return done(null, false, req.flash('message', 'Invalid Password'));
+			}
+
+			// set lastlogin
+			var query2 = sql.format('UPDATE Utenti SET lastlogin=? WHERE username=?', [formatLocalDate(), username]);
+			sql.query(query2, function(err, data2) {
+
+				if (err) {
+//							console.log("error: "+err);
+					return done(err);
 				}
 
-				// set lastlogin
-				sql(function(err, connection) {
-					var timestamp = formatLocalDate(); //new Date().toISOString(); //.slice(0, 19).replace('T', ' ');
-
-					var query2 = mysql.format('UPDATE Utenti SET lastlogin=? WHERE username=?', [timestamp, username]);
-					connection.query(query2, function(err, data2) {
-
-						if (err) {
-//							console.log("error: "+err);
-							return done(err);
-						}
-
-						return done(null, data[0]);
-					});
-				});
+				return done(null, data[0]);
 			});
 		});
 	}));

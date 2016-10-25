@@ -1,5 +1,4 @@
 var rest = require('../helpers/rest.js');
-var mysql = require('mysql');
 var bCrypt = require('bcrypt');
 var sql = require('../helpers/db.js');
 var tableName = 'Utenti';
@@ -18,36 +17,32 @@ var calculatehash = function(input, cb) {
 }
 
 var getUserLevel = function(inputid, cb) {
-	sql(function(err,connection) {
-		var query = mysql.format('SELECT * FROM ?? WHERE id=?', [tableName, inputid]);
-				
-		connection.query(query, function(err, data) {
-			var ret = false;
-			if (err);
-			else if (!data || data.length != 1);
-			else ret = data[0].userlevel;	
-			cb(ret);
-		});
-    });
+	var query = sql.format('SELECT * FROM ?? WHERE id=?', [tableName, inputid]);
+
+	sql.query(query, function(err, data) {
+		var ret = false;
+		if (err);
+		else if (!data || data.length != 1);
+		else ret = data[0].userlevel;
+		cb(ret);
+	});
 };
 
 var checkPassword = function(id, password, cb, err) {
-	
+
 	if (!id || !password)	{	// ensure they do exist
 		err("old password not provided");
 		return;
 	}
 
-	sql(function(err, connection) {
-		var query = mysql.format('SELECT * FROM ?? WHERE id=?', [tableName, id]);
-		connection.query(query, function(err, data) {
-			
-			if (!err && data && data.length == 1 && bCrypt.compareSync(password, data[0].hash))
-				return cb();
-			else
-				err("wrong password");
-		});
-	});	
+	var query = sql.format('SELECT * FROM ?? WHERE id=?', [tableName, id]);
+	sql.query(query, function(err, data) {
+
+		if (!err && data && data.length == 1 && bCrypt.compareSync(password, data[0].hash))
+			return cb();
+		else
+			err("wrong password");
+	});
 }
 
 router.get('/me', function(req, res, next) {
@@ -62,40 +57,35 @@ router.get('/me', function(req, res, next) {
 
 
 router.get('/', function(req, res, next) {
-    sql(function(err,connection) {
-        connection.query('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM '+tableName, function(err, data) {
-            if (err) rest.error500(res, err);
-			else res.json(data);
-		});
-    });
+	sql.query('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM '+tableName, function(err, data) {
+		if (err) rest.error500(res, err);
+		else res.json(data);
+	});
 });
 
 router.get('/:id', function(req, res, next) {
-	sql(function(err,connection) {
-		var query = mysql.format('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM ?? WHERE id=?', [tableName, req.params.id]);
-		
-		connection.query(query, function(err, data) {
-            if (err) rest.error500(res, err);
-			else res.json(data.length == 1 ? data[0] : []);
-		});
+	var query = sql.format('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM ?? WHERE id=?', [tableName, req.params.id]);
+
+	sql.query(query, function(err, data) {
+		if (err) rest.error500(res, err);
+		else res.json(data.length == 1 ? data[0] : []);
 	});
 });
 
 router.delete('/:id', function(req, res, next) {
-	
+
 	getUserLevel(req.params.id, function(requserlvl) {
 		// a normal user cannot delete an account <= level. superuser(lvl=0) can delete anything
 		if (req.user.userlevel != 0 && requserlvl <= req.user.userlevel)
 			rest.error403(res);
-		else
-			sql(function (err, connection) {
-				var query = mysql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
-				
-				connection.query(query, function(err, data) {
-					if (err) rest.error500(res, err);
-					else rest.deleted(res, data);
-				});
+		else {
+			var query = sql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
+
+			sql.query(query, function(err, data) {
+				if (err) rest.error500(res, err);
+				else rest.deleted(res, data);
 			});
+		}
 	});
 });
 
@@ -105,52 +95,46 @@ router.post('/', function(req, res, next) {
 	if (req.user.userlevel != 0)
 		rest.error403(res);
 	else
-		sql(function(err, connection) {
-			calculatehash(req.body.password, function(err, newhash) {
-				var query = mysql.format("INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1]);
-			
-				connection.query(query, function(err, data) {
-					if (err) rest.error500(res, err);
-					else rest.created(res, data);
-				});
+		calculatehash(req.body.password, function(err, newhash) {
+			var query = sql.format("INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1]);
+
+			sql.query(query, function(err, data) {
+				if (err) rest.error500(res, err);
+				else rest.created(res, data);
 			});
 		});
 });
 
 router.put('/:id', function(req, res, next) {
-	
+
 	if (req.user.userlevel != 0 && req.user.id != req.params.id)					// a normal user cannot update other users
 		rest.error403(res);
 	else if (req.user.userlevel != 0 && req.user.userlevel != req.body.userlevel)	// normal users cannot change (his own) level
 		rest.error403(res);
 	else
-		sql(function(err, connection) {
-			calculatehash(req.body.password, function(err, newhash) {
-				var query = mysql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id]);
-			
-				connection.query(query, function(err, data) {
-					if (err) rest.error500(res, err);
-					else rest.updated(res, data);
-				});
+		calculatehash(req.body.password, function(err, newhash) {
+			var query = sql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id]);
+
+			sql.query(query, function(err, data) {
+				if (err) rest.error500(res, err);
+				else rest.updated(res, data);
 			});
 		});
 });
 
 router.put('/password/:id', function(req, res, next) {
-	
+
 	// a normal user cannot update other users passwords
 	if (req.user.userlevel != 0 && req.user.id != req.params.id)
 		rest.error403(res);
-	else {	
+	else {
 		checkPassword(req.user.id, req.body.oldpassword, function() {
-			sql(function(err, connection) {
-				calculatehash(req.body.password, function(err, newhash) {
-					var query = mysql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "hash", newhash, "id", req.params.id]);
+			calculatehash(req.body.password, function(err, newhash) {
+				var query = sql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "hash", newhash, "id", req.params.id]);
 
-					connection.query(query, function(err, data) {
-						if (err) rest.error500(res, err);
-						else rest.updated(res, data);
-					});
+				sql.query(query, function(err, data) {
+					if (err) rest.error500(res, err);
+					else rest.updated(res, data);
 				});
 			});
 		},

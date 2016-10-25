@@ -8,7 +8,6 @@ const passport = require('passport');
 const expressSession = require('express-session');
 const config = require('./helpers/config');
 
-
 var app = express();
 
 
@@ -18,13 +17,13 @@ app.set('view engine', 'ejs');
 
 
 // initialize passport
-app.use(expressSession({secret: config.secret
-    ,name: "jspratiche"
-//    ,store: sessionStore // connect-mongo session store
-    ,proxy: true
-    ,resave: false
-    ,saveUninitialized: false
-	/*,cookie: { secure: true }*/
+app.use(expressSession({secret: config.secret,
+    name: "jspratiche",
+//  store: sessionStore, // connect-mongo session store
+    proxy: true,
+    resave: false,
+    saveUninitialized: false,
+	/*cookie: { secure: true }*/
 	}));
 	
 app.use(passport.initialize());
@@ -33,15 +32,22 @@ app.use(flash());
 var initPassport = require('./helpers/passport');
 initPassport(passport);
 
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 
+// setup config object
+config.app = app;
+config.deps = {};
+config.deps.express = express;
+config.deps.passport = passport;
+config.deps.sql = require('./helpers/db.js');
+config.deps.rest = require('./helpers/rest.js');
+
 // routes
-require('./routes/index')(app, passport);
+require('./routes/index')(config, './routes');
 
 
 // catch 404 and forward to error handler
