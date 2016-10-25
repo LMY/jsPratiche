@@ -1,10 +1,10 @@
 var path = require('path');
 //var favicon = require('serve-favicon');
+const fs = require('fs');
 
 module.exports = function(config, dirpath) {
 
 	var listDirs = function(path) {
-		const fs = require('fs');
 		
 		const files = fs.readdirSync(path);
 		const ret = [];
@@ -55,8 +55,10 @@ module.exports = function(config, dirpath) {
 	
 	// for each subfolder, route it
 	listDirs(dirpath).forEach(f => { 
-//		console.log("use("+'/'+f+", "+'./'+f+'/index.js' +");");
-		config.app.use('/'+f, isAuthenticated, require('./'+f+'/index.js')(config, './'+f));
+		if (fs.existsSync(dirpath+'/'+f+'/index.js')) {
+//			console.log("use('"+'/'+f+"', "+"'./"+f+"/index.js" +"');");
+			config.app.use('/'+f, isAuthenticated, require('./'+f+'/index.js')(config, './'+f));
+		}
 	});
 
 
