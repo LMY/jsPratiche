@@ -46,12 +46,17 @@ var checkPassword = function(id, password, cb, err) {
 }
 
 router.get('/me', function(req, res, next) {
-	res.json({
-		id: req.user.id,
-		username: req.user.username,
-		userlevel: req.user.userlevel,
-		pareri: req.user.pareri,
-		correzioni: req.user.correzioni
+	var query = sql.format('SELECT count(*) as pms FROM PrivateMessages WHERE readen=0 AND userto=?', [req.user.id]);
+
+	sql.query(query, function(err, data) {
+		res.json({
+			id: req.user.id,
+			username: req.user.username,
+			userlevel: req.user.userlevel,
+			pareri: req.user.pareri,
+			correzioni: req.user.correzioni,
+			messages: err ? "error" : data[0].pms
+		});
 	});
 });
 

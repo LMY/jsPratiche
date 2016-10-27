@@ -193,3 +193,30 @@ CREATE TABLE RegistroStrumenti (
   FOREIGN KEY (idUtente) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION,
   FOREIGN KEY (idSedeTo) REFERENCES Sedi(id) ON UPDATE CASCADE ON DELETE NO ACTION
 ) DEFAULT CHARSET=utf8;
+
+
+/* Chat */
+CREATE TABLE Messages (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  
+  userfrom int(11),
+  msg TEXT,
+  timePoint TIMESTAMP,
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (userfrom) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE PrivateMessages (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  
+  userfrom int(11),
+  userto int(11),
+  msg TEXT,
+  readen boolean,  
+  timePoint TIMESTAMP,
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (userfrom) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION,
+  FOREIGN KEY (userto) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION
+) DEFAULT CHARSET=utf8;
