@@ -933,7 +933,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="x in messages|orderBy:orderByField:reverseSort">
+			<tr ng-repeat="x in messages|orderBy:orderByField:reverseSort" class="{{x.rowClass}}">
 		<!--		<td class="text-center">{{x.id}}</td> -->
 				<td class="text-center">{{x.timePoint}}</td>
 				<td class="text-center">{{x.username}}</td>
@@ -1862,7 +1862,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		$scope.orderByField = 'timePoint';
 		$scope.reverseSort = true;
 		$scope.me = Me.get();
-		$scope.messages = ChatPM.query();
+		$scope.messages = ChatPM.query(function() {
+			$scope.messages.forEach( x => {
+				x.rowClass = x.readen==0 ? "time-green" : "time-normal";
+			});
+		});
 		$scope.utenti = Utenti.query();
 	}])
 	.controller('ChatBoardCtrl', ['$scope', 'Me', 'ChatBoard', '$route', function($scope, Me, ChatBoard, $route) {
@@ -1874,7 +1878,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 
 		$scope.send = function() {
 			var newmsg = new ChatBoard({ msg: $scope.newline });
-			
+
 			newmsg.$save(function(){
 				$scope.newline = "";
 				$route.reload();
