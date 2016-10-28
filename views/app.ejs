@@ -925,10 +925,8 @@
 	<div ng-include="'/public/navbar.html'"></div>
 	<div class="input-group">       
 		<input type="text" class="form-control" ng-model="newline" placeholder="text">
-		<div class="input-group-btn">
-			<select class="input-group-addon" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
-		</div>
 		<span class="input-group-btn">
+			<select class="btn btn-default" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
 			<button class="btn btn-primary" ng-click="send()">Invia</button>
 		</span>
 	</div>
@@ -1886,10 +1884,9 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 	}])
 
 	.controller('ChatPMCtrl', ['$scope', 'Me', 'PMcount','ChatPM', 'Utenti', '$route', function($scope, Me, PMcount, ChatPM, Utenti, $route) {
-		$scope.me = Me.get();
+		$scope.me = Me.get(function() { $scope.selectedUser = $scope.me.id; });
 		$scope.pmcount = PMcount.query();
 
-		$scope.selectedUser = $scope.me.id;
 		$scope.orderByField = 'timePoint';
 		$scope.reverseSort = true;
 		$scope.messages = ChatPM.query(function() {
@@ -1902,7 +1899,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		
 		$scope.send = function() {
 			var newmsg = new ChatPM({ msg: $scope.newline, userto: $scope.selectedUser });
-
+		
 			newmsg.$save(function(){
 				$scope.newline = "";
 				$scope.selectedUser = $scope.me.id;			
