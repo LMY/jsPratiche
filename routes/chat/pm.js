@@ -78,7 +78,7 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var query =  sql.format("INSERT INTO ??(??,??,??,??, ??) VALUES (?,?,?, CURRENT_TIMESTAMP())", [tableName, "userfrom", "userto", "msg", "readen", "timePoint", req.user.id, req.body.userto, req.body.msg, 1]);
+	var query =  sql.format("INSERT INTO ??(??,??,??,??,??) VALUES (?,?,?,?,CURRENT_TIMESTAMP())", [tableName, "userfrom", "userto", "msg", "readen", "timePoint", req.user.id, req.body.userto, req.body.msg, 1]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
