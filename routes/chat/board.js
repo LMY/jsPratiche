@@ -6,7 +6,7 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-	sql.query('SELECT Messages.*, Utenti.username FROM Messages LEFT JOIN Utenti on Messages.userfrom = Utenti.id', function(err, data) {
+	sql.query('SELECT Messages.*, Utenti.username FROM Messages LEFT JOIN Utenti on Messages.userfrom = Utenti.id ORDER BY id DESC LIMIT 50', function(err, data) {
 		if (err) rest.error500(res, err);
 		else res.json(data);
 	});
