@@ -1129,6 +1129,9 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			'update': { method:'PUT' }
 		});
 	}])
+	.factory('PMcount', ['$resource', function($resource){
+		return $resource('/chat/pm/count', null);
+	}])	
 	.factory('ChatBoard', ['$resource', function($resource){
 		return $resource('/chat/board/:id', null, {
 			'update': { method:'PUT' }
@@ -1156,10 +1159,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		};
 	}])
 
-	.controller('GestoriController', ['$scope', 'Me', 'Gestori', '$location', function($scope, Me, Gestori, $location) {
+	.controller('GestoriController', ['$scope', 'Me', 'PMcount','Gestori', '$location', function($scope, Me, PMcount, Gestori, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
 		$scope.anagrafiche = Gestori.query();
 
 		$scope.new = function() {
@@ -1170,7 +1175,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('gestori/'+id);
 		}
 	}])
-  	.controller('MainController', ['$scope', 'Me', '$location', function($scope, Me, $location) {
+  	.controller('MainController', ['$scope', 'Me', 'PMcount','$location', function($scope, Me, PMcount, $location) {
 		$scope.me = Me.get(function() {
 //			if ($scope.me.pareri == 1)				// se l'utente è esecutore
 //				$location.path("/pratiche");		// ridirigi a pratiche da fare
@@ -1178,8 +1183,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 //				$location.path("/pratiche-all");	// ridirigi a da correggere
 		});
 	}])
-	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'Gestori', '$location', 'ModalService', function($scope, $routeParams, Me, Gestori, $location, ModalService) {
+	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Gestori', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Gestori, $location, ModalService) {
 		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+		
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.egestore = $scope.isnew ? {} : Gestori.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Gestore" : "Gestore "+$routeParams.id;
@@ -1190,7 +1197,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 				if (!$scope.egestore.name || $scope.egestore.name.length < 1) { alert('Specificare nome!'); return; }
 				if (!$scope.egestore.pec || $scope.egestore.pec.length < 1) { alert('Specificare PEC!'); return; }
 
-				var gestore = new Gestori({ name: $scope.egestore.name, pec: $scope.egestore.pec });
+				var gestore = new Gestori({ name: $scope.egestore.naMe, PMcount, pec: $scope.egestore.pec });
 				gestore.$save(function(){
 					$location.url('gestori');
 				});
@@ -1213,10 +1220,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('gestori');
 		}
 	}])
-	.controller('ComuneController', ['$scope', 'Me', 'Comuni', '$location', function($scope, Me, Comuni, $location) {
+	.controller('ComuneController', ['$scope', 'Me', 'PMcount','Comuni', '$location', function($scope, Me, PMcount, Comuni, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
 		$scope.anagrafiche = Comuni.query();
 
 		$scope.new = function() {
@@ -1226,8 +1235,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('comuni/'+id);
 		}
 	}])
-	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Me', 'Comuni', '$location', 'ModalService', function($scope, $routeParams, Me, Comuni, $location, ModalService) {
+	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Comuni', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Comuni, $location, ModalService) {
 		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+		
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecomune = $scope.isnew ? {} : Comuni.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Comune" : "Comune "+$routeParams.id;
@@ -1238,7 +1249,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 				if (!$scope.ecomune.name || $scope.ecomune.name.length < 1) { alert('Specificare nome!'); return; }
 				if (!$scope.ecomune.pec || $scope.ecomune.pec.length < 1) { alert('Specificare PEC!'); return; }
 
-				var comune = new Comuni({ name: $scope.ecomune.name, pec: $scope.ecomune.pec });
+				var comune = new Comuni({ name: $scope.ecomune.naMe, PMcount, pec: $scope.ecomune.pec });
 				comune.$save(function(){
 					$location.url('comuni');
 				});
@@ -1261,8 +1272,9 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('comuni');
 		}
 	}])
-	.controller('IntegrazioneCtrl', ['$scope', '$routeParams', 'Me', 'Integrazioni', '$window', function($scope, $routeParams, Me, Integrazioni, $window) {
+	.controller('IntegrazioneCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Integrazioni', '$window', function($scope, $routeParams, Me, PMcount, Integrazioni, $window) {
 		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
 
 		$scope.eintegrazione = Integrazioni.get({id: $routeParams.id }, function(x) {
 			x.dateIN = x.dateIN ? moment(x.dateIN.substring(0, 10)).format("YYYY-MM-DD") : null;
@@ -1280,10 +1292,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$window.history.back();
 		}
 	}])
-	.controller('UtentiController', ['$scope', 'Me', 'Utenti', '$location', function($scope, Me, Utenti, $location) {
+	.controller('UtentiController', ['$scope', 'Me', 'PMcount','Utenti', '$location', function($scope, Me, PMcount, Utenti, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
 		$scope.utenti = Utenti.query();
 
 		$scope.new = function() {
@@ -1294,8 +1308,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 				$location.url('utenti/'+id);
 		}
 	}])
-	.controller('UtenteDetailCtrl', ['$scope', '$routeParams', 'Me', 'Utenti', '$location', 'ModalService', function($scope, $routeParams, Me, Utenti, $location, ModalService) {
+	.controller('UtenteDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Utenti', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Utenti, $location, ModalService) {
 		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+		
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.eutente = $scope.isnew ? {} : Utenti.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Utente" : "Utente "+$routeParams.id;
@@ -1305,7 +1321,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 				if (!$scope.eutente || $scope.eutente.length < 1) return;
 				if (!$scope.eutente.username || $scope.eutente.username.length < 1) { alert('Specificare username!'); return; }
 
-				var utente = new Utenti({ username: $scope.eutente.username, name: $scope.eutente.name, surname: $scope.eutente.surname, email: $scope.eutente.email, phone: $scope.eutente.phone });
+				var utente = new Utenti({ username: $scope.eutente.usernaMe, PMcount, name: $scope.eutente.naMe, PMcount, surname: $scope.eutente.surnaMe, PMcount, email: $scope.eutente.email, phone: $scope.eutente.phone });
 				utente.$save(function(){
 					$location.url('utenti');
 				});
@@ -1332,8 +1348,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('utenti/pass/'+$scope.eutente.id);
 		}
 	}])
-	.controller('UtentePassCtrl', ['$scope', '$http', '$routeParams', 'Me', 'Utenti', '$location', function($scope, $http, $routeParams, Me, Utenti, $location) {
+	.controller('UtentePassCtrl', ['$scope', '$http', '$routeParams', 'Me', 'PMcount','Utenti', '$location', function($scope, $http, $routeParams, Me, PMcount, Utenti, $location) {
 		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.eutente = Utenti.get({id: $routeParams.id });
 		$scope.title = "Utente "+$routeParams.id;
 
@@ -1366,10 +1384,13 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('utenti');
 		}
 	}])
-	.controller('PraticheController', ['$scope', 'Me', 'Pratiche', '$location', function($scope, Me, Pratiche, $location) {
+	.controller('PraticheController', ['$scope', 'Me', 'PMcount','Pratiche', '$location', function($scope, Me, PMcount, Pratiche, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
+
 		$scope.pratiche = Pratiche.query(function() {
 
 			var today = moment();
@@ -1410,10 +1431,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('pratiche/'+id);
 		}
 	}])
-	.controller('PraticheAllController', ['$scope', 'Me', 'PraticheAll', '$location', function($scope, Me, PraticheAll, $location) {
+	.controller('PraticheAllController', ['$scope', 'Me', 'PMcount','PraticheAll', '$location', function($scope, Me, PMcount, PraticheAll, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+		
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
 		$scope.pratiche = PraticheAll.query(function() {
 			$scope.pratiche.forEach(function(x) {
 				x.rowClass = getTableRowClass(x.idStato);
@@ -1427,10 +1450,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		$scope.startDate = new Date();
 		$scope.endDate = new Date();
 	}])
-	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PraticheCorreggere', '$location', function($scope, Me, PraticheCorreggere, $location) {
+	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PMcount','PraticheCorreggere', '$location', function($scope, Me, PMcount, PraticheCorreggere, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
 		$scope.pratiche = PraticheCorreggere.query(function() {
 			$scope.pratiche.forEach(function(x) {
 				x.rowClass = getTableRowClass(x.idStato);
@@ -1440,10 +1465,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('pratiche/'+id);
 		}
 	}])
-	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PraticheProtocollare', 'PraticheProtoOUT', '$route', "ModalService", function($scope, Me, PraticheProtocollare, PraticheProtoOUT, $route, ModalService) {
+	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PMcount','PraticheProtocollare', 'PraticheProtoOUT', '$route', "ModalService", function($scope, Me, PMcount, PraticheProtocollare, PraticheProtoOUT, $route, ModalService) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+		
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
 
 		$scope.pratiche = PraticheProtocollare.query(function() {
 			$scope.pratiche.forEach(function(x) {
@@ -1481,9 +1508,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			});
 		}
 	}])
-	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Me', 'Comuni', 'Gestori', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Me, Comuni, Gestori, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
+	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Me', 'PMcount','Comuni', 'Gestori', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Me, PMcount, Comuni, Gestori, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
 
 		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id }, function(x) {
 			x.dateIN = x.dateIN ? moment(x.dateIN.substring(0, 10)).format("YYYY-MM-DD") : null;
@@ -1531,11 +1560,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			}, "Sei sicuro di voler rimovere la pratica?");
 		}
 	}])
-	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'Utenti', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, Utenti, StoricoStatoPratiche, $location, ModalService) {
+	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'PMcount','Utenti', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, PMcount, Utenti, StoricoStatoPratiche, $location, ModalService) {
 		$scope.me = Me.get(function(x) {
 			$scope.selectedUser = $scope.me.id
 		});
-
+		$scope.pmcount = PMcount.query();
+		
 		$scope.utenti = Utenti.query();
 		$scope.orderByField = "timePoint";
 		$scope.reverseSort = true;
@@ -1615,10 +1645,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			}
 		}
 	}])
-	.controller('StrumentiController', ['$scope', 'Me', 'Strumenti', '$location', function($scope, Me, Strumenti, $location) {
+	.controller('StrumentiController', ['$scope', 'Me', 'PMcount','Strumenti', '$location', function($scope, Me, PMcount, Strumenti, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
 		$scope.strumenti = Strumenti.query();
 
 		$scope.new = function() {
@@ -1629,8 +1661,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		}
 	}])
 
-	.controller('StrumentoDetailCtrl', ['$scope', '$routeParams', 'Me', 'Strumenti', '$location', 'ModalService', function($scope, $routeParams, Me, Strumenti, $location, ModalService) {
+	.controller('StrumentoDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Strumenti', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Strumenti, $location, ModalService) {
 		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.estrumento = $scope.isnew ? {} : Strumenti.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Strumento" : "Strumento "+$routeParams.id;
@@ -1639,7 +1673,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			if ($scope.isnew) {
 				if (!$scope.estrumento || $scope.estrumento.length < 1) return;
 
-				var strumento = new Strumenti({ name: $scope.estrumento.name, marca: $scope.estrumento.marca, modello: $scope.estrumento.modello, serial: $scope.estrumento.serial, inventario: $scope.estrumento.inventario, tipo: $scope.estrumento.tipo, taratura: $scope.estrumento.taratura, note: $scope.estrumento.note });
+				var strumento = new Strumenti({ name: $scope.estrumento.naMe, PMcount, marca: $scope.estrumento.marca, modello: $scope.estrumento.modello, serial: $scope.estrumento.serial, inventario: $scope.estrumento.inventario, tipo: $scope.estrumento.tipo, taratura: $scope.estrumento.taratura, note: $scope.estrumento.note });
 				strumento.$save(function(){
 					$location.url('strumenti-strumenti');
 				});
@@ -1663,10 +1697,13 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		}
 	}])
 
-	.controller('CateneController', ['$scope', 'Me', 'Catene', '$location', function($scope, Me, Catene, $location) {
+	.controller('CateneController', ['$scope', 'Me', 'PMcount','Catene', '$location', function($scope, Me, PMcount, Catene, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
+
 		$scope.catene = Catene.query(function() {
 			var today = moment();
 
@@ -1696,8 +1733,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('catene/'+id);
 		}
 	}])
-	.controller('CatenaDetailCtrl', ['$scope', '$routeParams', 'Me', 'Catene', 'StrumentiCatena', 'StrumentiFree', 'CalibrazioniCatena', '$location', '$route', 'ModalService', function($scope, $routeParams, Me, Catene, StrumentiCatena, StrumentiFree, CalibrazioniCatena, $location, $route, ModalService) {
+	.controller('CatenaDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Catene', 'StrumentiCatena', 'StrumentiFree', 'CalibrazioniCatena', '$location', '$route', 'ModalService', function($scope, $routeParams, Me, PMcount, Catene, StrumentiCatena, StrumentiFree, CalibrazioniCatena, $location, $route, ModalService) {
 		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecatena = $scope.isnew ? {} : Catene.get({ id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuova Catena" : "Catena "+$routeParams.id;
@@ -1717,7 +1756,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			if ($scope.isnew) {
 				if (!$scope.ecatena || $scope.ecatena.length < 1) return;
 
-				var catena = new Catene({ name: $scope.ecatena.name, note: $scope.ecatena.note });
+				var catena = new Catene({ name: $scope.ecatena.naMe, PMcount, note: $scope.ecatena.note });
 				catena.$save(function(){
 					$location.url('strumenti-catene');
 				});
@@ -1764,8 +1803,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('calibrazione/'+id);
 		}
 	}])
-	.controller('CalibrazioneDetailCtrl', ['$scope', '$routeParams', 'Me', 'Catene', 'Calibrazioni', '$window', 'ModalService', function($scope, $routeParams, Me, Catene, Calibrazioni, $window, ModalService) {
+	.controller('CalibrazioneDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Catene', 'Calibrazioni', '$window', 'ModalService', function($scope, $routeParams, Me, PMcount, Catene, Calibrazioni, $window, ModalService) {
 		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecalibrazione = $scope.isnew ? {} : Calibrazioni.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuova Calibrazione" : "Calibrazione "+$routeParams.id;
@@ -1798,20 +1839,24 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$window.history.back();
 		}
 	}])
-	.controller('StrumentiStoricoCtrl', ['$scope', 'Me', 'RegistroStrumenti', '$location', function($scope, Me, RegistroStrumenti, $location) {
+	.controller('StrumentiStoricoCtrl', ['$scope', 'Me', 'PMcount','RegistroStrumenti', '$location', function($scope, Me, PMcount, RegistroStrumenti, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
 		$scope.registro = RegistroStrumenti.query();
 
 		$scope.show = function(id) {
 			$location.url('catene/'+id);
 		}
 	}])
-	.controller('StrumentiRegistroCtrl', ['$scope', 'Me', 'RegistroStrumentiLatest', 'Sedi', '$location', '$route', function($scope, Me, RegistroStrumentiLatest, Sedi, $location, $route) {
+	.controller('StrumentiRegistroCtrl', ['$scope', 'Me', 'PMcount','RegistroStrumentiLatest', 'Sedi', '$location', '$route', function($scope, Me, PMcount, RegistroStrumentiLatest, Sedi, $location, $route) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
-		$scope.me = Me.get();
 		$scope.sedi = Sedi.query();
 		$scope.registro = RegistroStrumentiLatest.query(function(data) {
 
@@ -1858,10 +1903,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			});
 		}
 	}])
-	.controller('ChatPMCtrl', ['$scope', 'Me', 'ChatPM', 'Utenti', function($scope, Me, ChatPM, Utenti) {
+	.controller('ChatPMCtrl', ['$scope', 'Me', 'PMcount','ChatPM', 'Utenti', function($scope, Me, PMcount, ChatPM, Utenti) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+		
 		$scope.orderByField = 'timePoint';
 		$scope.reverseSort = true;
-		$scope.me = Me.get();
 		$scope.messages = ChatPM.query(function() {
 			$scope.messages.forEach( x => {
 				x.rowClass = x.readen==0 ? "time-green" : "time-normal";
@@ -1869,10 +1916,12 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		});
 		$scope.utenti = Utenti.query();
 	}])
-	.controller('ChatBoardCtrl', ['$scope', 'Me', 'ChatBoard', '$route', function($scope, Me, ChatBoard, $route) {
+	.controller('ChatBoardCtrl', ['$scope', 'Me', 'PMcount','ChatBoard', '$route', function($scope, Me, PMcount, ChatBoard, $route) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
 		$scope.orderByField = 'timePoint';
 		$scope.reverseSort = true;
-		$scope.me = Me.get();
 		$scope.newline = "";
 		$scope.messages = ChatBoard.query();
 

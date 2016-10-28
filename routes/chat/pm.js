@@ -23,6 +23,15 @@ router.get('/', function(req, res, next) {
 	});
 });
 
+router.get('/count', function(req, res, next) {
+	var query = sql.format('SELECT count(*) as pms FROM PrivateMessages WHERE readen=0 AND userto=?', [req.user.id]);
+
+	sql.query(query, function(err, data) {
+		if (err) rest.error500(res, err);
+		else res.json(data[0].pms);
+	});
+});
+
 router.get('/new', function(req, res, next) {
 	var query = sql.format("SELECT PrivateMessages.*, Utenti.username FROM PrivateMessages LEFT JOIN Utenti on PrivateMessages.userfrom = Utenti.id WHERE userto=? AND readen=0", [req.user.id]);
 
