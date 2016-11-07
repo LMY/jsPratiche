@@ -67,32 +67,26 @@
 	<div class = "container">
 	<div class = "jumbotron">
 		<h1>Benvenuto</h1>
-		<p>Avvisi, istruzioni e modifiche al software</p>
 
-		<p>Modifiche al software:
-			<ul>
-				<li>Rifatto le integrazioni, ora è UnaRobaFattaBene&trade; Ho azzerato il db. Ora le pratiche sono DA TESTARE!</li>
-				<li>Ho tolto i Date-Picker</li>
-				<li>Doppio click per modificare la riga di una tabella!!</li>
-				<li>Strumenti, Catene, Calibrazioni, RegistroStrumenti</li>
+		<p>
+			<span>
+				Note:
+				<button type="submit" class="btn btn-success" ng-click="add()">Add</button>
+			</span>
+
+			<ul ng-repeat="x in notes" ng-dblclick="edit(x.id)">
+				<li ng-show="editing != x.id">{{x.text}}</li>
+
+				<li ng-show="editing == x.id">
+					<span>
+						<input type="text" class="col-xs-4" id="text" ng-model="x.text" placeholder="Text">
+						<button type="submit" class="btn btn-success" ng-click="commit(x.id)">Update</button>
+						<button type="submit" class="btn btn-danger" ng-click="remove(x.id)">Remove</button>
+					</span>
+				</li>
 			</ul>
 		</p>
 
-		<p>Pratiche:
-			<ul>
-				<li><u>Da Fare</u>: qui vengono inserite nuove pratiche, vengono prese in carico e segnate "Fatte".</li>
-				<li><u>Da Correggere</u>: qui le pratiche "Fatte" vengono (corrette e) segnate "Uscite"</li>
-				<li><u>Da Protocollare</u>: qui alle pratiche "Uscite" viene assegnato un protocollo e una data di uscita, e diventano "Archiviate"</li>
-			</ul>
-		</p>
-
-		<p>Strumenti:
-			<ul>
-				<li><u>Registro</u>: ogni utente registra quando prende uno strumento e dove&quando lo restituisce</li>
-				<li><u>Strumenti, Catene</u>: qui si inseriscono i dati degli strumenti, delle catene e delle calibrazioni</li>
-				<li><u>Storico</u>: storico del registro, per ogni strumento si vede (chi,quando,dove) l'ha preso e riposto</li>
-			</ul>
-		</p>
 	</div>
 </script>
 
@@ -923,7 +917,7 @@
 
 <script type="text/ng-template" id="/chat-pm.html">
 	<div ng-include="'/public/navbar.html'"></div>
-	<div class="input-group">       
+	<div class="input-group">
 		<input type="text" class="form-control" ng-model="newline" placeholder="text">
 		<span class="input-group-btn">
 			<select class="btn btn-default" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser"></select>
@@ -1116,6 +1110,11 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			'update': { method:'PUT' }
 		});
 	}])
+	.factory('SharedNotes', ['$resource', function($resource){
+		return $resource('/chat/sharednotes/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
 
 	// helper controllers
 	.controller('YesNoController', ['$scope', 'message', 'close', function($scope, message, close) {
@@ -1154,13 +1153,52 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			$location.url('gestori/'+id);
 		}
 	}])
-  	.controller('MainController', ['$scope', 'Me', 'PMcount','$location', function($scope, Me, PMcount, $location) {
+  	.controller('MainController', ['$scope', 'Me', 'PMcount', 'SharedNotes', '$location', '$route', function($scope, Me, PMcount, SharedNotes, $location, $route) {
 		$scope.me = Me.get(function() {
 //			if ($scope.me.pareri == 1)				// se l'utente è esecutore
 //				$location.path("/pratiche");		// ridirigi a pratiche da fare
 //			else if ($scope.me.correzioni == 1)		// se è un correttore
 //				$location.path("/pratiche-all");	// ridirigi a da correggere
 		});
+
+		$scope.notes = SharedNotes.query();
+		$scope.editing = -1;
+
+		$scope.add = function() {
+			$scope.notes.push(new SharedNotes({ id:'new', text:'' }));
+			$scope.editing = 'new';
+		}
+
+		$scope.edit = function(id) {
+			$scope.editing = id;
+		}
+
+		$scope.commit = function(id) {
+			var index = -1;
+
+			for (var i=0; i<$scope.notes.length; i++)
+				if ($scope.notes[i].id == id) {
+					index = i;
+					break;
+				}
+
+			$scope.editing = -1;
+			if (id && id != 'new')
+				SharedNotes.update({id: id}, $scope.notes[index], function() {
+					$route.reload();
+				});
+			else
+				$scope.notes[index].$save(function(){
+					$route.reload();
+				});
+		}
+
+		$scope.remove = function(id) {
+			$scope.editing = -1;
+			SharedNotes.remove({id: id}, function() {
+				$route.reload();
+			});
+		}
 	}])
 	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Gestori', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Gestori, $location, ModalService) {
 		$scope.me = Me.get();
@@ -1896,13 +1934,13 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 			});
 		});
 		$scope.utenti = Utenti.query();
-		
+
 		$scope.send = function() {
 			var newmsg = new ChatPM({ msg: $scope.newline, userto: $scope.selectedUser });
-		
+
 			newmsg.$save(function(){
 				$scope.newline = "";
-				$scope.selectedUser = $scope.me.id;			
+				$scope.selectedUser = $scope.me.id;
 				$route.reload();
 			});
 		}
@@ -2056,7 +2094,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 </script> -->
 
 <footer class="container-fluid bg-4 text-center">
-	<p>jsPratiche v1.2.1-build161020 - <a href="#">Miro Salvagni</a></p>
+	<p>jsPratiche v1.2.2-build161028 - <a href="#">Miro Salvagni</a></p>
 </footer>
 
 </body>
