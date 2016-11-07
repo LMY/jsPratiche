@@ -1165,6 +1165,8 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		$scope.editing = -1;
 
 		$scope.add = function() {
+			if ($scope.editing == 'new') return;	// either commit or discard new one
+			
 			$scope.notes.push(new SharedNotes({ id:'new', text:'' }));
 			$scope.editing = 'new';
 		}
@@ -1181,13 +1183,17 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 					index = i;
 					break;
 				}
-
+			if (index < 0) {
+				console.log("ERROR MainController::commit(id): index not found!");
+				return;
+			}
+				
 			$scope.editing = -1;
-			if (id && id != 'new')
+			if (id != 'new')	// update an existing note
 				SharedNotes.update({id: id}, $scope.notes[index], function() {
 					$route.reload();
 				});
-			else
+			else				// create a new note
 				$scope.notes[index].$save(function(){
 					$route.reload();
 				});
@@ -1195,6 +1201,8 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 
 		$scope.remove = function(id) {
 			$scope.editing = -1;
+			if ($scope.editing == 'new') return;	// do not try to delete on db
+			
 			SharedNotes.remove({id: id}, function() {
 				$route.reload();
 			});
