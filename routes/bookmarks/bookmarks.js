@@ -1,19 +1,25 @@
 var rest = require('../../helpers/rest.js');
 var sql = require('../../helpers/db.js');
-var tableName = 'Bookmarks';
+var tableName = 'Links';
 
 var express = require('express');
 var router = express.Router();
 
+// get MY links
+// post new MY link
+// remove from MY links
+// edit an url? naaa.
+
+
 router.get('/', function(req, res, next) {
-	sql.query('SELECT * FROM Bookmarks', function(err, data) {
+	sql.query('SELECT * FROM Links', function(err, data) {
 		if (err) rest.error500(res, err);
 		else res.json(data);
 	});
 });
 
 router.get('/:id', function(req, res, next) {
-	var query = sql.format('SELECT * FROM Bookmarks WHERE id=?', [req.params.id]);
+	var query = sql.format('SELECT * FROM Links WHERE id=?', [req.params.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -22,7 +28,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 router.delete('/:id', function(req, res, next) {
-	var query = sql.format('DELETE FROM ?? WHERE iduser=?, idurl=?', [tableName, req.user.id, req.params.id]);
+	var query = sql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -31,11 +37,20 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var query =  sql.format("INSERT INTO ??(??,??) VALUES (?,?)", [tableName, "idurl", req.params.idurl, "iduser", req.user.id ]);
+	var query =  sql.format("INSERT INTO ??(??) VALUES (?)", [tableName, "url", req.user.url ]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
 		else rest.created(res, data);
+	});
+});
+
+router.put('/:id', function(req, res, next) {
+	var query = sql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "url", req.user.url, "id", req.params.id]);
+
+	sql.query(query, function(err, data) {
+		if (err) rest.error500(res, err);
+		else rest.updated(res, data);
 	});
 });
 

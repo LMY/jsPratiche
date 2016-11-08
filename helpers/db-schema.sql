@@ -239,6 +239,7 @@ CREATE TABLE SharedNotes(
 CREATE TABLE Links(
   id int(11) NOT NULL AUTO_INCREMENT,
   url varchar(256),
+  name varchar(256),
   
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
