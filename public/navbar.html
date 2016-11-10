@@ -48,7 +48,10 @@
 				</li>
 
 				<li class="dropdown">
-					<a class="dropdown-toggle active" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{me.username}}<span class="caret"></span></a>
+					<a class="dropdown-toggle active" data-toggle="dropdown" >
+						<span ng-show="me && me.username" class="glyphicon glyphicon-user"></span> {{me.username}}<span class="caret"></span>
+						<span ng-show="!me || !me.username" style="color:red;">CONNETION ERROR</span>
+					</a>
 					<ul class="dropdown-menu">
 						<li><a ng-href="#utenti/{{me.id}}">Profilo</a></li>
 						<li><a ng-href="#utenti/pass/{{me.id}}">Cambia Password</a></li>
