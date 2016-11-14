@@ -5,30 +5,26 @@ var tableName = 'Links';
 var express = require('express');
 var router = express.Router();
 
-// get MY links
-// post new MY link
-// remove from MY links
-// edit an url? naaa.
-
-
 router.get('/', function(req, res, next) {
-	sql.query('SELECT * FROM Links', function(err, data) {
+	var query = sql.format('SELECT * FROM Links WHERE id IN (SELECT idurl FROM Bookmarks WHERE iduser=?)', [req.user.id]);
+
+	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
 		else res.json(data);
 	});
 });
 
-router.get('/:id', function(req, res, next) {
+/*router.get('/:id', function(req, res, next) {
 	var query = sql.format('SELECT * FROM Links WHERE id=?', [req.params.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
 		else res.json(data.length == 1 ? data[0] : []);
 	});
-});
+});*/
 
 router.delete('/:id', function(req, res, next) {
-	var query = sql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
+	var query = sql.format('DELETE FROM Bookmarks WHERE idurl=? AND isuser=?', [req.params.id, req.user.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -37,21 +33,39 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var query =  sql.format("INSERT INTO ??(??) VALUES (?)", [tableName, "url", req.user.url ]);
-
-	sql.query(query, function(err, data) {
-		if (err) rest.error500(res, err);
-		else rest.created(res, data);
+	sql.connect(function (err, connection) {
+		connection.query(sql.format("SELECT * FROM Links WHERE URL=?", [req.body.url]), function(err, data) {
+			if (err) rest.error500(res, err);
+			else {
+				if (data && data.length == 1) {
+					connection.query(sql.format("INSERT INTO Bookmarks(idurl,isuser) VALUES (?,?)", [data[0].id, req.user.id]), function(res, data2) {
+						if (err) rest.error500(res, err);
+						else rest.json(data2);
+					});
+				}
+				else {
+					connection.query(sql.format("INSERT INTO Links(url) VALUES (?); SELECT LAST_INSERT_ID() AS id", [req.body.url]), function(res, data2) {
+						if (err) rest.error500(res, err);
+						else {
+							connection.query(sql.format("INSERT INTO Bookmarks(idurl,isuser) VALUES (?,?)", [data2[0].id, req.user.id]), function(res, data) {
+								if (err) rest.error500(res, err);
+								else rest.json(data);
+							});
+						}
+					});
+				}
+			}
+		});
 	});
 });
 
-router.put('/:id', function(req, res, next) {
-	var query = sql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "url", req.user.url, "id", req.params.id]);
+/*router.put('/:id', function(req, res, next) {
+	var query = sql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "url", req.user.url, "name", req.user.name, "id", req.params.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
 		else rest.updated(res, data);
 	});
-});
+});*/
 
 module.exports = router;
