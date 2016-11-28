@@ -35,7 +35,7 @@ module.exports = function(config, dirpath) {
 	config.app.use("/public", isAuthenticated, config.deps.express.static(path.join(__dirname, '../public')));
 
 	config.app.get('/', function(req, res) {
-		res.render('index', { message: req.flash('message') });
+		res.sendFile(path.join(__dirname, '../public/html', 'index.html'));
 	});
 
 	config.app.get('/login', function(req, res) {
@@ -61,13 +61,12 @@ module.exports = function(config, dirpath) {
 		}
 	});
 
-
 	config.app.get("/home", isAuthenticated, function(req, res) {
-		res.render('app');
+		res.sendFile(path.join(__dirname, '../public/html', 'app.html'));	
 	});
 
 	config.app.get("/test", isAuthenticated, function(req, res) {
-		res.render('test');
+		res.sendFile(path.join(__dirname, '../public/html', 'test.html'));	
 	});
 
 	config.app.get('/logout', function(req, res) {

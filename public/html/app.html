@@ -63,7 +63,7 @@
 <ng-view></ng-view>
 
 <script type="text/ng-template" id="/main.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class = "container">
 	<div class = "jumbotron">
 		<h1>Benvenuto</h1>
@@ -91,7 +91,7 @@
 </script>
 
 <script type="text/ng-template" id="/pratiche.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuova Pratica</button>
@@ -136,7 +136,23 @@
 
 
 <script type="text/ng-template" id="/pratiche-storico.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
+	
+	<div class="row">
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="dateFrom">Da:</label>
+			<div class="col-sm-10">
+				<input class="form-control" datetimepicker type="text" ng-model="dateFrom" placeholder="YYYY-MM-DD">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="dateTo">A:</label>
+			<div class="col-sm-10">
+				<input class="form-control" datetimepicker type="text" ng-model="dateTo" placeholder="YYYY-MM-DD">
+			</div>
+		</div>
+	</div>
+	
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -175,7 +191,7 @@
 </script>
 
 <script type="text/ng-template" id="/praticaDetails.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<h2>{{ title }}</h2>
 		<form class="form-horizontal" role="form">
@@ -252,7 +268,7 @@
 </script>
 
 <script type="text/ng-template" id="/praticaStatoDetails.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<div class="row">
 			<span class="col-md-10">
@@ -323,7 +339,7 @@
 </script>
 
 <script type="text/ng-template" id="/anagrafiche.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuovo Gestore</button>
@@ -348,7 +364,7 @@
 </script>
 
 <script type="text/ng-template" id="/gestoreDetails.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<h2>{{ title }}</h2>
 		<form class="form-horizontal" role="form">
@@ -377,7 +393,7 @@
 </script>
 
 <script type="text/ng-template" id="/integrazione.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<h2>{{ title }}</h2>
 		<form class="form-horizontal" role="form">
@@ -422,7 +438,7 @@
 </script>
 
 <script type="text/ng-template" id="/comuneDetails.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<h2>{{ title }}</h2>
 		<form class="form-horizontal" role="form">
@@ -451,7 +467,7 @@
 </script>
 
 <script type="text/ng-template" id="/utenti.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuovo Utente</button>
@@ -486,7 +502,7 @@
 </script>
 
 <script type="text/ng-template" id="/utenteDetails.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<h2>{{ title }}</h2>
 		<form class="form-horizontal" role="form">
@@ -542,7 +558,7 @@
 </script>
 
 <script type="text/ng-template" id="/utentePass.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<h2>{{ title }} - {{eutente.username}}</h2>
 		<form class="form-horizontal" role="form">
@@ -575,7 +591,7 @@
 </script>
 
 <script type="text/ng-template" id="/strumenti.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuovo Strumento</button>
@@ -610,7 +626,7 @@
 </script>
 
 <script type="text/ng-template" id="/strumentoDetails.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<h2>{{ title }}</h2>
 		<form class="form-horizontal" role="form">
@@ -678,7 +694,7 @@
 
 
 <script type="text/ng-template" id="/catene.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuovo Catena</button>
@@ -708,7 +724,7 @@
 
 
 <script type="text/ng-template" id="/catenaDetails.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<h2>{{ title }}</h2>
 		<form class="form-horizontal" role="form">
@@ -807,7 +823,7 @@
 </script>
 
 <script type="text/ng-template" id="/calibrazioneDetails.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="container">
 		<h2>{{ title }}</h2>
 		<form class="form-horizontal" role="form">
@@ -860,7 +876,7 @@
 </script>
 
 <script type="text/ng-template" id="/strumentiRegistro.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -892,7 +908,7 @@
 </script>
 
 <script type="text/ng-template" id="/strumentiStorico.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -916,7 +932,7 @@
 </script>
 
 <script type="text/ng-template" id="/chat-pm.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="input-group">
 		<input type="text" class="form-control" ng-model="newline" placeholder="text">
 		<span class="input-group-btn">
@@ -931,7 +947,7 @@
 </script>
 
 <script type="text/ng-template" id="/chat-board.html">
-	<div ng-include="'/public/navbar.html'"></div>
+	<div ng-include="'/public/html/navbar.html'"></div>
 	<div class="input-group">
 		<input type="text" class="form-control" ng-model="newline" placeholder="text">
 		<span class="input-group-btn">
@@ -965,7 +981,7 @@ var getTableRowClass = function(id) {
 
 var askconfirm = function(ModalService, next, textmessage) {
 	ModalService.showModal({
-		templateUrl: "public/confirm.html",
+		templateUrl: "public/html/confirm.html",
 		controller: "YesNoController",
 		inputs: {
 			message: textmessage
@@ -1459,7 +1475,10 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 	.controller('PraticheAllController', ['$scope', 'Me', 'PMcount','PraticheAll', '$location', function($scope, Me, PMcount, PraticheAll, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
-
+		
+		$scope.dateFrom = moment().subtract(30, 'day').format("YYYY-MM-DD");
+		$scope.dateTo = moment().format("YYYY-MM-DD");
+			
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
 		$scope.pratiche = PraticheAll.query(function() {
@@ -1504,7 +1523,7 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 		});
 		$scope.show = function(id) {
 			ModalService.showModal({
-				templateUrl: "public/protoout.html",
+				templateUrl: "public/html/protoout.html",
 				controller: "ProtoOUTController",
 				inputs: {
 					title: "ProtoOUT per pratica "+id
