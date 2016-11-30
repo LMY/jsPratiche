@@ -96,7 +96,7 @@ router.post('/', function(req, res, next) {
 		rest.error403(res);
 	else
 		calculatehash(req.body.password, function(err, newhash) {
-			var query = sql.format("INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, reqhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1]);
+			var query = sql.format("INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, newhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1]);
 
 			sql.query(query, function(err, data) {
 				if (err) rest.error500(res, err);
