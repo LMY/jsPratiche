@@ -255,6 +255,32 @@
 					<input type="text" class="form-control" id="note" ng-model="epratica.note" placeholder="Note">
 				</div>
 			</div>
+			
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="flag87bis">87bis:</label>
+				<div class="col-sm-10">
+					<input class="form-control" type="checkbox" ng-model="epratica.flag87bis" ng-true-value="1" ng-false-value="0">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="flagCongiunto">Parere Congiunto:</label>
+				<div class="col-sm-10">
+					<input class="form-control" type="checkbox" ng-model="epratica.flagCongiunto" ng-true-value="1" ng-false-value="0">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="flagSupTerra">Superamento a terra:</label>
+				<div class="col-sm-10">
+					<input class="form-control" type="checkbox" ng-model="epratica.flagSupTerra" ng-true-value="1" ng-false-value="0">
+				</div>
+			</div>	
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="flagA24">Alpha24:</label>
+				<div class="col-sm-10">
+					<input class="form-control" type="checkbox" ng-model="epratica.flagA24" ng-true-value="1" ng-false-value="0">
+				</div>
+			</div>	
+
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 					<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
@@ -1579,8 +1605,8 @@ var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService',
 				if (!$scope.epratica.tipopratica) { alert('Specificare il tipo di pratica!'); return; }
 
 				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dateIN: $scope.epratica.dateIN,
-					protoOUT: $scope.epratica.protoOUT, dateOUT: $scope.epratica.dateOUT, note: $scope.epratica.note });
-
+					protoOUT: $scope.epratica.protoOUT, dateOUT: $scope.epratica.dateOUT, note: $scope.epratica.note, flag87bis: $scope.epratica.flag87bis,flagCongiunto: $scope.epratica.flagCongiunto, flagSupTerra: $scope.epratica.flagSupTerra, flagA24: $scope.epratica.flagA24 });
+					
 				pratica.$save(function(){
 					$location.url('pratiche');
 				});

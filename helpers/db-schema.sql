@@ -68,6 +68,10 @@ CREATE TABLE Pratiche (
   protoOUT varchar(50),
   dateOUT date,
   note varchar(256),
+  
+  flag87bis boolean,
+  flagCongiunto boolean,
+  flagSupTerra boolean,
 
   PRIMARY KEY (id),
   FOREIGN KEY (tipopratica) REFERENCES ConstTipoPratiche(id) ON DELETE NO ACTION ON UPDATE CASCADE,
