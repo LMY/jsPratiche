@@ -1,0 +1,99 @@
+<div class="container">
+	<h2>{{ title }}</h2>
+	<form class="form-horizontal" role="form">
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="gestore">Gestore:</label>
+			<div class="col-sm-10">
+				<select data-ng-options="g.id as g.name for g in gestori" data-ng-model="epratica.idGestore"></select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="comune">Comune:</label>
+			<div class="col-sm-10">
+				<select data-ng-options="g.id as g.name for g in comuni" data-ng-model="epratica.idComune"></select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="address">Indirizzo:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="address" ng-model="epratica.address" placeholder="Indirizzo">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="sitecode">Codice Sito:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="sitecode" ng-model="epratica.sitecode" placeholder="Codice Sito">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="tipopratica">Tipo Pratica:</label>
+			<div class="col-sm-10">
+				<select data-ng-options="g.id as g.descrizione for g in consttipipratiche" data-ng-model="epratica.tipopratica"></select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="protoIN">Proto IN:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="protoIN" ng-model="epratica.protoIN" placeholder="Proto IN">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="dateIN">Data IN:</label>
+			<div class="col-sm-10">
+				<input class="form-control" datetimepicker type="text" ng-model="epratica.dateIN" placeholder="YYYY-MM-DD">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="protoOUT">Proto OUT:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="protoIN" ng-model="epratica.protoOUT" placeholder="Proto OUT" ng-disabled="isnew">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="dateOUT">Data OUT:</label>
+			<div class="col-sm-10">
+				<input class="form-control" datetimepicker type="text" ng-model="epratica.dateOUT" placeholder="YYYY-MM-DD" ng-disabled="isnew">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="note">Note:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="note" ng-model="epratica.note" placeholder="Note">
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="flag87bis">87bis:</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="checkbox" ng-model="epratica.flag87bis" ng-true-value="1" ng-false-value="0">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="flagCongiunto">Parere Congiunto:</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="checkbox" ng-model="epratica.flagCongiunto" ng-true-value="1" ng-false-value="0">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="flagSupTerra">Superamento a terra:</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="checkbox" ng-model="epratica.flagSupTerra" ng-true-value="1" ng-false-value="0">
+			</div>
+		</div>	
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="flagA24">Alpha24:</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="checkbox" ng-model="epratica.flagA24" ng-true-value="1" ng-false-value="0">
+			</div>
+		</div>	
+
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+				<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+				<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+				<div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+			</div>
+		</div>
+	</form>
+</div>

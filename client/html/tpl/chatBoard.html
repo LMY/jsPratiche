@@ -1,0 +1,10 @@
+<div class="input-group">
+	<input type="text" class="form-control" ng-model="newline" placeholder="text">
+	<span class="input-group-btn">
+		<button class="btn btn-primary" ng-click="send()">Invia</button>
+	</span>
+</div>
+<hr>
+<div ng-repeat="x in messages|orderBy:orderByField:reverseSort">
+	<div>{{x.line}}</div>
+</div>

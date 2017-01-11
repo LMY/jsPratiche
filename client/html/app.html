@@ -1,0 +1,224 @@
+<html ng-app="app">
+<head>
+	<title>jsPratiche!</title>
+	<link rel="stylesheet" type="text/css" href="client/css/main.css">
+
+	<script src="client/libs/jquery/dist/jquery.min.js"></script>
+	<script src="client/libs/angular/angular.min.js"></script>
+	<script src="client/libs/angular-route/angular-route.min.js"></script>
+	<script src="client/libs/angular-resource/angular-resource.min.js"></script>
+
+	<script src="client/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="client/libs/bootstrap/dist/css/bootstrap.min.css" />
+
+	<script type="text/javascript" src="client/libs/moment/min/moment.min.js"></script>
+
+	<script src="client/libs/angular-modal-service/dst/angular-modal-service.min.js"></script>
+
+	<script src="client/libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+	<link rel="stylesheet" href="client/libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+
+	<script src="client/libs/angular-bootstrap-datetimepicker-directive/angular-bootstrap-datetimepicker-directive.min.js"></script>
+</head>
+<body>
+
+<div ng-view></div>
+<footer class="container-fluid bg-4 text-center">
+	<p>jsPratiche v1.2.2-build161028 - <a href="#">Miro Salvagni</a></p>
+</footer>
+
+<script type="text/ng-template" id="/main.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/main.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/pratiche.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/pratiche.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/pratiche-storico.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/pratiche-storico.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/praticaDetails.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/praticaDetails.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/praticaStatoDetails.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/praticaStatoDetails.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/anagrafiche.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/anagrafiche.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/gestoreDetails.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/gestoreDetails.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/integrazione.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/praticheIntegrazione.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/comuneDetails.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/comuneDetails.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/utenti.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/users.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/utenteDetails.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/userDetails.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/utentePass.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/userPass.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/strumenti.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/strumenti.html'"></div>	
+</script>
+
+<script type="text/ng-template" id="/strumentoDetails.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/strumentoDetails.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/catene.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/strumentiCatene.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/catenaDetails.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/strumentiCatenaDetails.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/calibrazioneDetails.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/strumentiCalibrazioneDetails.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/strumentiRegistro.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/strumentiRegistro.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/strumentiStorico.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/strumentiStorico.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/chat-pm.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/chatPM.html'"></div>
+</script>
+
+<script type="text/ng-template" id="/chat-board.html">
+	<div ng-include="'/client/html/navbar.html'"></div>
+	<div ng-include="'/client/html/tpl/chatBoard.html'"></div>
+</script>
+
+<script>
+var getTableRowClass = function(id) {
+
+	if (!id|| id == 1)						// arrivata
+		return "danger";
+	else if (id == 2 || id == 3)			// in carico
+		return "active";
+	else if (id == 4 || id == 5)			// da correggere
+		return "info";
+	else if (id == 7)						// attesa integ
+		return "warning";
+	else if (id==8 || id==9 || id==6 || id==12)		// uscita/parere-condizionato
+		return "success";
+	else if (id==10 || id==11)				// cancellata/non-si-fa
+		return "danger";
+
+	return "";
+}
+
+var askconfirm = function(ModalService, next, textmessage) {
+	ModalService.showModal({
+		templateUrl: "client/html/confirm.html",
+		controller: "YesNoController",
+		inputs: {
+			message: textmessage
+		}
+	}).then(function(modal) {
+		modal.element.modal();
+		modal.close.then(function(result) {
+			if (result) {
+				next();
+			}
+		});
+	});
+}
+
+angular.module('app', ['ngRoute', 'ngResource', 'angularModalService', 'datetimepicker'])
+
+	// helper controllers
+	.controller('YesNoController', ['$scope', 'message', 'close', function($scope, message, close) {
+		$scope.message = message;
+		$scope.close = function(result) {
+			close(result, 500); // close, but give 500ms for bootstrap to animate
+		};
+	}])
+	.controller('ProtoOUTController', ['$scope', '$element', 'title', 'close',  function($scope, $element, title, close) {
+		$scope.protoout = null;
+		$scope.date = new Date();
+		$scope.title = title;
+
+		$scope.close = function() {
+			close({ protoout: $scope.protoout, date: $scope.date, approved: true }, 500);
+		};
+
+		$scope.cancel = function() {
+			$element.modal('hide');
+		};
+	}])
+
+	.config([
+		'datetimepickerProvider',
+		function (datetimepickerProvider) {
+			datetimepickerProvider.setOptions({
+				format: 'YYYY-MM-DD'
+			});
+		}
+	])
+	;
+</script>
+
+<script src="client/js/users.js"></script>
+<script src="client/js/chat.js"></script>
+<script src="client/js/main.js"></script>
+<script src="client/js/comuni.js"></script>
+<script src="client/js/gestori.js"></script>
+<script src="client/js/pratiche.js"></script>
+<script src="client/js/strumenti.js"></script>
+<script src="client/js/routes.js"></script>
+
+
+<!-- Update navbar active
+<script>
+	$(".nav a").on("click", function(){
+		$(".nav").find(".active").removeClass("active");
+		$(this).parent().addClass("active");
+	});
+</script> -->
+
+</body>
+</html>

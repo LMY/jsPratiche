@@ -1,0 +1,95 @@
+<div class="container">
+	<h2>{{ title }}</h2>
+	<form class="form-horizontal" role="form">
+		<div class="form-group">
+			<label class="control-label col-sm-2">Nome:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="ecatena.name" placeholder="Nome">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">Note:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="ecatena.note" placeholder="Note">
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+				<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+				<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+				<div class="pull-right">
+					<button type="submit" class="btn btn-danger" ng-click="remove()">Remove</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+<hr>
+
+<div class="container" ng-show="!isnew">
+	<h3>Strumenti della catena:</h3>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th class="text-center"><a ng-click="orderByField1='id'; reverseSort1=!reverseSort1">ID <span ng-show="orderByField1=='id'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField1='name'; reverseSort1=!reverseSort1">Nome <span ng-show="orderByField1=='name'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField1='note'; reverseSort1=!reverseSort1">Note <span ng-show="orderByField1=='note'"><span ng-show="!reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort1"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="strumento in strumenticatena|orderBy:orderByField1:reverseSort1" ng-dblclick="remove(strumento.id)">
+				<td class="text-center">{{strumento.id}}</td>
+				<td class="text-center">{{strumento.name}}</td>
+				<td class="text-center">{{strumento.note}}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<center><button type="submit" class="btn btn-success" ng-click="addstrum=!addstrum">Aggiungi Strumenti</button></center>
+
+	<div ng-show="addstrum">
+		<hr>
+		<h3>Strumenti Liberi:</h3>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th class="text-center"><a ng-click="orderByField2='id'; reverseSort2=!reverseSort2">ID <span ng-show="orderByField2=='id'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField2='name'; reverseSort2=!reverseSort2">Nome <span ng-show="orderByField2=='name'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField2='note'; reverseSort2=!reverseSort2">Note <span ng-show="orderByField2=='note'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="strumento in strumenti|orderBy:orderByField2:reverseSort2" ng-dblclick="add(strumento.id)">
+					<td class="text-center">{{strumento.id}}</td>
+					<td class="text-center">{{strumento.name}}</td>
+					<td class="text-center">{{strumento.note}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<hr>
+	<h3>Calibrazioni:</h3>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th class="text-center"><a ng-click="orderByField3='lab'; reverseSort3=!reverseSort3">Laboratorio <span ng-show="orderByField3=='lab'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField3='certn'; reverseSort3=!reverseSort3">#certificato <span ng-show="orderByField3=='certn'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField3='dateCal'; reverseSort3=!reverseSort3">Data Calibrazione <span ng-show="orderByField3=='dateCal'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField3='note'; reverseSort3=!reverseSort3">Note <span ng-show="orderByField3=='note'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField3='scadenza'; reverseSort3=!reverseSort3">Scadenza <span ng-show="orderByField3=='scadenza'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="calibrazione in calibrazioni|orderBy:orderByField3:reverseSort3" ng-dblclick="showcalib(calibrazione.id)">
+				<td class="text-center">{{calibrazione.lab}}</td>
+				<td class="text-center">{{calibrazione.certn}}</td>
+				<td class="text-center">{{calibrazione.dateCal}}</td>
+				<td class="text-center">{{calibrazione.note}}</td>
+				<td class="text-center">{{calibrazione.scadenza}}</td>
+			</tr>
+		</tbody>
+	</table>
+	<center><button type="submit" class="btn btn-success" ng-click="addcalib()">Aggiungi Calibrazione</button></center>
+</div>

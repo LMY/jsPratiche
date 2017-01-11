@@ -1,0 +1,28 @@
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th class="text-center"><a ng-click="orderByField='catena'; reverseSort=!reverseSort">Catena <span ng-show="orderByField=='catena'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='username'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='username'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='timePointFrom'; reverseSort=!reverseSort">Dalle <span ng-show="orderByField=='timePointFrom'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='timePointTo'; reverseSort=!reverseSort">Alle <span ng-show="orderByField=='timePointTo'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='sede'; reverseSort=!reverseSort">Sede <span ng-show="orderByField=='sede'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center">Azione</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="x in registro|orderBy:orderByField:reverseSort">
+			<td class="text-center">{{x.catena}}</td>
+			<td class="text-center">{{x.username}}</td>
+			<td class="text-center">{{x.timePointFrom}}</td>
+			<td class="text-center">{{x.timePointTo}}</td>
+			<td class="text-center">
+			{{x.sede}}
+			<select data-ng-options="g.id as g.nome for g in sedi" data-ng-model="x.idSede" ng-show="x.isopen"></select>
+			</td>
+			<td class="text-center">
+				<button type="submit" class="btn btn-success" ng-click="open(x.id)" ng-show="!x.isopen">Open</button>
+				<button type="submit" class="btn btn-danger" ng-click="close(x.id, x.idSede)" ng-show="x.isopen">Close</button>
+			</td>
+		</tr>
+	</tbody>
+</table>

@@ -1,0 +1,63 @@
+<div class="container">
+	<h2>{{ title }}</h2>
+	<form class="form-horizontal" role="form">
+		<div class="form-group">
+			<label class="control-label col-sm-2">Nome:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="estrumento.name" placeholder="Nome">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">Marca:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="estrumento.marca" placeholder="Marca">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">Modello:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="estrumento.modello" placeholder="Modello">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">Seriale:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="estrumento.serial" placeholder="Seriale">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">Inventario:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="estrumento.inventario" placeholder="Inventario">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">Tipo:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="estrumento.tipo" placeholder="Tipo">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">Taratura:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="estrumento.taratura" placeholder="Taratura">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">Note:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" ng-model="estrumento.note" placeholder="Note">
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+				<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+				<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+				<div class="pull-right">
+					<button type="submit" class="btn btn-danger" ng-click="remove()">Remove</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>

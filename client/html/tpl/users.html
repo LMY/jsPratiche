@@ -1,0 +1,31 @@
+<div class="form-group">
+	<div class="span7 text-center">
+		<button class="btn btn-primary" ng-click="new()">Nuovo Utente</button>
+	</div>
+</div>
+<table class="table table-hover">
+	<thead>
+		<tr>
+<!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
+			<th class="text-center"><a ng-click="orderByField='username'; reverseSort=!reverseSort">Username <span ng-show="orderByField=='username'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Name <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='surname'; reverseSort=!reverseSort">Surname <span ng-show="orderByField=='surname'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='email'; reverseSort=!reverseSort">Email <span ng-show="orderByField=='email'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='phone'; reverseSort=!reverseSort">Phone <span ng-show="orderByField=='phone'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='lastlogin'; reverseSort=!reverseSort">Last Login <span ng-show="orderByField=='lastlogin'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='userlevel'; reverseSort=!reverseSort">UserLevel <span ng-show="orderByField=='userlevel'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="utente in utenti|orderBy:orderByField:reverseSort" ng-dblclick="show(utente.id)">
+<!--				<td class="text-center">{{utente.id}}</td> -->
+			<td class="text-center">{{utente.username}}</td>
+			<td class="text-center">{{utente.name}}</td>
+			<td class="text-center">{{utente.surname}}</td>
+			<td class="text-center">{{utente.email}}</td>
+			<td class="text-center">{{utente.phone}}</td>
+			<td class="text-center">{{utente.lastlogin}}</td>
+			<td class="text-center">{{utente.userlevel}}</td>
+		</tr>
+	</tbody>
+</table>

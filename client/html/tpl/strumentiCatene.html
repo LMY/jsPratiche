@@ -1,0 +1,25 @@
+<div class="form-group">
+	<div class="span7 text-center">
+		<button class="btn btn-primary" ng-click="new()">Nuovo Catena</button>
+	</div>
+</div>
+<table class="table table-hover">
+	<thead>
+		<tr>
+<!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
+			<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Nome <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='note'; reverseSort=!reverseSort">Note <span ng-show="orderByField=='note'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='calib'; reverseSort=!reverseSort">Calibrazione <span ng-show="orderByField=='calib'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza Calibrazione <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="catena in catene|orderBy:orderByField:reverseSort" ng-dblclick="show(catena.id)">
+<!--				<td class="text-center {{catena.scadenzaType}}">{{catena.id}}</td> -->
+			<td class="text-center {{catena.scadenzaType}}">{{catena.name}}</td>
+			<td class="text-center {{catena.scadenzaType}}">{{catena.note}}</td>
+			<td class="text-center {{catena.scadenzaType}}">{{catena.certn}}</td>
+			<td class="text-center {{catena.scadenzaType}}">{{catena.scadenza}}</td>
+		</tr>
+	</tbody>
+</table>

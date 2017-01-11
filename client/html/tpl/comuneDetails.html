@@ -1,0 +1,25 @@
+<div class="container">
+	<h2>{{ title }}</h2>
+	<form class="form-horizontal" role="form">
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="name">Name:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="name" ng-model="ecomune.name" placeholder="Nome comune">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="pec">Pec:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="pec" ng-model="ecomune.pec" placeholder="PEC comune">
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button type="submit" class="btn btn-success" ng-show="!isnew" ng-click="update()">Update</button>
+				<button type="submit" class="btn btn-success" ng-show="isnew" ng-click="update()">Create</button>
+				<button type="submit" class="btn btn-default" ng-click="cancel()">Cancel</button>
+				<div class="pull-right"><button type="submit" class="btn btn-danger" ng-show="!isnew" ng-click="remove()">Remove</button></div>
+			</div>
+		</div>
+	</form>
+</div>

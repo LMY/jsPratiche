@@ -1,0 +1,67 @@
+<div class="container">
+	<div class="row">
+		<span class="col-md-10">
+			<h2>{{ title }}</h2>
+		</span>
+		<button class="col-md-2 btn btn-danger" ng-click="stato(1)" ng-show="epratica.idStato && epratica.idStato != 1"
+		style="top: 20px;" >Rilascia</button>
+	</div>
+	<hr>
+	<div class="row">
+
+		<span class="col-md-4">
+			<div ng-show="epratica.idStato == null || epratica.idStato == 1">
+				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
+				<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)">Prendi in carico</button>
+			</div>
+			<div ng-show="epratica.idStato == 4">
+				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
+				<button class="col-md-6 btn btn-primary" ng-click="stato(6, selectedUser)">Corretto</button>
+			</div>
+			<div class="div-border-invisible" ng-show="epratica.idStato == 2">
+				<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
+			</div>
+		</span>
+
+		<span class="col-md-4">
+			<div ng-show="epratica.idStato == 2 || epratica.idStato == 3">
+				<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
+				<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
+				<button class="col-md-4 btn btn-warning" ng-click="integric()">Richiedi integ</button>
+			</div>
+			<div ng-show="epratica.idStato == 7">
+				<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
+				<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
+				<button class="col-md-4 btn btn-warning" ng-click="integarr()">Arrivate integ</button>
+			</div>
+		</span>
+
+		<span class="col-md-2"><div class="spacer"></div></span>
+
+		<button class="col-md-2 btn btn-success" ng-click="stato(4)" style="top: 12px;" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
+	</div>
+	<hr>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+<!--						<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
+					<th class="text-center"><a ng-click="orderByField='descStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='descStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+					<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Modifica <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="x in history|orderBy:orderByField:reverseSort" ng-dblclick="showinteg(x.integID)">
+<!--						<td class="text-center">{{x.id}}</td>  -->
+					<td class="text-center">{{x.descStato}}</td>
+					<td class="text-center">{{x.timePoint}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+	<div>
+		<button class="btn btn-default" ng-click="cancel()">Indietro</button>
+		<div class="pull-right">
+			<button class="btn btn-default" ng-click="show()">Modifica</button>
+		</div>
+	</div>
+</div>

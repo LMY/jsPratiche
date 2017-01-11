@@ -1,0 +1,31 @@
+<div class="form-group">
+	<div class="span7 text-center">
+		<button class="btn btn-primary" ng-click="new()">Nuovo Strumento</button>
+	</div>
+</div>
+<table class="table table-hover">
+	<thead>
+		<tr>
+<!--				<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
+			<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Nome <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='marca'; reverseSort=!reverseSort">Marca <span ng-show="orderByField=='marca'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='modello'; reverseSort=!reverseSort">Modello <span ng-show="orderByField=='modello'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='serial'; reverseSort=!reverseSort">Seriale <span ng-show="orderByField=='serial'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='inventario'; reverseSort=!reverseSort">Inventario <span ng-show="orderByField=='inventario'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='tipo'; reverseSort=!reverseSort">Tipo <span ng-show="orderByField=='tipo'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='taratura'; reverseSort=!reverseSort">Taratura <span ng-show="orderByField=='taratura'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="strumento in strumenti|orderBy:orderByField:reverseSort" ng-dblclick="show(strumento.id)">
+<!--				<td class="text-center">{{strumento.id}}</td> -->
+			<td class="text-center">{{strumento.name}}</td>
+			<td class="text-center">{{strumento.marca}}</td>
+			<td class="text-center">{{strumento.modello}}</td>
+			<td class="text-center">{{strumento.serial}}</td>
+			<td class="text-center">{{strumento.inventario}}</td>
+			<td class="text-center">{{strumento.tipo}}</td>
+			<td class="text-center">{{strumento.taratura}}</td>
+		</tr>
+	</tbody>
+</table>

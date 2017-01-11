@@ -33,10 +33,11 @@ module.exports = function(config, dirpath) {
 
 	//config.app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));	// public/favicon.ico
 	config.app.use("/public", isAuthenticated, config.deps.express.static(path.join(__dirname, '../public')));
+	config.app.use("/client", isAuthenticated, config.deps.express.static(path.join(__dirname, '../client')));
 
 	config.app.get('/', function(req, res) {
-		res.sendFile(path.join(__dirname, '../public/html', 'index.html'));
-	});
+		res.sendFile(path.join(__dirname, '../client/html', 'index.html'));
+	});	
 
 	config.app.get('/login', function(req, res) {
 		res.render('login', { message: req.flash('message') });
@@ -62,11 +63,11 @@ module.exports = function(config, dirpath) {
 	});
 
 	config.app.get("/home", isAuthenticated, function(req, res) {
-		res.sendFile(path.join(__dirname, '../public/html', 'app.html'));
+		res.sendFile(path.join(__dirname, '../client/html', 'app.html'));
 	});
 
 	config.app.get("/test", isAuthenticated, function(req, res) {
-		res.sendFile(path.join(__dirname, '../public/html', 'test.html'));
+		res.sendFile(path.join(__dirname, '../client/html', 'test.html'));
 	});
 
 	config.app.get('/logout', function(req, res) {

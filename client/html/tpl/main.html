@@ -1,0 +1,24 @@
+<div class = "container">
+	<div class = "jumbotron">
+		<h1>Benvenuto</h1>
+
+		<p>
+			<span>
+				Note:
+				<button type="submit" class="btn btn-success" ng-click="add()">Add</button>
+			</span>
+
+			<ul ng-repeat="x in notes" ng-dblclick="edit(x.id)">
+				<li ng-show="editing != x.id">{{x.text}}</li>
+
+				<li ng-show="editing == x.id">
+					<span>
+						<input type="text" class="col-xs-4" id="text" ng-model="x.text" placeholder="Text">
+						<button type="submit" class="btn btn-success" ng-click="commit(x.id)">Update</button>
+						<button type="submit" class="btn btn-danger" ng-click="remove(x.id)">Remove</button>
+					</span>
+				</li>
+			</ul>
+		</p>
+	</div>
+</div>

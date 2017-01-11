@@ -6,4 +6,4 @@ backup/
 helpers/*~
 routes/*~
 views/*~
-public/js
+client/libs
