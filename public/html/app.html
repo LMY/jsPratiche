@@ -1022,7 +1022,7 @@ var askconfirm = function(ModalService, next, textmessage) {
 	});
 }
 
-var app = angular.module('app', ['ngRoute', 'ngResource', 'angularModalService', 'datetimepicker'])
+angular.module('app', ['ngRoute', 'ngResource', 'angularModalService', 'datetimepicker'])
 	.factory('Gestori', ['$resource', function($resource){
 		return $resource('/gestori/:id', null, {
 			'update': { method:'PUT' }

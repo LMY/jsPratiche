@@ -89,7 +89,6 @@ router.post('/', function(req, res, next) {
 								}
 							});
 						}
-						// TODO
 						else if (req.body.idStato == 2 && req.body.integData) {	// lavorazione (arrivate integrazioni)
 
 							connection.query("SELECT LAST_INSERT_ID() AS id", function(err, laststatoid) {
