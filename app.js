@@ -7,6 +7,7 @@ var flash = require('connect-flash');
 const passport = require('passport');
 const expressSession = require('express-session');
 const config = require('./helpers/config');
+const favicon = require('express-favicon');
 
 var app = express();
 
@@ -36,7 +37,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+app.use(favicon(path.join(__dirname, 'client', 'imgs', 'favicon.ico')));
 
 // setup config object
 config.app = app;
@@ -45,6 +46,7 @@ config.deps.express = express;
 config.deps.passport = passport;
 config.deps.sql = require('./helpers/db.js');
 config.deps.rest = require('./helpers/rest.js');
+
 
 // routes
 require('./routes/index')(config, './routes');

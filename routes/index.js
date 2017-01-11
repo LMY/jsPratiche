@@ -1,5 +1,4 @@
 var path = require('path');
-//var favicon = require('serve-favicon');
 const fs = require('fs');
 
 module.exports = function(config, dirpath) {
@@ -31,8 +30,6 @@ module.exports = function(config, dirpath) {
 		res.redirect('/login');
 	}
 
-	//config.app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));	// public/favicon.ico
-	config.app.use("/public", isAuthenticated, config.deps.express.static(path.join(__dirname, '../public')));
 	config.app.use("/client", isAuthenticated, config.deps.express.static(path.join(__dirname, '../client')));
 
 	config.app.get('/', function(req, res) {
