@@ -1,3 +1,20 @@
+var getTableRowClass = function(id) {
+	if (!id|| id == 1)						// arrivata
+		return "danger";
+	else if (id == 2 || id == 3)			// in carico
+		return "active";
+	else if (id == 4 || id == 5)			// da correggere
+		return "info";
+	else if (id == 7)						// attesa integ
+		return "warning";
+	else if (id==8 || id==9 || id==6 || id==12)		// uscita/parere-condizionato
+		return "success";
+	else if (id==10 || id==11)				// cancellata/non-si-fa
+		return "danger";
+
+	return "";
+}
+
 angular.module('app')
 	.factory('Pratiche', ['$resource', function($resource){
 		return $resource('/pratiche/pratiche/:id', null, {
@@ -53,7 +70,21 @@ angular.module('app')
 		});
 	}])
 
+	
+	.controller('ProtoOUTController', ['$scope', '$element', 'title', 'close',  function($scope, $element, title, close) {
+		$scope.protoout = null;
+		$scope.date = new Date();
+		$scope.title = title;
 
+		$scope.close = function() {
+			close({ protoout: $scope.protoout, date: $scope.date, approved: true }, 500);
+		};
+
+		$scope.cancel = function() {
+			$element.modal('hide');
+		};
+	}])
+	
 	.controller('IntegrazioneCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Integrazioni', '$window', function($scope, $routeParams, Me, PMcount, Integrazioni, $window) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();

@@ -132,76 +132,7 @@
 	<div ng-include="'/client/templates/chatBoard.html'"></div>
 </script>
 
-<script>
-var getTableRowClass = function(id) {
-
-	if (!id|| id == 1)						// arrivata
-		return "danger";
-	else if (id == 2 || id == 3)			// in carico
-		return "active";
-	else if (id == 4 || id == 5)			// da correggere
-		return "info";
-	else if (id == 7)						// attesa integ
-		return "warning";
-	else if (id==8 || id==9 || id==6 || id==12)		// uscita/parere-condizionato
-		return "success";
-	else if (id==10 || id==11)				// cancellata/non-si-fa
-		return "danger";
-
-	return "";
-}
-
-var askconfirm = function(ModalService, next, textmessage) {
-	ModalService.showModal({
-		templateUrl: "client/templates/confirm.html",
-		controller: "YesNoController",
-		inputs: {
-			message: textmessage
-		}
-	}).then(function(modal) {
-		modal.element.modal();
-		modal.close.then(function(result) {
-			if (result) {
-				next();
-			}
-		});
-	});
-}
-
-angular.module('app', ['ngRoute', 'ngResource', 'angularModalService', 'datetimepicker'])
-
-	// helper controllers
-	.controller('YesNoController', ['$scope', 'message', 'close', function($scope, message, close) {
-		$scope.message = message;
-		$scope.close = function(result) {
-			close(result, 500); // close, but give 500ms for bootstrap to animate
-		};
-	}])
-	.controller('ProtoOUTController', ['$scope', '$element', 'title', 'close',  function($scope, $element, title, close) {
-		$scope.protoout = null;
-		$scope.date = new Date();
-		$scope.title = title;
-
-		$scope.close = function() {
-			close({ protoout: $scope.protoout, date: $scope.date, approved: true }, 500);
-		};
-
-		$scope.cancel = function() {
-			$element.modal('hide');
-		};
-	}])
-
-	.config([
-		'datetimepickerProvider',
-		function (datetimepickerProvider) {
-			datetimepickerProvider.setOptions({
-				format: 'YYYY-MM-DD'
-			});
-		}
-	])
-	;
-</script>
-
+<script src="client/app.js"></script>
 <script src="client/controllers/users.js"></script>
 <script src="client/controllers/chat.js"></script>
 <script src="client/controllers/main.js"></script>
