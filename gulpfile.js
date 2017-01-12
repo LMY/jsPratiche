@@ -75,5 +75,10 @@ gulp.task('css', function () {
 		.pipe(gulp.dest(clientCssDest));
 });
 
+gulp.task('images', function () {
+	return gulp.src('client/imgs/*')
+		.pipe(gulp.dest('dist/imgs/'));
+});
+
 gulp.task('html', ['html-main', 'html-templates']);
-gulp.task('all', ['js', 'html-main', 'html-templates', 'css']);
+gulp.task('all', ['js', 'html-main', 'html-templates', 'css', 'images']);
