@@ -60,7 +60,7 @@ router.post('/', function(req, res, next) {
 		connection.query('START TRANSACTION;', function(err, data) {
 			if (err) rest.error500(res, err);
 			else {
-				var query = sql.format('INSERT INTO ??(idGestore, idComune, address, sitecode, tipopratica, protoIN, dateIN, protoOUT, dateOUT, note, flag87bis, flagCongiunto, flagSupTerra, ?) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note, req.body.flag87bis, req.body.flagCongiunto, req.body.flagSupTerra, req.body.flagA24]);
+				var query = sql.format('INSERT INTO ??(idGestore, idComune, address, sitecode, tipopratica, protoIN, dateIN, protoOUT, dateOUT, note, flag87bis, flagCongiunto, flagSupTerra, flagA24) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note, req.body.flag87bis, req.body.flagCongiunto, req.body.flagSupTerra, req.body.flagA24]);
 		
 				connection.query(query, function(err, data) {
 					if (err) rest.error500(res, err);
