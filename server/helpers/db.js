@@ -1,5 +1,5 @@
 var mysql = require('mysql');
-var config = require('../helpers/config.js');
+var config = require('../config/config.js');
 var pool = mysql.createPool(config.db);
 
 module.exports = {

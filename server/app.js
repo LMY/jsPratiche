@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var flash = require('connect-flash');
 const passport = require('passport');
 const expressSession = require('express-session');
-const config = require('./helpers/config');
+const config = require('./config/config');
 const favicon = require('express-favicon');
 
 var app = express();
@@ -49,7 +49,7 @@ config.deps.rest = require('./helpers/rest.js');
 
 
 // routes
-require('./routes/index')(config, './routes');
+require('./routes/index')(config, './server/routes');
 
 
 // catch 404 and forward to error handler
