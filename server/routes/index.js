@@ -31,6 +31,7 @@ module.exports = function(config, dirpath) {
 	}
 
 	config.app.use("/client", isAuthenticated, config.deps.express.static(path.join(__dirname, '../../client')));
+	config.app.use("/dist", isAuthenticated, config.deps.express.static(path.join(__dirname, '../../dist')));
 
 	config.app.get('/', function(req, res) {
 		//res.sendFile(path.join(__dirname, '../../client', 'index.html'));

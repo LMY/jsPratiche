@@ -15,7 +15,7 @@ var clientNgFiles = ['client/app.js', 'client/controllers/*.js' ],
 var clientHtmlFiles = 'client/app.html',
 	clientHtmlDest = 'dist/html';
 	
-var clientCssFiles = 'client/css/*.css',
+var clientCssFiles = ['client/css/*.css', 'client/libs/bootstrap/dist/css/bootstrap.min.css', 'client/libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css'],
 	clientCssDest = 'dist/css';
 
 var clientImgFiles = 'client/imgs/*',
@@ -72,6 +72,7 @@ gulp.task('html-templates', function() {
 gulp.task('css', function () {
 	return gulp.src(clientCssFiles)
 		.pipe(minifyCss())
+		.pipe(concat('main.css'))		
 		.pipe(gulp.dest(clientCssDest));
 });
 
@@ -81,4 +82,4 @@ gulp.task('images', function () {
 });
 
 gulp.task('html', ['html-main', 'html-templates']);
-gulp.task('all', ['js', 'html-main', 'html-templates', 'css', 'images']);
+gulp.task('all', ['js', 'html-main', 'html-templates', 'css', 'images', 'libs']);
