@@ -4,6 +4,11 @@ angular.module('app')
 			'update': { method:'PUT' }
 		});
 	}])
+	.factory('AAS', ['$resource', function($resource){
+		return $resource('/aas/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])	
 
 	.controller('ComuneController', ['$scope', 'Me', 'PMcount','Comuni', '$location', function($scope, Me, PMcount, Comuni, $location) {
 		$scope.me = Me.get();
@@ -20,12 +25,13 @@ angular.module('app')
 			$location.url('comuni/'+id);
 		}
 	}])
-	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Comuni', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Comuni, $location, ModalService) {
+	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount', 'Comuni', 'AAS', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Comuni, AAS, $location, ModalService) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecomune = $scope.isnew ? {} : Comuni.get({id: $routeParams.id });
+		$scope.aas = AAS.query();
 		$scope.title = $scope.isnew ? "Nuovo Comune" : "Comune "+$routeParams.id;
 
 		$scope.update = function( ){
@@ -34,7 +40,7 @@ angular.module('app')
 				if (!$scope.ecomune.name || $scope.ecomune.name.length < 1) { alert('Specificare nome!'); return; }
 				if (!$scope.ecomune.pec || $scope.ecomune.pec.length < 1) { alert('Specificare PEC!'); return; }
 
-				var comune = new Comuni({ name: $scope.ecomune.naMe, PMcount, pec: $scope.ecomune.pec });
+				var comune = new Comuni({ name: $scope.ecomune.naMe, PMcount, pec: $scope.ecomune.pec, idaas: $scope.ecomune.idaas });
 				comune.$save(function(){
 					$location.url('comuni');
 				});

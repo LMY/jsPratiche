@@ -2,7 +2,7 @@
 CREATE DATABASE jsPratiche;
 USE jsPratiche;
 
-CREATE TABLE Comuni (
+CREATE TABLE Gestori (
   id int(11) NOT NULL AUTO_INCREMENT,
 
   name varchar(50),
@@ -11,13 +11,24 @@ CREATE TABLE Comuni (
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE Gestori (
+CREATE TABLE AAS (
   id int(11) NOT NULL AUTO_INCREMENT,
 
   name varchar(50),
   pec varchar(50),
 
   PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE Comuni (
+  id int(11) NOT NULL AUTO_INCREMENT,
+
+  name varchar(50),
+  pec varchar(50),
+  idaas int(11),
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (idaas) REFERENCES AAS(id) ON DELETE NO ACTION ON UPDATE CASCADE,
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE Utenti (

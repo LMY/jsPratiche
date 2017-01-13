@@ -1,6 +1,6 @@
 var rest = require('../helpers/rest.js');
 var sql = require('../helpers/db.js');
-var tableName = 'Comuni';
+var tableName = 'AAS';
 
 var express = require('express');
 var router = express.Router();
@@ -31,7 +31,7 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var query =  sql.format("INSERT INTO ??(??,??,idaas) VALUES (?,?)", [tableName, "name", "pec", req.body.name, req.body.pec, req.body.idaas ]);
+	var query =  sql.format("INSERT INTO ??(??,??) VALUES (?,?)", [tableName, "name", "pec", req.body.name, req.body.pec ]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -40,7 +40,7 @@ router.post('/', function(req, res, next) {
 });
 
 router.put('/:id', function(req, res, next) {
-	var query = sql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "name", req.body.name, "pec", req.body.pec, "idaas", req.body.idaas, "id", req.params.id]);
+	var query = sql.format("UPDATE ?? SET ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "name", req.body.name, "pec", req.body.pec, "id", req.params.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);

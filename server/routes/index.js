@@ -51,6 +51,7 @@ module.exports = function(config, dirpath) {
 	config.app.use('/utenti', isAuthenticated, require('./utenti'));
 	config.app.use('/gestori', isAuthenticated, require('./gestori'));
 	config.app.use('/comuni', isAuthenticated, require('./comuni'));
+	config.app.use('/aas', isAuthenticated, require('./aas'));
 
 	// for each subfolder, route it
 	listDirs(dirpath).forEach(f => {
