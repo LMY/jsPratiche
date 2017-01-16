@@ -9,6 +9,7 @@ const stripDebug = require('gulp-strip-debug');
 const size = require('gulp-size');
 const minifyCss = require('gulp-minify-css');
 
+
 var clientNgFiles = ['client/app.js', 'client/controllers/*.js' ],
 	clientNgDest = 'dist/js';
 
