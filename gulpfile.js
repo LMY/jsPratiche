@@ -14,6 +14,9 @@ var clientNgFiles = ['client/app.js', 'client/controllers/*.js' ],
 
 var clientHtmlFiles = 'client/app.html',
 	clientHtmlDest = 'dist/html';
+
+var clientHtmlTemplateFiles = 'client/templates/*.html',
+	clientHtmlTemplateDest = 'dist/html/templates';
 	
 var clientCssFiles = ['client/css/*.css', 'client/libs/bootstrap/dist/css/bootstrap.min.css', 'client/libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css'],
 	clientCssDest = 'dist/css';
@@ -64,9 +67,9 @@ gulp.task('html-main', function() {
 });
 
 gulp.task('html-templates', function() {
-	return gulp.src('client/templates/*.html')
+	return gulp.src(clientHtmlTemplateFiles)
         .pipe(minifyHtml())
-		.pipe(gulp.dest('dist/html/templates/'));
+		.pipe(gulp.dest(clientHtmlTemplateDest));
 });
 
 gulp.task('css', function () {
@@ -86,6 +89,25 @@ gulp.task('images', function () {
 		.pipe(gulp.dest('dist/imgs/'));
 });
 
+
 gulp.task('html', ['html-main', 'html-templates']);
 gulp.task('angular', ['html', 'js']);
 gulp.task('all', ['js', 'html-main', 'html-templates', 'css', 'images', 'libs', 'fonts']);
+
+
+// WATCHES
+
+gulp.task('watch-html-main', function() {
+	gulp.watch(clientHtmlFiles, ['html-main']);
+});
+
+gulp.task('watch-html-templates', function() {
+	gulp.watch([clientHtmlTemplateFiles], ['html-templates']);
+});
+
+gulp.task('watch-js', function() {
+	gulp.watch(clientNgFiles, ['js']);
+});
+
+gulp.task('watch-html', ['watch-html-main', 'watch-html-templates']);
+gulp.task('watch-angular', ['watch-html', 'watch-js']);
