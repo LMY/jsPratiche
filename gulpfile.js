@@ -76,10 +76,16 @@ gulp.task('css', function () {
 		.pipe(gulp.dest(clientCssDest));
 });
 
+gulp.task('fonts', function () {
+	return gulp.src([ 'client/libs/bootstrap/dist/fonts/glyphicons-halflings-regular.woff', 'client/libs/bootstrap/dist/fonts/glyphicons-halflings-regular.woff2' ])
+		.pipe(gulp.dest('dist/fonts'));
+});
+
 gulp.task('images', function () {
 	return gulp.src('client/imgs/*')
 		.pipe(gulp.dest('dist/imgs/'));
 });
 
 gulp.task('html', ['html-main', 'html-templates']);
-gulp.task('all', ['js', 'html-main', 'html-templates', 'css', 'images', 'libs']);
+gulp.task('angular', ['html', 'js']);
+gulp.task('all', ['js', 'html-main', 'html-templates', 'css', 'images', 'libs', 'fonts']);
