@@ -40,7 +40,7 @@ var libFiles = 	[ 'client/libs/jquery/dist/jquery.min.js',
 gulp.task('js', function() {
 	return gulp.src(clientNgFiles)
 		.pipe(babel({ presets: ['es2017', 'es2016', 'es2015'] }))
-        .pipe(stripDebug())	
+//        .pipe(stripDebug())
 		.pipe(concat('app.js'))
 		.pipe(gulp.dest(clientNgDest))		
         .pipe(rename('app.min.js'))

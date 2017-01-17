@@ -19,6 +19,9 @@ router.get('/', function(req, res, next) {
 router.get('/all', function(req, res, next) {
 	var query = "SELECT T3.*, T4.stringUser, T5.diff FROM (SELECT Pratiche.*, idStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, T1.stringStato, T1.final FROM Pratiche LEFT JOIN Gestori on idGestore=Gestori.id LEFT JOIN Comuni on idComune = Comuni.id LEFT JOIN ConstTipoPratiche on tipopratica = ConstTipoPratiche.id LEFT JOIN (SELECT StatoPratiche.*, ConstStatoPratiche.descrizione as stringStato, ConstStatoPratiche.final FROM StatoPratiche LEFT JOIN ConstStatoPratiche on idStato = ConstStatoPratiche.id  WHERE StatoPratiche.id IN (SELECT MAX(id) as id FROM StatoPratiche GROUP BY idPratica)) as T1 on Pratiche.id = T1.idPratica) as T3 LEFT JOIN (SELECT T2.idPratica, T2.timepoint as timePointInCarico, Utenti.username as stringUser FROM (SELECT StatoPratiche.* FROM StatoPratiche WHERE StatoPratiche.id IN (SELECT MAX(StatoPratiche.id) as id FROM AssStatoPraticheUtenti LEFT JOIN StatoPratiche on AssStatoPraticheUtenti.idStato = StatoPratiche.id WHERE StatoPratiche.idStato=2 GROUP BY idPratica)) AS T2 JOIN AssStatoPraticheUtenti on T2.id=AssStatoPraticheUtenti.idStato LEFT JOIN Utenti on AssStatoPraticheUtenti.idUtente=Utenti.id) as T4 on T3.id = T4.idPratica LEFT JOIN (SELECT idPratica, SUM(DATEDIFF(dateIN, dateOUT)) as diff FROM StatoPratiche LEFT JOIN AssStatoPraticheIntegrazioni on StatoPratiche.id=AssStatoPraticheIntegrazioni.idStato LEFT JOIN Integrazioni on AssStatoPraticheIntegrazioni.idInteg = Integrazioni.id GROUP BY idPratica) AS T5 on T3.id = T5.idPratica";
 
+	if (req.query.dateFrom && req.query.dateTo)
+		query = sql.format(query + " WHERE DateIn BETWEEN ? AND ?", [ req.query.dateFrom, req.query.dateTo ]);
+
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
 		else res.json(data);
@@ -61,7 +64,7 @@ router.post('/', function(req, res, next) {
 			if (err) rest.error500(res, err);
 			else {
 				var query = sql.format('INSERT INTO ??(idGestore, idComune, address, sitecode, tipopratica, protoIN, dateIN, protoOUT, dateOUT, note, flag87bis, flagCongiunto, flagSupTerra, flagA24) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note, req.body.flag87bis, req.body.flagCongiunto, req.body.flagSupTerra, req.body.flagA24]);
-		
+
 				connection.query(query, function(err, data) {
 					if (err) rest.error500(res, err);
 					else

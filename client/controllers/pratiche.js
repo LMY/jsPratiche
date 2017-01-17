@@ -70,7 +70,7 @@ angular.module('app')
 		});
 	}])
 
-	
+
 	.controller('ProtoOUTController', ['$scope', '$element', 'title', 'close',  function($scope, $element, title, close) {
 		$scope.protoout = null;
 		$scope.date = new Date();
@@ -84,7 +84,7 @@ angular.module('app')
 			$element.modal('hide');
 		};
 	}])
-	
+
 	.controller('IntegrazioneCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Integrazioni', '$window', function($scope, $routeParams, Me, PMcount, Integrazioni, $window) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
@@ -157,23 +157,25 @@ angular.module('app')
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 
-		$scope.dateFrom = moment().subtract(30, 'day').format("YYYY-MM-DD");
+		$scope.dateFrom = moment().subtract(30, 'day').set('date', 1).format("YYYY-MM-DD");
 		$scope.dateTo = moment().format("YYYY-MM-DD");
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
-		$scope.pratiche = PraticheAll.query(function() {
-			$scope.pratiche.forEach(function(x) {
-				x.rowClass = getTableRowClass(x.idStato);
-				if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
-			});
-		});
+
 		$scope.show = function(id) {
 			$location.url('pratiche/'+id);
 		}
 
-		$scope.startDate = new Date();
-		$scope.endDate = new Date();
+		$scope.requery = function(from, to) {
+			$scope.pratiche = PraticheAll.query({ dateFrom: from, dateTo: to }, function() {
+				$scope.pratiche.forEach(function(x) {
+					x.rowClass = getTableRowClass(x.idStato);
+					if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
+				});
+			});
+		}
+		$scope.requery($scope.dateFrom, $scope.dateTo);	// GET $scope.pratiche
 	}])
 	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PMcount','PraticheCorreggere', '$location', function($scope, Me, PMcount, PraticheCorreggere, $location) {
 		$scope.me = Me.get();
