@@ -11,13 +11,13 @@ const minifyCss = require('gulp-minify-css');
 
 
 var clientNgFiles = ['client/app.js', 'client/controllers/*.js' ],
-	clientNgDest = 'dist/js';
+	clientNgDest = 'dist';
 
 var clientHtmlFiles = 'client/app.html',
-	clientHtmlDest = 'dist/html';
+	clientHtmlDest = 'dist';
 
 var clientHtmlTemplateFiles = 'client/templates/*.html',
-	clientHtmlTemplateDest = 'dist/html/templates';
+	clientHtmlTemplateDest = 'dist/templates';
 	
 var clientCssFiles = ['client/css/*.css', 'client/libs/bootstrap/dist/css/bootstrap.min.css', 'client/libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css'],
 	clientCssDest = 'dist/css';

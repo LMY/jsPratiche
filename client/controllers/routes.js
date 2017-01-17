@@ -38,6 +38,14 @@ angular.module('app')
 				templateUrl: '/pratiche-storico.html',
 				controller: 'PraticheAllController'
 			})
+			.when('/pratiche-fatturazione', {
+				templateUrl: '/pratiche-fatturazione.html',
+				controller: 'PraticheFatturazione'
+			})
+			.when('/pratiche-statistiche', {
+				templateUrl: '/pratiche-statistiche.html',
+				controller: 'PraticheStatistiche'
+			})
 
 			.when('/pratiche/detail/:id', {
 				templateUrl: '/praticaDetails.html',

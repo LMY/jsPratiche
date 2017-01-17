@@ -42,7 +42,7 @@ module.exports = function(config, dirpath) {
 	});
 
     config.app.post('/login', config.deps.passport.authenticate('login', {
-        successRedirect : '/home',
+        successRedirect : '/dist/app.html',
         failureRedirect : '/login',
         failureFlash : true
     }));
@@ -59,14 +59,6 @@ module.exports = function(config, dirpath) {
 //			console.log("use('"+'/'+f+"', "+"'./"+f+"/index.js" +"');");
 			config.app.use('/'+f, isAuthenticated, require('./'+f+'/index.js')(config, './'+f));
 		}
-	});
-
-	config.app.get("/home", isAuthenticated, function(req, res) {
-		res.sendFile(path.join(__dirname, '../../client', 'app.html'));
-	});
-
-	config.app.get("/test", isAuthenticated, function(req, res) {
-		res.sendFile(path.join(__dirname, '../../client', 'test.html'));
 	});
 
 	config.app.get('/logout', function(req, res) {
