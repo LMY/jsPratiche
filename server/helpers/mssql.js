@@ -18,6 +18,7 @@ module.exports = {
 	},
 
 	query: function(queryString, callback, errcallback) {
+		console.log(config.mssql);
 		const conn = new mssql.Connection(config.mssql);
 		conn.connect(function(err) {
 			if (err) {

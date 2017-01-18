@@ -19,10 +19,10 @@ module.exports = {
         debug    :  false
 	},
 	'mssql': {
-		user: '',
-		password: '',
-		server: '',
-		database: '',
+		user: 'arcview',
+		password: 'arpafvg',
+		server: '192.168.99.70',
+		database: 'db_emittenti',
 		port: 1433,
 		options: {
 			encrypt: false,

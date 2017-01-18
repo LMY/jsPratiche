@@ -3,7 +3,7 @@ module.exports = function(config, dirpath) {
 	
 	var router = config.deps.express.Router();
 	
-	const files = [];
+	const files = [ 'srb' ];
 	files.forEach(f => { router.use('/' + f, require('./' + f)); });
 
 	return router;
