@@ -1,69 +1,67 @@
 <nav class="navbar navbar-default">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="#/">jsPratiche!</a>
-		</div>
-		
-		<div class="collapse navbar-collapse" id="myNavbar">
-			<ul class="nav navbar-nav">
-				<li class="dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown">Pratiche<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="#!pratiche">Da Fare</a></li>
-						<li class="nav-divider"></li>
-						<li><a href="#!pratiche-correggere">Da Correggere</a></li>
-						<li><a href="#!pratiche-protocollare">Da Protocollare</a></li>
-						<li class="nav-divider"></li>
-						<li><a href="#!pratiche-all">Storico</a></li>
-						<li><a href="#!pratiche-fatturazione">Fatturazione</a></li>
-						<li><a href="#!pratiche-statistiche">Statistiche</a></li>
-					</ul>
-				</li>
-				<li class="dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown">Strumenti<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="#!strumenti-registro">Registro</a></li>
-						<li class="nav-divider"></li>
-						<li><a href="#!strumenti-strumenti">Strumenti</a></li>
-						<li><a href="#!strumenti-catene">Catene</a></li>
-						<li class="nav-divider"></li>
-						<li><a href="#!strumenti-storico">Storico</a></li>
-					</ul>
-				</li>
-				<li><a href="#!gestori">Gestori</a></li>
-				<li><a href="#!comuni">Comuni</a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a class="dropdown-toggle active" data-toggle="dropdown"><span class="glyphicon glyphicon-envelope"></span> <span ng-show="pmcount && pmcount > 0">{{me.messages}}</span><span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a ng-href="#!messaggi-pm">PM</a></li>
-						<li><a ng-href="#!messaggi-sent">PM: Inviati</a></li>
-						<li class="nav-divider"></li>
-						<li><a href="#!messaggi-board">Board</a></li>
-					</ul>
-				</li>
+	<div class="navbar-header">
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+		<a class="navbar-brand" href="#/">jsPratiche!</a>
+	</div>
+	
+	<div class="collapse navbar-collapse" id="myNavbar">
+		<ul class="nav navbar-nav">
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown">Pratiche<span class="caret"></span></a>
+				<ul class="dropdown-menu" id="navbarlinks">
+					<li><a href="#!pratiche">Da Fare</a></li>
+					<li class="nav-divider"></li>
+					<li><a href="#!pratiche-correggere">Da Correggere</a></li>
+					<li><a href="#!pratiche-protocollare">Da Protocollare</a></li>
+					<li class="nav-divider"></li>
+					<li><a href="#!pratiche-all">Storico</a></li>
+					<li><a href="#!pratiche-fatturazione">Fatturazione</a></li>
+					<li><a href="#!pratiche-statistiche">Statistiche</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown">Strumenti<span class="caret"></span></a>
+				<ul class="dropdown-menu" id="navbarlinks">
+					<li><a href="#!strumenti-registro">Registro</a></li>
+					<li class="nav-divider"></li>
+					<li><a href="#!strumenti-strumenti">Strumenti</a></li>
+					<li><a href="#!strumenti-catene">Catene</a></li>
+					<li class="nav-divider"></li>
+					<li><a href="#!strumenti-storico">Storico</a></li>
+				</ul>
+			</li>
+			<li><a href="#!gestori">Gestori</a></li>
+			<li><a href="#!comuni">Comuni</a></li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li class="dropdown">
+				<a class="dropdown-toggle active" data-toggle="dropdown"><span class="glyphicon glyphicon-envelope"></span> <span ng-show="pmcount && pmcount > 0">{{me.messages}}</span><span class="caret"></span></a>
+				<ul class="dropdown-menu" id="navbarlinks">
+					<li><a ng-href="#!messaggi-pm">PM</a></li>
+					<li><a ng-href="#!messaggi-sent">PM: Inviati</a></li>
+					<li class="nav-divider"></li>
+					<li><a href="#!messaggi-board">Board</a></li>
+				</ul>
+			</li>
 
-				<li class="dropdown">
-					<a class="dropdown-toggle active" data-toggle="dropdown" >
-						<span ng-show="me && me.username" class="glyphicon glyphicon-user"></span> {{me.username}}<span class="caret"></span>
-						<span ng-show="!me || !me.username" style="color:red;">CONNETION ERROR</span>
-					</a>
-					<ul class="dropdown-menu">
-						<li><a ng-href="#!utenti/{{me.id}}">Profilo</a></li>
-						<li><a ng-href="#!utenti/pass/{{me.id}}">Cambia Password</a></li>
-						<li class="nav-divider"></li>
-						<li><a href="#!utenti">Utenti</a></li>
-						<li class="nav-divider"></li>
-						<li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
+			<li class="dropdown">
+				<a class="dropdown-toggle active" data-toggle="dropdown" >
+					<span ng-show="me && me.username" class="glyphicon glyphicon-user"></span> {{me.username}}<span class="caret"></span>
+					<span ng-show="!me || !me.username" style="color:red;">CONNETION ERROR</span>
+				</a>
+				<ul class="dropdown-menu" id="navbarlinks">
+					<li><a ng-href="#!utenti/{{me.id}}">Profilo</a></li>
+					<li><a ng-href="#!utenti/pass/{{me.id}}">Cambia Password</a></li>
+					<li class="nav-divider"></li>
+					<li><a href="#!utenti">Utenti</a></li>
+					<li class="nav-divider"></li>
+					<li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+				</ul>
+			</li>
+		</ul>
 	</div>
 </nav>

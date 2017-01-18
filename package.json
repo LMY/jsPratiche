@@ -19,6 +19,7 @@
     "express-session": "^1.14.0",
     "momentjs": "^1.1.17",
     "morgan": "~1.7.0",
+    "mssql": "^3.3.0",
     "multer": "^1.1.0",
     "mysql": ">=2.5.0",
     "passport": "^0.3.0",
