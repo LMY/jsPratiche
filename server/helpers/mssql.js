@@ -3,22 +3,21 @@ const config = require('../config/config.js');
 
 module.exports = {
 
-	connect: function(callback, errcallback) {
+	connect: function(callback) {
 		const conn = new mssql.Connection(config.mssql);
 		conn.connect(function(err) {
-			if (err) {
-				conn.close();
-				errcallback(err);
-			}
-			else {
-				callback(conn);
-				conn.close();
-			}
+			callback(err, conn);
+		});
+	},
+	
+	conquery: function(conn, queryString, callback) {
+		const req = new mssql.Request(conn);
+		req.query(queryString, function(err, data) {
+			callback(err, data);
 		});
 	},
 
 	query: function(queryString, callback, errcallback) {
-		console.log(config.mssql);
 		const conn = new mssql.Connection(config.mssql);
 		conn.connect(function(err) {
 			if (err) {
@@ -27,7 +26,7 @@ module.exports = {
 			}
 			else {
 				const req = new mssql.Request(conn);
-				req.query(queryString).then(function (recordset) {
+				req.query(queryString).then(function(recordset) {
 					conn.close();
 					callback(recordset);
 				})
@@ -37,5 +36,7 @@ module.exports = {
 				});
 			}
 		});
-	}
+	},
+	
+	mssql: mssql
 }
