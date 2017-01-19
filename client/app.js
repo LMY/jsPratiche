@@ -1,6 +1,6 @@
 var askconfirm = function(ModalService, next, textmessage) {
 	ModalService.showModal({
-		templateUrl: "client/templates/confirm.html",
+		templateUrl: "templates/confirm.html",
 		controller: "YesNoController",
 		inputs: {
 			message: textmessage

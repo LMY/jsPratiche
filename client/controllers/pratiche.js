@@ -206,7 +206,7 @@ angular.module('app')
 		});
 		$scope.show = function(id) {
 			ModalService.showModal({
-				templateUrl: "client/templates/protoout.html",
+				templateUrl: "templates/protoout.html",
 				controller: "ProtoOUTController",
 				inputs: {
 					title: "ProtoOUT per pratica "+id
