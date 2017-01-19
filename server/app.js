@@ -52,14 +52,6 @@ config.deps.rest = require('./helpers/rest.js');
 require('./routes/index')(config, './server/routes');
 
 
-// 404
-app.use(function(req, res, next) {
-	var err = new Error('Not Found');
-	err.status = 404;
-	next(err);
-});
-
-
 // 500 development error handler, will print stacktrace
 if (app.get('env') === 'development') {
 	app.use(function(err, req, res, next) {

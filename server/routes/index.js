@@ -65,4 +65,12 @@ module.exports = function(config, dirpath) {
 		req.logout();
 		res.redirect('/');
 	});
+	
+	
+	// 404, but redirect to /login if not authenticated
+	config.app.use(isAuthenticated, function(req, res, next) {
+		var err = new Error('Not Found');
+		err.status = 404;
+		next(err);
+	});
 }
