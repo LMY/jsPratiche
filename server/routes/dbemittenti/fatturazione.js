@@ -6,7 +6,7 @@ var express = require('express');
 var router = express.Router();
 
 
-router.get('/test', function(req, res, next) {
+router.get('/', function(req, res, next) {
 	var sql_query = "select dbo.TBL_SITI.ID_SITO, dbo.TBL_GESTORI.DESCRIZIONE as GESTORE, dbo.TBL_SITI.Provincia, dbo.TBL_SITI.Comune, dbo.TBL_SITI.Indirizzo, " +
 		"dbo.TBL_SITI.Stato_Parere, dbo.TBL_SITI.Pt_RicARP, dbo.TBL_SITI.Dt_RicARP, dbo.TBL_SITI.Pt_RilPar, dbo.TBL_SITI.Dt_RilPar, " +
 		"dbo.TBL_DESCRIZIONE_FLAG_realizz.descr_flag as Realizzato, dbo.TBL_SITI.NoteSito " +
@@ -43,13 +43,13 @@ router.get('/test', function(req, res, next) {
 	}*/
 	const protoString = req.query.proto || "dbo.TBL_SITI.Dt_RilPar";
 
-	if (req.query.datefrom) {
+	if (req.query.dateFrom) {
 		if (sql_where.length > 0)
 			sql_where += " AND ";
 
 		sql_where += protoString + " >= @reqdatefrom";
 	}
-	if (req.query.dateto) {
+	if (req.query.dateTo) {
 		if (sql_where.length > 0)
 			sql_where += " AND ";
 
@@ -63,15 +63,10 @@ router.get('/test', function(req, res, next) {
 
 		if (err) errorHandler(err);
 		else {
-
-console.log(moment(req.query.datefrom).toISOString());
-console.log(sql_query);
-
 			const dbreq = new mssql.mssql.Request(connection);
 			if (req.query.comune) dbreq.input('reqcomune', mssql.mssql.NVarChar, req.query.comune);
-			if (req.query.datefrom) dbreq.input('reqdatefrom', mssql.mssql.DateTime, new Date(moment(req.query.datefrom).toISOString()));
-			if (req.query.dateto) dbreq.input('reqdateto', mssql.mssql.DateTime, new Date(moment(req.query.dateto).toISOString()));
-
+			if (req.query.dateFrom) dbreq.input('reqdatefrom', mssql.mssql.DateTime, new Date(moment(req.query.dateFrom).toISOString()));
+			if (req.query.dateTo) dbreq.input('reqdateto', mssql.mssql.DateTime, new Date(moment(req.query.dateTo).toISOString()));
 
 			dbreq.query(sql_query, function(err, data2) {
 					if (err) errorHandler(err);
