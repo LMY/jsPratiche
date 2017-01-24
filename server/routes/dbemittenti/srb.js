@@ -14,9 +14,9 @@ router.get('/all', function(req, res, next) {
 				"FROM dbo.TBL_SITI INNER JOIN dbo.TBL_GESTORI ON (dbo.TBL_SITI.gestore = dbo.TBL_GESTORI.codice), dbo.TBL_CELLE, (SELECT id_flag,descr_flag  FROM dbo.TBL_DESCRIZIONE_FLAG_realizz UNION SELECT 0 as id_flag, 'NON SPECIFICATO' as descr_flag) as TempRealizzato "+
 				"WHERE dbo.TBL_SITI.Flag_realizzato = TempRealizzato.id_flag"
 
-	const errorHandler = function(err) { rest.error500(res, err); connection.close(); }
-
 	mssql.connect(function(err, connection) {
+		const errorHandler = function(err) { rest.error500(res, err); connection.close(); }
+
 		if (err) errorHandler(err);
 		else
 			new mssql.mssql.Request(connection)

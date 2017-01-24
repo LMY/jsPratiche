@@ -1,33 +1,86 @@
 var rest = require('../../helpers/rest.js');
 var mssql = require('../../helpers/mssql.js');
+var moment = require('momentjs');
 
 var express = require('express');
 var router = express.Router();
 
-router.get('/all', function(req, res, next) {
-	var query = "SELECT distinct dbo.TBL_SITI.id_sito as ID, dbo.TBL_SITI.codice_sito as 'Codice Sito', dbo.TBL_SITI.stato_parere as 'Stato Parere', "+
-				"dbo.TBL_GESTORI.descrizione as Gestore, dbo.TBL_SITI.comune as Comune, "+
-				"dbo.TBL_SITI.provincia as Provincia, dbo.TBL_SITI.indirizzo as Indirizzo, "+
-				"dbo.TBL_SITI.notesito AS Notee, dbo.TBL_SITI.Pt_RicARP AS 'Protocollo In', dbo.TBL_SITI.Dt_RicARP AS 'Data Protocollo In', "+
-				"dbo.TBL_SITI.Pt_RilPar AS 'Protocollo Out', dbo.TBL_SITI.Dt_RilPar AS 'Data Protocollo Out', dbo.TBL_SITI.Data_Attivazione AS 'Data Attivazione', "+
-				"dbo.TBL_SITI.quota_slm as Quota, dbo.TBL_SITI.utmx as UTMX, dbo.TBL_SITI.utmy as UTMY, TempRealizzato.descr_flag as Realizzato "+
-				"FROM dbo.TBL_SITI INNER JOIN dbo.TBL_GESTORI ON (dbo.TBL_SITI.gestore = dbo.TBL_GESTORI.codice), dbo.TBL_CELLE, (SELECT id_flag,descr_flag  FROM dbo.TBL_DESCRIZIONE_FLAG_realizz UNION SELECT 0 as id_flag, 'NON SPECIFICATO' as descr_flag) as TempRealizzato "+
-				"WHERE dbo.TBL_SITI.Flag_realizzato = TempRealizzato.id_flag"
 
-	const errorHandler = function(err) { rest.error500(res, err); connection.close(); }
+router.get('/test', function(req, res, next) {
+	var sql_query = "select dbo.TBL_SITI.ID_SITO, dbo.TBL_GESTORI.DESCRIZIONE as GESTORE, dbo.TBL_SITI.Provincia, dbo.TBL_SITI.Comune, dbo.TBL_SITI.Indirizzo, " +
+		"dbo.TBL_SITI.Stato_Parere, dbo.TBL_SITI.Pt_RicARP, dbo.TBL_SITI.Dt_RicARP, dbo.TBL_SITI.Pt_RilPar, dbo.TBL_SITI.Dt_RilPar, " +
+		"dbo.TBL_DESCRIZIONE_FLAG_realizz.descr_flag as Realizzato, dbo.TBL_SITI.NoteSito " +
+		"from dbo.TBL_SITI inner join  dbo.TBL_GESTORI  on (dbo.TBL_SITI.Gestore = dbo.TBL_GESTORI.codice) " +
+		"inner join dbo.TBL_DESCRIZIONE_FLAG_realizz on (dbo.TBL_SITI.Flag_realizzato = dbo.TBL_DESCRIZIONE_FLAG_realizz.id_flag) " +
+		"inner join dbo.TBL_UTENTI on (dbo.TBL_SITI.ID_Utente = dbo.TBL_UTENTI.ID_UTENTE)";
 
+	var sql_where = "";
+
+	// COMUNE	
+	if (req.query.comune) {
+		if (sql_where.length > 0)
+			sql_where += " AND ";
+
+		sql_where += "dbo.TBL_SITI.Comune LIKE '%@reqcomune%'";
+	}
+
+	// STATO
+	/*
+	if (req.query.state) {
+		if (sql_where.length > 0)
+			sql_where += " AND ";
+
+		const letters = req.query.state.split('');
+		sql_where += " (";
+		for (var i=0; i<letters.length; i++) {
+			if (i > 0)
+				sql_where += " OR ";
+
+			sql_where += "dbo.TBL_SITI.Stato_Parere = '" + letters[i] + "'";
+		}
+
+		sql_where += ")";
+	}*/
+	const protoString = req.query.proto || "dbo.TBL_SITI.Dt_RilPar";
+
+	if (req.query.datefrom) {
+		if (sql_where.length > 0)
+			sql_where += " AND ";
+
+		sql_where += protoString + " >= @reqdatefrom";
+	}
+	if (req.query.dateto) {
+		if (sql_where.length > 0)
+			sql_where += " AND ";
+
+		sql_where += protoString + " <= @reqdateto";
+	}
+
+	sql_query += (sql_where.length==0 ? "" : " WHERE " + sql_where) + " order by dbo.TBL_SITI.ID_SITO;";
+	
 	mssql.connect(function(err, connection) {
+		const errorHandler = function(err) { rest.error500(res, err); connection.close(); }
+
 		if (err) errorHandler(err);
-		else
-			new mssql.mssql.Request(connection)
-//				.input('reqparamsid', mssql.mssql.NVarChar, id)		
-				.batch(query, function(err, data2) {	// batch, not query (res is ~3mb)
+		else {
+
+console.log(moment(req.query.datefrom).toISOString());
+console.log(sql_query);
+
+			const dbreq = new mssql.mssql.Request(connection);
+			if (req.query.comune) dbreq.input('reqcomune', mssql.mssql.NVarChar, req.query.comune);
+			if (req.query.datefrom) dbreq.input('reqdatefrom', mssql.mssql.DateTime, new Date(moment(req.query.datefrom).toISOString()));
+			if (req.query.dateto) dbreq.input('reqdateto', mssql.mssql.DateTime, new Date(moment(req.query.dateto).toISOString()));
+
+
+			dbreq.query(sql_query, function(err, data2) {
 					if (err) errorHandler(err);
 					else {
 						connection.close();
-						res.json(data2);
+						rest.json(res, data2);
 					}
 				});
+		}
 	});
 });
 
