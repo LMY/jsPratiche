@@ -24,7 +24,7 @@ router.get('/all', function(req, res, next) {
 					if (err) errorHandler(err);
 					else {
 						connection.close();
-						res.json(data2);
+						rest.json(res, data2);
 					}
 				});
 	});
@@ -101,7 +101,7 @@ router.get('/near', function(req, res, next) {
 						const appendi = function(ret, i, data) {		// iterate i=[0;data.length-1]
 							if (i == data.length) {
 								connection.close();
-								res.json(ret);
+								rest.json(res, ret);
 							}
 							else
 								getSite(connection, data[i].id, function(err, newdata) {
@@ -129,7 +129,7 @@ router.get('/cells/:id', function(req, res, next) {
 			connection.close();
 
 			if (err) rest.error500(res, err);
-			else res.json(data);
+			else rest.json(res, data);
 		});
 	});
 });
@@ -145,7 +145,7 @@ router.get('/:id', function(req, res, next) {
 			connection.close();
 
 			if (err) rest.error500(res, err);
-			else res.json1(data);
+			else rest.json1(res, data);
 		});
 	});
 });
