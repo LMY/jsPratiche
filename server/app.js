@@ -12,6 +12,8 @@ const favicon = require('express-favicon');
 var app = express();
 
 
+const envtype = app.get('env') === 'development' ? 'd' : 'e';
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -19,7 +21,7 @@ app.set('view engine', 'ejs');
 
 // initialize passport
 app.use(expressSession({secret: config.secret,
-    name: "jspratiche",
+    name: "jspratiche"+envtype,
 //  store: sessionStore, // connect-mongo session store
     proxy: true,
     resave: false,
