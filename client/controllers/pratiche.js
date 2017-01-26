@@ -21,6 +21,12 @@ angular.module('app')
 			'update': { method:'PUT' }
 		});
 	}])
+	.factory('PraticheInfo', ['$resource', function($resource){
+		return $resource('/pratiche/praticheinfo/:id', null, {
+			'update': { method:'PUT' },
+			'get' : { isArray:true, method:'GET', url:'/pratiche/praticheinfo/:id' }
+		});
+	}])
 
 	.factory('PraticheProtoOUT', ['$resource', function($resource){
 		return $resource('/pratiche/pratiche/protoout/:id', null, {
@@ -290,11 +296,18 @@ angular.module('app')
 			}, "Sei sicuro di voler rimovere la pratica?");
 		}
 	}])
-	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'Me', 'PMcount','Utenti', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, Me, PMcount, Utenti, StoricoStatoPratiche, $location, ModalService) {
+	.controller('PraticaStatoDetailController', ['$window', '$scope', '$routeParams', 'Pratiche', 'PraticheInfo', 'Me', 'PMcount','Utenti', 'StoricoStatoPratiche', '$location', 'ModalService', function($window, $scope, $routeParams, Pratiche, PraticheInfo, Me, PMcount, Utenti, StoricoStatoPratiche, $location, ModalService) {
 		$scope.me = Me.get(function(x) {
 			$scope.selectedUser = $scope.me.id
 		});
 		$scope.pmcount = PMcount.query();
+
+		$scope.info = PraticheInfo.get({id: $routeParams.id }, function(x) {
+			for (var i=0; i<x.length; i++) {
+				x[i].isupdated = true;
+				x[i].isnew = false;
+			}
+		});
 
 		$scope.utenti = Utenti.query();
 		$scope.orderByField = "timePoint";
@@ -373,6 +386,37 @@ angular.module('app')
 					$window.history.back();
 				});
 			}
+		}
+
+		$scope.newsiteinfo = function() {
+			var newinfo = new PraticheInfo({ idsite: 0, idpratica: $routeParams.id, flag87bis: 0, flagSupTerra: 0, flagA24: 0, isnew:true, isupdated:false });
+			$scope.info.push(newinfo);
+		}
+
+		$scope.sitesave = function(siteinfo) {
+			var theinfo = new PraticheInfo({ idsite: siteinfo.idsite, idpratica: siteinfo.idpratica, flag87bis: siteinfo.flag87bis, flagSupTerra: siteinfo.flagSupTerra, flagA24: siteinfo.flagA24, isnew: siteinfo.isnew, isupdated: false });
+
+			if (theinfo.isnew)
+				theinfo.$save(function() { siteinfo.isupdated = true; siteinfo.isnew=false; });
+			else
+				PraticheInfo.update({id: theinfo.idsite}, theinfo, function() { siteinfo.isupdated = true; });
+		}
+
+		$scope.sitedelete = function(siteinfo) {
+			PraticheInfo.remove({id: siteinfo.idsite}, function() {
+				var index = $scope.info.indexOf(siteinfo);
+				$scope.info.splice(index, 1);
+			});
+			
+			/*
+							Pratiche.remove({id: $scope.epratica.id}, function() {
+					$location.url('pratiche');
+				});*/
+			
+		}
+
+		$scope.setupdated = function(siteinfo) {
+			siteinfo.isupdated = false;
 		}
 	}])
 	.controller('PraticheFatturazione', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, Utenti, $location) {

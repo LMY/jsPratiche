@@ -40,24 +40,58 @@
 
 		<button class="col-md-2 btn btn-success" ng-click="stato(4)" style="top: 12px;" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
 	</div>
-	<hr>
-		<table class="table table-hover">
-			<thead>
-				<tr>
-<!--						<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
-					<th class="text-center"><a ng-click="orderByField='descStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='descStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-					<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Modifica <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="x in history|orderBy:orderByField:reverseSort" ng-dblclick="showinteg(x.integID)">
-<!--						<td class="text-center">{{x.id}}</td>  -->
-					<td class="text-center">{{x.descStato}}</td>
-					<td class="text-center">{{x.timePoint}}</td>
-				</tr>
-			</tbody>
-		</table>
 
+
+	<hr>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+<!--						<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th> -->
+				<th class="text-center"><a ng-click="orderByField='descStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='descStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField='timePoint'; reverseSort=!reverseSort">Modifica <span ng-show="orderByField=='timePoint'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="x in history|orderBy:orderByField:reverseSort" ng-dblclick="showinteg(x.integID)">
+<!--						<td class="text-center">{{x.id}}</td>  -->
+				<td class="text-center">{{x.descStato}}</td>
+				<td class="text-center">{{x.timePoint}}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<hr>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th class="text-center"><a ng-click="orderByField2='idSite'; reverseSort2=!reverseSort2">ID Sito <span ng-show="orderByField2=='idSite'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField2='flagA24'; reverseSort2=!reverseSort2">Alpha24 <span ng-show="orderByField2=='flagA24'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+
+				<th class="text-center"><a ng-click="orderByField2='flag87bis'; reverseSort2=!reverseSort2">87bis <span ng-show="orderByField2=='flag87bis'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+
+				<th class="text-center"><a ng-click="orderByField2='flagSupTerra'; reverseSort2=!reverseSort2">Sup. Terra <span ng-show="orderByField2=='flagSupTerra'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+
+				<th class="text-center">Azioni </th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="x in info|orderBy:orderByField:reverseSort2">
+				<td class="text-center"><input type="text" class="form-control" id="address" ng-model="x.idsite" placeholder="ID Sito" ng-change="setupdated(x)"></td>
+				<td class="text-center"><input class="form-control" type="checkbox" ng-model="x.flagA24" ng-true-value="1" ng-false-value="0" ng-change="setupdated(x)"></td>
+				<td class="text-center"><input class="form-control" type="checkbox" ng-model="x.flag87bis" ng-true-value="1" ng-false-value="0" ng-change="setupdated(x)"></td>
+				<td class="text-center"><input class="form-control" type="checkbox" ng-model="x.flagSupTerra" ng-true-value="1" ng-false-value="0" ng-change="setupdated(x)"></td>
+				<td class="text-center">
+					<button class="btn btn-success" ng-click="sitesave(x)" style="top: 12px;" ng-show="!x.isupdated">Save</button>
+					<button class="btn btn-danger" ng-click="sitedelete(x)" style="top: 12px;" ng-show="!x.isnew">Delete</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>	
+	<div class="text-center">
+		<button class="btn btn-success" ng-click="newsiteinfo()">Nuovo Sito</button>
+	</div>
+	
+	<hr>
 	<div>
 		<button class="btn btn-default" ng-click="cancel()">Indietro</button>
 		<div class="pull-right">
