@@ -407,12 +407,6 @@ angular.module('app')
 				var index = $scope.info.indexOf(siteinfo);
 				$scope.info.splice(index, 1);
 			});
-			
-			/*
-							Pratiche.remove({id: $scope.epratica.id}, function() {
-					$location.url('pratiche');
-				});*/
-			
 		}
 
 		$scope.setupdated = function(siteinfo) {
