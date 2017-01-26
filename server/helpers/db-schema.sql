@@ -79,10 +79,6 @@ CREATE TABLE Pratiche (
   protoOUT varchar(50),
   dateOUT date,
   note varchar(256),
-  
-  flag87bis boolean,
-  flagCongiunto boolean,
-  flagSupTerra boolean,
 
   PRIMARY KEY (id),
   FOREIGN KEY (tipopratica) REFERENCES ConstTipoPratiche(id) ON DELETE NO ACTION ON UPDATE CASCADE,
@@ -284,7 +280,7 @@ CREATE TABLE SRBSiti(
   activationDate date,
   resignationDate date,
   active boolean,
-  
+
   PRIMARY KEY (id),
   FOREIGN KEY (idcomune) REFERENCES Comuni(id) ON UPDATE CASCADE ON DELETE NO ACTION
 ) DEFAULT CHARSET=utf8;
@@ -300,7 +296,7 @@ CREATE TABLE SRBSitiNote(
 
   PRIMARY KEY (id),
   FOREIGN KEY (idsite) REFERENCES SRBSiti(id) ON UPDATE CASCADE ON DELETE NO ACTION,
-  FOREIGN KEY (iduser) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION  
+  FOREIGN KEY (iduser) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE SRBAntenne(
@@ -355,7 +351,7 @@ CREATE TABLE SRBRiconfig(
   id int(11),
   idnew int(11),
   idold int(11),
-  
+
   PRIMARY KEY (id),
   FOREIGN KEY (idnew) REFERENCES SRBSiti(id) ON UPDATE CASCADE ON DELETE NO ACTION,
   FOREIGN KEY (idold) REFERENCES SRBSiti(id) ON UPDATE CASCADE ON DELETE NO ACTION
@@ -364,8 +360,41 @@ CREATE TABLE SRBRiconfig(
 CREATE TABLE SRBRPraticheSiti(
   idsite int(11),
   idpratica int(11),
-  
+
   PRIMARY KEY (idsite,idpratica),
   FOREIGN KEY (idsite) REFERENCES SRBSiti(id) ON UPDATE CASCADE ON DELETE NO ACTION,
   FOREIGN KEY (idpratica) REFERENCES Pratiche(id) ON UPDATE CASCADE ON DELETE NO ACTION
 ) DEFAULT CHARSET=utf8;
+
+
+/* Link tables */
+CREATE TABLE LinkUtenti(
+  id int(11),			/* id on jsPratiche */
+  idlink int(11),		/* id on db_emittenti */
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (id) REFERENCES Utenti(id) ON UPDATE CASCADE ON DELETE NO ACTION
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE LinkSitiPratiche(
+  idsite int(11),		/* Siti(id) on db_emittenti */
+  idpratica int(11),	/* id on jsPratiche */
+
+  flag87bis boolean,
+  flagSupTerra boolean,
+  flagA24 boolean,
+  
+  PRIMARY KEY (idsite),
+  FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON DELETE CASCADE ON UPDATE CASCADE
+
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE LinkMisure(
+  idpratica int(11),	/* id on jsPratiche */
+  idMisura int(11),		/* Interventi(id) on db_emittenti */
+  
+  PRIMARY KEY (idMisura),
+  FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON DELETE CASCADE ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8;
+
+

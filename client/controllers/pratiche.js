@@ -265,7 +265,7 @@ angular.module('app')
 				if (!$scope.epratica.tipopratica) { alert('Specificare il tipo di pratica!'); return; }
 
 				var pratica = new Pratiche({ idGestore: $scope.epratica.idGestore, idComune: $scope.epratica.idComune, address: $scope.epratica.address, sitecode: $scope.epratica.sitecode, tipopratica: $scope.epratica.tipopratica, protoIN: $scope.epratica.protoIN, dateIN: $scope.epratica.dateIN,
-					protoOUT: $scope.epratica.protoOUT, dateOUT: $scope.epratica.dateOUT, note: $scope.epratica.note, flag87bis: $scope.epratica.flag87bis,flagCongiunto: $scope.epratica.flagCongiunto, flagSupTerra: $scope.epratica.flagSupTerra, flagA24: $scope.epratica.flagA24 });
+					protoOUT: $scope.epratica.protoOUT, dateOUT: $scope.epratica.dateOUT, note: $scope.epratica.note });
 
 				pratica.$save(function(){
 					$location.url('pratiche');
