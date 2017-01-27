@@ -37,7 +37,7 @@ angular.module('app')
 				if (!$scope.eutente || $scope.eutente.length < 1) return;
 				if (!$scope.eutente.username || $scope.eutente.username.length < 1) { alert('Specificare username!'); return; }
 
-				var utente = new Utenti({ username: $scope.eutente.usernaMe, PMcount, name: $scope.eutente.naMe, PMcount, surname: $scope.eutente.surnaMe, PMcount, email: $scope.eutente.email, phone: $scope.eutente.phone });
+				var utente = new Utenti({ username: $scope.eutente.username, PMcount, name: $scope.eutente.name, PMcount, surname: $scope.eutente.surname, PMcount, email: $scope.eutente.email, phone: $scope.eutente.phone });
 				utente.$save(function(){
 					$location.url('utenti');
 				});

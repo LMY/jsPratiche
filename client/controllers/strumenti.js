@@ -75,7 +75,7 @@ angular.module('app')
 			if ($scope.isnew) {
 				if (!$scope.estrumento || $scope.estrumento.length < 1) return;
 
-				var strumento = new Strumenti({ name: $scope.estrumento.naMe, PMcount, marca: $scope.estrumento.marca, modello: $scope.estrumento.modello, serial: $scope.estrumento.serial, inventario: $scope.estrumento.inventario, tipo: $scope.estrumento.tipo, taratura: $scope.estrumento.taratura, note: $scope.estrumento.note });
+				var strumento = new Strumenti({ name: $scope.estrumento.name, PMcount, marca: $scope.estrumento.marca, modello: $scope.estrumento.modello, serial: $scope.estrumento.serial, inventario: $scope.estrumento.inventario, tipo: $scope.estrumento.tipo, taratura: $scope.estrumento.taratura, note: $scope.estrumento.note });
 				strumento.$save(function(){
 					$location.url('strumenti-strumenti');
 				});
@@ -158,7 +158,7 @@ angular.module('app')
 			if ($scope.isnew) {
 				if (!$scope.ecatena || $scope.ecatena.length < 1) return;
 
-				var catena = new Catene({ name: $scope.ecatena.naMe, PMcount, note: $scope.ecatena.note });
+				var catena = new Catene({ name: $scope.ecatena.name, PMcount, note: $scope.ecatena.note });
 				catena.$save(function(){
 					$location.url('strumenti-catene');
 				});

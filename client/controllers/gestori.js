@@ -26,32 +26,32 @@ angular.module('app')
 		$scope.pmcount = PMcount.query();
 
 		$scope.isnew = ($routeParams.id === "new");
-		$scope.egestore = $scope.isnew ? {} : Gestori.get({id: $routeParams.id });
+		$scope.data = $scope.isnew ? {} : Gestori.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Gestore" : "Gestore "+$routeParams.id;
 
 		$scope.update = function( ){
 			if ($scope.isnew) {
-				if (!$scope.egestore || $scope.egestore.length < 1) return;
-				if (!$scope.egestore.name || $scope.egestore.name.length < 1) { alert('Specificare nome!'); return; }
-				if (!$scope.egestore.pec || $scope.egestore.pec.length < 1) { alert('Specificare PEC!'); return; }
+				if (!$scope.data || $scope.data.length < 1) return;
+				if (!$scope.data.name || $scope.data.name.length < 1) { alert('Specificare nome!'); return; }
+				if (!$scope.data.pec || $scope.data.pec.length < 1) { alert('Specificare PEC!'); return; }
 
-				var gestore = new Gestori({ name: $scope.egestore.naMe, PMcount, pec: $scope.egestore.pec });
+				var gestore = new Gestori({ name: $scope.data.name, PMcount, pec: $scope.data.pec });
 				gestore.$save(function(){
 					$location.url('gestori');
 				});
 			}
 			else
-				Gestori.update({id: $scope.egestore.id}, $scope.egestore, function() {
+				Gestori.update({id: $scope.data.id}, $scope.data, function() {
 					$location.url('gestori');
 				});
 		}
 
 		$scope.remove = function() {
 			askconfirm(ModalService, function() {
-				Gestori.remove({id: $scope.egestore.id}, function() {
+				Gestori.remove({id: $scope.data.id}, function() {
 					$location.url('gestori');
 				});
-			}, "Sei sicuro di voler rimovere "+$scope.egestore.name+"?");
+			}, "Sei sicuro di voler rimovere "+$scope.data.name+"?");
 		}
 
 		$scope.cancel = function() {

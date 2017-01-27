@@ -5,14 +5,14 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-    sql.query('SELECT * FROM Comuni', function(err, data) {
+    sql.query('SELECT * FROM Province', function(err, data) {
 		if (err) rest.error500(res, err);
 		else res.json(data);
 	});
 });
 
 router.get('/:id', function(req, res, next) {
-	var query = sql.format('SELECT * FROM Comuni WHERE id=?', [req.params.id]);
+	var query = sql.format('SELECT * FROM Province WHERE id=?', [req.params.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -21,7 +21,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 router.delete('/:id', function(req, res, next) {
-	var query = sql.format('DELETE FROM Comuni WHERE id=?', [req.params.id]);
+	var query = sql.format('DELETE FROM Province WHERE id=?', [req.params.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -30,7 +30,7 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var query =  sql.format("INSERT INTO Comuni(name,pec,idaas,province) VALUES (?,?,?)", [req.body.name, req.body.pec, req.body.idaas, req.body.province]);
+	var query =  sql.format("INSERT INTO Province(id,name) VALUES (?,?)", [req.body.id, req.body.name ]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -39,7 +39,7 @@ router.post('/', function(req, res, next) {
 });
 
 router.put('/:id', function(req, res, next) {
-	var query = sql.format("UPDATE Comuni SET name = ?, pec = ?, idaas = ?, province = ? WHERE id = ?", [req.body.name, req.body.pec, req.body.idaas, req.body.province, req.params.id]);
+	var query = sql.format("UPDATE Province SET name = ? WHERE id = ?", [req.body.name, req.params.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);

@@ -50,6 +50,7 @@ module.exports = function(config, dirpath) {
 	// app router
 	config.app.use('/utenti', isAuthenticated, require('./utenti'));
 	config.app.use('/gestori', isAuthenticated, require('./gestori'));
+	config.app.use('/province', isAuthenticated, require('./province'));
 	config.app.use('/comuni', isAuthenticated, require('./comuni'));
 	config.app.use('/aas', isAuthenticated, require('./aas'));
 

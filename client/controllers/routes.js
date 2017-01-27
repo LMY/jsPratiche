@@ -6,7 +6,7 @@ angular.module('app')
 				controller: 'MainController'
 			})
 			.when('/gestori', {
-				templateUrl: '/anagrafiche.html',
+				templateUrl: '/gestori.html',
 				controller: 'GestoriController'
 			})
 			.when('/gestori/:id', {
@@ -14,7 +14,7 @@ angular.module('app')
 				controller: 'GestoreDetailCtrl'
 			})
 			.when('/comuni', {
-				templateUrl: '/anagrafiche.html',
+				templateUrl: '/comuni.html',
 				controller: 'ComuneController'
 			})
 			.when('/comuni/:id', {
@@ -22,6 +22,24 @@ angular.module('app')
 				controller: 'ComuneDetailCtrl'
 			})
 
+			.when('/province', {
+				templateUrl: '/province.html',
+				controller: 'ProvinceController'
+			})
+			.when('/province/:id', {
+				templateUrl: '/provinceDetails.html',
+				controller: 'ProvinceDetailCtrl'
+			})
+			.when('/aas', {
+				templateUrl: '/aas.html',
+				controller: 'AASController'
+			})
+			.when('/aas/:id', {
+				templateUrl: '/aasDetails.html',
+				controller: 'AASDetailCtrl'
+			})
+			
+			
 			.when('/pratiche', {
 				templateUrl: '/pratiche.html',
 				controller: 'PraticheController'

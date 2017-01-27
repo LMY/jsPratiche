@@ -1,0 +1,25 @@
+<div class="form-group">
+	<div class="span7 text-center">
+		<button class="btn btn-primary" ng-click="new()">Nuovo Comune</button>
+	</div>
+</div>
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Name <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='province'; reverseSort=!reverseSort">Provincia <span ng-show="orderByField=='province'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='idaas'; reverseSort=!reverseSort">AAS <span ng-show="orderByField=='idaas'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='pec'; reverseSort=!reverseSort">PEC <span ng-show="orderByField=='pec'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="x in anagrafiche|orderBy:orderByField:reverseSort" ng-dblclick="show(x.id)">
+			<td class="text-center">{{x.id}}</td>
+			<td class="text-center">{{x.name}}</td>
+			<td class="text-center">{{x.province}}</td>
+			<td class="text-center">{{x.idaas}}</td>
+			<td class="text-center">{{x.pec}}</td>
+		</tr>
+	</tbody>
+</table>
