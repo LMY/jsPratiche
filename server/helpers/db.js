@@ -1,18 +1,19 @@
 var mysql = require('mysql');
 var config = require('../config/config.js');
-var pool = mysql.createPool(config.db);
+var thepool = mysql.createPool(config.db);
 
 module.exports = {
+	pool: thepool,
 
 	connect: function(callback) {
-		pool.getConnection((err, connection) => {
+		thepool.getConnection((err, connection) => {
 			callback(err, connection);
 			connection.release();
 		});
 	},
 	
 	query: function(query, callback) {
-		pool.getConnection(function(err, connection) {
+		thepool.getConnection(function(err, connection) {
 			connection.query(query,
 				(err, data) => { callback(err, data); }
 			);
@@ -22,7 +23,7 @@ module.exports = {
 	},
 
 	queryfmt: function(query, args, callback) {
-		pool.getConnection(function(err, connection) {
+		thepool.getConnection(function(err, connection) {
 			connection.query(mysql.format(query, args),
 				(err, data) => { callback(err, data); }
 			);
