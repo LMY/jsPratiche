@@ -162,7 +162,7 @@ angular.module('app')
 			$location.url('pratiche/'+id);
 		}
 	}])
-	.controller('PraticheAllController', ['$scope', 'Me', 'PMcount','PraticheAll', '$location', function($scope, Me, PMcount, PraticheAll, $location) {
+	.controller('PraticheAllController', ['$scope', 'Me', 'PMcount', 'PraticheAll', '$location', function($scope, Me, PMcount, PraticheAll, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 
@@ -415,7 +415,7 @@ angular.module('app')
 			siteinfo.isupdated = false;
 		}
 	}])
-	.controller('PraticheFatturazione', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, Utenti, $location) {
+	.controller('PraticheFatturazione', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'PraticheInfo', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, PraticheInfo, Utenti, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 
@@ -434,82 +434,84 @@ angular.module('app')
 		});
 
 		$scope.requery = function(from, to) {
-			$scope.pratiche = PraticheFatturazione.query({ dateFrom: from, dateTo: to }, function() {
-				var seq = 1;
+			$scope.jspratiche = PraticheInfo.query({ dateFrom: from, dateTo: to }, function() {
+				$scope.pratiche = PraticheFatturazione.query({ dateFrom: from, dateTo: to }, function() {
+					var seq = 1;
 
-				function extractOperatore(input) {
-					const parts = input.split(' ');
+					function extractOperatore(input) {
+						const parts = input.split(' ');
 
-					for (var i=0; i<parts.length; i++) {
-						const a = parts[i].trim().toLowerCase();
-						if (a.length == 0 || a == '-')
-							continue;
+						for (var i=0; i<parts.length; i++) {
+							const a = parts[i].trim().toLowerCase();
+							if (a.length == 0 || a == '-')
+								continue;
 
-						for (var u=0; u<$scope.users.length; u++)
-							if (a == $scope.users[u].username.toLowerCase())
-								return $scope.users[u].username;
-					}
-
-					return "?!";
-				}
-				function extractData(input) {
-					return moment(input).format('YYYY-MM-DD');
-				}
-				function extractRif(input) {
-					const parts = input.split('/');
-
-					for (var i=0; i<parts.length; i++)
-						if (parts[i].includes('-') && !parts[i].includes('P'))
-							return parts[i];
-
-					return "";
-				}
-				function extractProto(input) {
-					const parts = input.split(' ');
-					var mmm = 999999;
-					var already12 = false;
-
-					for (var i=0; i<parts.length; i++) {
-						var n = parseInt(parts[i]);
-						if (n == NaN) continue;
-
-						if (n == 12 && !already12) {	// ignore first 12
-							already12 = true;
-							continue;
+							for (var u=0; u<$scope.users.length; u++)
+								if (a == $scope.users[u].username.toLowerCase())
+									return $scope.users[u].username;
 						}
 
-						if (n < mmm)
-							mmm = n;
+						return "?!";
+					}
+					function extractData(input) {
+						return moment(input).format('YYYY-MM-DD');
+					}
+					function extractRif(input) {
+						const parts = input.split('/');
+
+						for (var i=0; i<parts.length; i++)
+							if (parts[i].includes('-') && !parts[i].includes('P'))
+								return parts[i];
+
+						return "";
+					}
+					function extractProto(input) {
+						const parts = input.split(' ');
+						var mmm = 999999;
+						var already12 = false;
+
+						for (var i=0; i<parts.length; i++) {
+							var n = parseInt(parts[i]);
+							if (n == NaN) continue;
+
+							if (n == 12 && !already12) {	// ignore first 12
+								already12 = true;
+								continue;
+							}
+
+							if (n < mmm)
+								mmm = n;
+						}
+
+						return mmm == 999999 ? "" : ""+mmm;
+					}
+					function extractSiteCode(input) {
+						const parts = input.split(' ');
+						for (var i=0; i<parts.length; i++) {
+							const la = parts[i].trim().toUpperCase();
+
+							if (la.includes("UD") || la.includes("GO")  || la.includes("TS") || la.includes("PN") ||
+								la.includes("UX") || la.includes("GX")  || la.includes("TX") || la.includes("PX"))
+								return la;
+						}
+
+						return "";
 					}
 
-					return mmm == 999999 ? "" : ""+mmm;
-				}
-				function extractSiteCode(input) {
-					const parts = input.split(' ');
-					for (var i=0; i<parts.length; i++) {
-						const la = parts[i].trim().toUpperCase();
-
-						if (la.includes("UD") || la.includes("GO")  || la.includes("TS") || la.includes("PN") ||
-							la.includes("UX") || la.includes("GX")  || la.includes("TX") || la.includes("PX"))
-							return la;
-					}
-
-					return "";
-				}
-
-				$scope.pratiche.forEach(function(x) {
-					x.seq = seq++;
-					x.FatturareA = '\u2190';
-					x.operatore = extractOperatore(x.NoteSito);
-					x.proto = extractProto(x.Pt_RilPar);
-					x.riferimento = extractRif(x.Pt_RilPar);
-					x.data = extractData(x.Dt_RilPar);
-					x.sitecode = extractSiteCode(x.NoteSito);
+					$scope.pratiche.forEach(function(x) {
+						x.seq = seq++;
+						x.FatturareA = '\u2190';
+						x.operatore = extractOperatore(x.NoteSito);
+						x.proto = extractProto(x.Pt_RilPar);
+						x.riferimento = extractRif(x.Pt_RilPar);
+						x.data = extractData(x.Dt_RilPar);
+						x.sitecode = extractSiteCode(x.NoteSito);
+					});
 				});
 			});
 		}
 	}])
-	.controller('PraticheStatistiche', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, Utenti, $location) {
+	.controller('PraticheStatistiche', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'PraticheInfo', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, PraticheInfo, Utenti, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 		$scope.users = Utenti.query();
@@ -524,78 +526,85 @@ angular.module('app')
 			$location.url('pratiche/'+id);
 		}
 
+
 		$scope.requery = function(from, to) {
-			$scope.pratiche = PraticheFatturazione.query({ dateFrom: from, dateTo: to }, function() {
-				var seq = 1;
+			$scope.jspratiche = PraticheInfo.query({ dateFrom: from, to, dateType: "dateOUT" }, function() {
 
-				function extractOperatore(input) {
-					const parts = input.split(' ');
+				for (var i=0; i<$scope.jspratiche.length; i++)
+					console.log(JSON.stringify($scope.jspratiche[i]));
 
-					for (var i=0; i<parts.length; i++) {
-						const a = parts[i].trim().toLowerCase();
-						if (a.length == 0 || a == '-')
-							continue;
+				$scope.pratiche = PraticheFatturazione.query({ dateFrom: from, dateTo: to }, function() {
+					var seq = 1;
 
-						for (var u=0; u<$scope.users.length; u++)
-							if (a == $scope.users[u].username.toLowerCase())
-								return $scope.users[u].username;
-					}
+					function extractOperatore(input) {
+						const parts = input.split(' ');
 
-					return "?!";
-				}
-				function extractData(input) {
-					return moment(input).format('YYYY-MM-DD');
-				}
-				function extractRif(input) {
-					const parts = input.split('/');
+						for (var i=0; i<parts.length; i++) {
+							const a = parts[i].trim().toLowerCase();
+							if (a.length == 0 || a == '-')
+								continue;
 
-					for (var i=0; i<parts.length; i++)
-						if (parts[i].includes('-') && !parts[i].includes('P'))
-							return parts[i];
-
-					return "";
-				}
-				function extractProto(input) {
-					const parts = input.split(' ');
-					var mmm = 999999;
-					var already12 = false;
-
-					for (var i=0; i<parts.length; i++) {
-						var n = parseInt(parts[i]);
-						if (n == NaN) continue;
-
-						if (n == 12 && !already12) {	// ignore first 12
-							already12 = true;
-							continue;
+							for (var u=0; u<$scope.users.length; u++)
+								if (a == $scope.users[u].username.toLowerCase())
+									return $scope.users[u].username;
 						}
 
-						if (n < mmm)
-							mmm = n;
+						return "?!";
+					}
+					function extractData(input) {
+						return moment(input).format('YYYY-MM-DD');
+					}
+					function extractRif(input) {
+						const parts = input.split('/');
+
+						for (var i=0; i<parts.length; i++)
+							if (parts[i].includes('-') && !parts[i].includes('P'))
+								return parts[i];
+
+						return "";
+					}
+					function extractProto(input) {
+						const parts = input.split(' ');
+						var mmm = 999999;
+						var already12 = false;
+
+						for (var i=0; i<parts.length; i++) {
+							var n = parseInt(parts[i]);
+							if (n == NaN) continue;
+
+							if (n == 12 && !already12) {	// ignore first 12
+								already12 = true;
+								continue;
+							}
+
+							if (n < mmm)
+								mmm = n;
+						}
+
+						return mmm == 999999 ? "" : ""+mmm;
+					}
+					function extractSiteCode(input) {
+						const parts = input.split(' ');
+						for (var i=0; i<parts.length; i++) {
+							const la = parts[i].trim().toUpperCase();
+
+							if (la.includes("UD") || la.includes("GO")  || la.includes("TS") || la.includes("PN") ||
+								la.includes("UX") || la.includes("GX")  || la.includes("TX") || la.includes("PX"))
+								return la;
+						}
+
+						return "";
 					}
 
-					return mmm == 999999 ? "" : ""+mmm;
-				}
-				function extractSiteCode(input) {
-					const parts = input.split(' ');
-					for (var i=0; i<parts.length; i++) {
-						const la = parts[i].trim().toUpperCase();
-
-						if (la.includes("UD") || la.includes("GO")  || la.includes("TS") || la.includes("PN") ||
-							la.includes("UX") || la.includes("GX")  || la.includes("TX") || la.includes("PX"))
-							return la;
-					}
-
-					return "";
-				}
-
-				$scope.pratiche.forEach(function(x) {
-					x.seq = seq++;
-					x.FatturareA = '\u2190';
-					x.operatore = extractOperatore(x.NoteSito);
-					x.proto = extractProto(x.Pt_RilPar);
-					x.riferimento = extractRif(x.Pt_RilPar);
-					x.data = extractData(x.Dt_RilPar);
-					x.sitecode = extractSiteCode(x.NoteSito);
+					$scope.pratiche.forEach(function(x) {
+						x.seq = seq++;
+						x.FatturareA = '\u2190';
+						x.operatore = extractOperatore(x.NoteSito);
+						x.proto = extractProto(x.Pt_RilPar);
+						x.riferimento = extractRif(x.Pt_RilPar);
+						x.data = extractData(x.Dt_RilPar);
+						x.sitecode = extractSiteCode(x.NoteSito);
+					});
 				});
 			});
 		}

@@ -6,7 +6,14 @@ var router = express.Router();
 
 
 router.get('/', function(req, res, next) {
-	rest.error500(res, "Not permitted");
+	if (!req.query.dateFrom || !req.query.dateTo)
+		rest.error500(res, "Not permitted");
+	else
+		sql.query(sql.format("SELECT * FROM LinkSitiPratiche WHERE idpratica IN (SELECT id FROM Pratiche where dateOUT BETWEEN ? AND ?)",
+								[ req.query.dateFrom, req.query.dateTo ]), function(err, data) {
+			if (err) rest.error500(res, err);
+			else rest.json(res, data);
+		});		
 });
 
 router.get('/:id', function(req, res, next) {
