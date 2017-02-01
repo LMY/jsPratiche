@@ -168,6 +168,8 @@ angular.module('app')
 
 		$scope.dateFrom = moment().subtract(30, 'day').set('date', 1).format("YYYY-MM-DD");
 		$scope.dateTo = moment().format("YYYY-MM-DD");
+		$scope.dateTypes = [ "dateIN", "dateOUT" ];
+		$scope.dateType = "dateIN";
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
@@ -176,15 +178,15 @@ angular.module('app')
 			$location.url('pratiche/'+id);
 		}
 
-		$scope.requery = function(from, to) {
-			$scope.pratiche = PraticheAll.query({ dateFrom: from, dateTo: to }, function() {
+		$scope.requery = function(from, to, type) {
+			$scope.pratiche = PraticheAll.query({ dateFrom: from, dateTo: to, dateType: type }, function() {
 				$scope.pratiche.forEach(function(x) {
 					x.rowClass = getTableRowClass(x.idStato);
 					if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
 				});
 			});
 		}
-		$scope.requery($scope.dateFrom, $scope.dateTo);	// GET $scope.pratiche
+		$scope.requery($scope.dateFrom, $scope.dateTo, $scope.dateType);	// GET $scope.pratiche
 	}])
 	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PMcount','PraticheCorreggere', '$location', function($scope, Me, PMcount, PraticheCorreggere, $location) {
 		$scope.me = Me.get();
@@ -414,6 +416,100 @@ angular.module('app')
 		}
 	}])
 	.controller('PraticheFatturazione', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, Utenti, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
+		$scope.dateFrom = moment().subtract(1, 'month').set('date', 1).format("YYYY-MM-DD");	// day 1 of prev month
+		$scope.dateTo = moment().set('date', 1).subtract(1, 'day').format("YYYY-MM-DD");		// day LAST of prev month
+
+		$scope.orderByField = 'dateIN';
+		$scope.reverseSort = false;
+
+		$scope.show = function(id) {
+			$location.url('pratiche/'+id);
+		}
+
+		$scope.users = Utenti.query(function() {
+			$scope.requery($scope.dateFrom, $scope.dateTo);	// GET $scope.pratiche after Users, or extractOperatore could fail at 1st execution
+		});
+
+		$scope.requery = function(from, to) {
+			$scope.pratiche = PraticheFatturazione.query({ dateFrom: from, dateTo: to }, function() {
+				var seq = 1;
+
+				function extractOperatore(input) {
+					const parts = input.split(' ');
+
+					for (var i=0; i<parts.length; i++) {
+						const a = parts[i].trim().toLowerCase();
+						if (a.length == 0 || a == '-')
+							continue;
+
+						for (var u=0; u<$scope.users.length; u++)
+							if (a == $scope.users[u].username.toLowerCase())
+								return $scope.users[u].username;
+					}
+
+					return "?!";
+				}
+				function extractData(input) {
+					return moment(input).format('YYYY-MM-DD');
+				}
+				function extractRif(input) {
+					const parts = input.split('/');
+
+					for (var i=0; i<parts.length; i++)
+						if (parts[i].includes('-') && !parts[i].includes('P'))
+							return parts[i];
+
+					return "";
+				}
+				function extractProto(input) {
+					const parts = input.split(' ');
+					var mmm = 999999;
+					var already12 = false;
+
+					for (var i=0; i<parts.length; i++) {
+						var n = parseInt(parts[i]);
+						if (n == NaN) continue;
+
+						if (n == 12 && !already12) {	// ignore first 12
+							already12 = true;
+							continue;
+						}
+
+						if (n < mmm)
+							mmm = n;
+					}
+
+					return mmm == 999999 ? "" : ""+mmm;
+				}
+				function extractSiteCode(input) {
+					const parts = input.split(' ');
+					for (var i=0; i<parts.length; i++) {
+						const la = parts[i].trim().toUpperCase();
+
+						if (la.includes("UD") || la.includes("GO")  || la.includes("TS") || la.includes("PN") ||
+							la.includes("UX") || la.includes("GX")  || la.includes("TX") || la.includes("PX"))
+							return la;
+					}
+
+					return "";
+				}
+
+				$scope.pratiche.forEach(function(x) {
+					x.seq = seq++;
+					x.FatturareA = '\u2190';
+					x.operatore = extractOperatore(x.NoteSito);
+					x.proto = extractProto(x.Pt_RilPar);
+					x.riferimento = extractRif(x.Pt_RilPar);
+					x.data = extractData(x.Dt_RilPar);
+					x.sitecode = extractSiteCode(x.NoteSito);
+				});
+			});
+		}
+	}])
+	.controller('PraticheStatistiche', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, Utenti, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 		$scope.users = Utenti.query();
