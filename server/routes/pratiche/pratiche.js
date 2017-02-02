@@ -15,6 +15,15 @@ router.get('/', function(req, res, next) {
 	});
 });
 
+router.get('/count', function(req, res, next) {
+	var query = "SELECT Pratiche.idGestore as id,Gestori.name,COUNT(idGestore) as count FROM LinkSitiPratiche JOIN Pratiche on LinkSitiPratiche.idPratica = Pratiche.id JOIN Gestori on Pratiche.idGestore = Gestori.id WHERE dateOUT > '2016-12-31' GROUP BY Pratiche.idGestore,Gestori.name";
+
+	sql.query(query, function(err, data) {
+		if (err) rest.error500(res, err);
+		else res.json(data);
+	});
+});
+
 /* GET /pratiche storico listing. */
 router.get('/all', function(req, res, next) {
 	var query = "SELECT T3.*, T4.stringUser, T5.diff FROM (SELECT Pratiche.*, idStato, Gestori.name as stringGestore, Comuni.name as stringComune, ConstTipoPratiche.descrizione as stringTipo, T1.stringStato, T1.final FROM Pratiche LEFT JOIN Gestori on idGestore=Gestori.id LEFT JOIN Comuni on idComune = Comuni.id LEFT JOIN ConstTipoPratiche on tipopratica = ConstTipoPratiche.id LEFT JOIN (SELECT StatoPratiche.*, ConstStatoPratiche.descrizione as stringStato, ConstStatoPratiche.final FROM StatoPratiche LEFT JOIN ConstStatoPratiche on idStato = ConstStatoPratiche.id  WHERE StatoPratiche.id IN (SELECT MAX(id) as id FROM StatoPratiche GROUP BY idPratica)) as T1 on Pratiche.id = T1.idPratica) as T3 LEFT JOIN (SELECT T2.idPratica, T2.timepoint as timePointInCarico, Utenti.username as stringUser FROM (SELECT StatoPratiche.* FROM StatoPratiche WHERE StatoPratiche.id IN (SELECT MAX(StatoPratiche.id) as id FROM AssStatoPraticheUtenti LEFT JOIN StatoPratiche on AssStatoPraticheUtenti.idStato = StatoPratiche.id WHERE StatoPratiche.idStato=2 GROUP BY idPratica)) AS T2 JOIN AssStatoPraticheUtenti on T2.id=AssStatoPraticheUtenti.idStato LEFT JOIN Utenti on AssStatoPraticheUtenti.idUtente=Utenti.id) as T4 on T3.id = T4.idPratica LEFT JOIN (SELECT idPratica, SUM(DATEDIFF(dateIN, dateOUT)) as diff FROM StatoPratiche LEFT JOIN AssStatoPraticheIntegrazioni on StatoPratiche.id=AssStatoPraticheIntegrazioni.idStato LEFT JOIN Integrazioni on AssStatoPraticheIntegrazioni.idInteg = Integrazioni.id GROUP BY idPratica) AS T5 on T3.id = T5.idPratica";
