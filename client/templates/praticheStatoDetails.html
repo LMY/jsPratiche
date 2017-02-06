@@ -66,20 +66,20 @@
 			<tr>
 				<th class="text-center"><a ng-click="orderByField2='idSite'; reverseSort2=!reverseSort2">ID Sito <span ng-show="orderByField2=='idSite'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField2='flagA24'; reverseSort2=!reverseSort2">Alpha24 <span ng-show="orderByField2=='flagA24'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-
 				<th class="text-center"><a ng-click="orderByField2='flag87bis'; reverseSort2=!reverseSort2">87bis <span ng-show="orderByField2=='flag87bis'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-
 				<th class="text-center"><a ng-click="orderByField2='flagSupTerra'; reverseSort2=!reverseSort2">Sup. Terra <span ng-show="orderByField2=='flagSupTerra'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-
+				<th class="text-center"><a ng-click="orderByField2='idriconf'; reverseSort2=!reverseSort2">ID Riconf. <span ng-show="orderByField2=='idriconf'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+								
 				<th class="text-center">Azioni </th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr ng-repeat="x in info|orderBy:orderByField:reverseSort2">
-				<td class="text-center"><input type="text" class="form-control" id="address" ng-model="x.idsite" placeholder="ID Sito" ng-change="setupdated(x)"></td>
+				<td class="text-center"><input type="text" class="form-control" id="idsite" ng-model="x.idsite" placeholder="ID Sito" ng-change="setupdated(x)"></td>
 				<td class="text-center"><input class="form-control" type="checkbox" ng-model="x.flagA24" ng-true-value="1" ng-false-value="0" ng-change="setupdated(x)"></td>
 				<td class="text-center"><input class="form-control" type="checkbox" ng-model="x.flag87bis" ng-true-value="1" ng-false-value="0" ng-change="setupdated(x)"></td>
 				<td class="text-center"><input class="form-control" type="checkbox" ng-model="x.flagSupTerra" ng-true-value="1" ng-false-value="0" ng-change="setupdated(x)"></td>
+				<td class="text-center"><input type="text" class="form-control" id="idriconf" ng-model="x.idriconf" placeholder="ID Riconf" ng-change="setupdated(x)"></td>
 				<td class="text-center">
 					<button class="btn btn-success" ng-click="sitesave(x)" style="top: 12px;" ng-show="!x.isupdated">Save</button>
 					<button class="btn btn-danger" ng-click="sitedelete(x)" style="top: 12px;" ng-show="!x.isnew">Delete</button>

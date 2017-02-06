@@ -26,9 +26,9 @@ router.get('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var query = sql.format("INSERT INTO LinkSitiPratiche(idsite,idpratica,flag87bis,flagSupTerra,flagA24) VALUES (?,?,?,?,?)",
+	var query = sql.format("INSERT INTO LinkSitiPratiche(idsite,idpratica,flag87bis,flagSupTerra,flagA24,idriconf) VALUES (?,?,?,?,?,?)",
 //	ON DUPLICATE KEY UPDATE idpratica=idpratica, flag87bis=flag87bis, flagSupTerra=flagSupTerra, flagA24=flagA24",
-							[ req.body.idsite, req.body.idpratica, req.body.flag87bis, req.body.flagSupTerra, req.body.flagA24 ]);
+							[ req.body.idsite, req.body.idpratica, req.body.flag87bis, req.body.flagSupTerra, req.body.flagA24, req.body.idriconf ]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -37,8 +37,8 @@ router.post('/', function(req, res, next) {
 });
 
 router.put('/:idsite', function(req, res, next) {
-	var query = sql.format("UPDATE LinkSitiPratiche SET idpratica=?, flag87bis=?, flagSupTerra=?, flagA24=? WHERE idsite=?",
-							[ req.body.idpratica, req.body.flag87bis, req.body.flagSupTerra, req.body.flagA24, req.params.idsite ]);
+	var query = sql.format("UPDATE LinkSitiPratiche SET idpratica=?, flag87bis=?, flagSupTerra=?, flagA24=?, idriconf=? WHERE idsite=?",
+							[ req.body.idpratica, req.body.flag87bis, req.body.flagSupTerra, req.body.flagA24, req.body.idriconf, req.params.idsite ]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);

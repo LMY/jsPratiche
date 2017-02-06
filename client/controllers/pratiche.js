@@ -27,6 +27,9 @@ angular.module('app')
 			'get' : { isArray:true, method:'GET', url:'/pratiche/praticheinfo/:id' }
 		});
 	}])
+	.factory('PraticheCount', ['$resource', function($resource){
+		return $resource('/pratiche/pratiche/count');
+	}])	
 
 	.factory('PraticheProtoOUT', ['$resource', function($resource){
 		return $resource('/pratiche/pratiche/protoout/:id', null, {
@@ -391,12 +394,12 @@ angular.module('app')
 		}
 
 		$scope.newsiteinfo = function() {
-			var newinfo = new PraticheInfo({ idsite: 0, idpratica: $routeParams.id, flag87bis: 0, flagSupTerra: 0, flagA24: 0, isnew:true, isupdated:false });
+			var newinfo = new PraticheInfo({ idsite: 0, idpratica: $routeParams.id, flag87bis: 0, flagSupTerra: 0, flagA24: 0, idriconf: 0, isnew:true, isupdated:false });
 			$scope.info.push(newinfo);
 		}
 
 		$scope.sitesave = function(siteinfo) {
-			var theinfo = new PraticheInfo({ idsite: siteinfo.idsite, idpratica: siteinfo.idpratica, flag87bis: siteinfo.flag87bis, flagSupTerra: siteinfo.flagSupTerra, flagA24: siteinfo.flagA24, isnew: siteinfo.isnew, isupdated: false });
+			var theinfo = new PraticheInfo({ idsite: siteinfo.idsite, idpratica: siteinfo.idpratica, flag87bis: siteinfo.flag87bis, flagSupTerra: siteinfo.flagSupTerra, flagA24: siteinfo.flagA24, idriconf: siteinfo.idriconf, isnew: siteinfo.isnew, isupdated: false });
 
 			if (theinfo.isnew)
 				theinfo.$save(function() { siteinfo.isupdated = true; siteinfo.isnew=false; });
@@ -415,7 +418,7 @@ angular.module('app')
 			siteinfo.isupdated = false;
 		}
 	}])
-	.controller('PraticheFatturazione', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'PraticheInfo', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, PraticheInfo, Utenti, $location) {
+	.controller('PraticheFatturazione', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'PraticheInfo', 'PraticheCount', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, PraticheInfo, PraticheCount, Utenti, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 
@@ -426,7 +429,8 @@ angular.module('app')
 		$scope.reverseSort = false;
 
 		$scope.show = function(id) {
-			$location.url('pratiche/'+id);
+			if (id)	// if defined
+				$location.url('pratiche/'+id);
 		}
 
 		$scope.users = Utenti.query(function() {
@@ -434,127 +438,131 @@ angular.module('app')
 		});
 
 		$scope.requery = function(from, to) {
-			$scope.jspratiche = PraticheInfo.query({ dateFrom: from, dateTo: to }, function() {
+			$scope.countpratiche = PraticheCount.query(function() {
+				$scope.jspratiche = PraticheInfo.query({ dateFrom: from, dateTo: to }, function() {
 
-				function getLink(id) {
-					for (var i=0, len=$scope.jspratiche.length; i<len; i++)
-						if ($scope.jspratiche[i].idsite == id)
-							return $scope.jspratiche[i];
+					function getLink(id) {
+						for (var i=0, len=$scope.jspratiche.length; i<len; i++)
+							if ($scope.jspratiche[i].idsite == id)
+								return $scope.jspratiche[i];
 
-					return null;
-				}
-
-				function isCongiunto(linkinfo) {
-					if (!linkinfo) return false;		// no info? can't say.
-
-					// count #pratiche with that id
-					var count = 0;
-
-					for (var i=0, len=$scope.jspratiche.length; i<len; i++)
-						if ($scope.jspratiche[i].idpratica == linkinfo.idpratica)
-							++count;
-
-					return count>1;
-				}
-
-				$scope.pratiche = PraticheFatturazione.query({ dateFrom: from, dateTo: to }, function() {
-					var seq = 1;
-
-					function extractOperatore(input) {
-						const parts = input.split(/[\s-]+/);			// whitespaces and '-'
-
-						for (var i=0, len=parts.length; i<len; i++) {
-							const a = parts[i].trim().toLowerCase();
-							if (a.length == 0 || a == '-')
-								continue;
-
-							for (var u=0, lenu=$scope.users.length; u<lenu; u++)
-								if (a == $scope.users[u].username.toLowerCase())
-									return $scope.users[u].username;
-						}
-
-						return "?!";
+						return null;
 					}
-					function extractData(input) {
-						return moment(input).format('YYYY-MM-DD');
+
+					function isCongiunto(linkinfo) {
+						if (!linkinfo) return false;		// no info? can't say.
+
+						// count #pratiche with that id
+						var count = 0;
+
+						for (var i=0, len=$scope.jspratiche.length; i<len; i++)
+							if ($scope.jspratiche[i].idpratica == linkinfo.idpratica)
+								++count;
+
+						return count>1;
 					}
-					function extractRif(input) {
-						const parts = input.split('/');
 
-						for (var i=0, len=parts.length; i<len; i++)
-							if (parts[i].includes('-') && !parts[i].includes('P'))
-								return parts[i];
+					$scope.pratiche = PraticheFatturazione.query({ dateFrom: from, dateTo: to }, function() {
+						var seq = 1;
 
-						return "";
-					}
-					function extractProto(input) {
-						const parts = input.split(' ');
-						var mmm = 999999;
-						var already12 = false;
+						function extractOperatore(input) {
+							const parts = input.split(/[\s-]+/);			// whitespaces and '-'
 
-						for (var i=0, len=parts.length; i<len; i++) {
-							var n = parseInt(parts[i]);
-							if (n == NaN) continue;
+							for (var i=0, len=parts.length; i<len; i++) {
+								const a = parts[i].trim().toLowerCase();
+								if (a.length == 0 || a == '-')
+									continue;
 
-							if (n == 12 && !already12) {	// ignore first 12
-								already12 = true;
-								continue;
+								for (var u=0, lenu=$scope.users.length; u<lenu; u++)
+									if (a == $scope.users[u].username.toLowerCase())
+										return $scope.users[u].username;
 							}
 
-							if (n < mmm)
-								mmm = n;
+							return "?!";
+						}
+						function extractData(input) {
+							return moment(input).format('YYYY-MM-DD');
+						}
+						function extractRif(input) {
+							const parts = input.split('/');
+
+							for (var i=0, len=parts.length; i<len; i++)
+								if (parts[i].includes('-') && !parts[i].includes('P'))
+									return parts[i];
+
+							return "";
+						}
+						function extractProto(input) {
+							const parts = input.split(' ');
+							var mmm = 999999;
+							var already12 = false;
+
+							for (var i=0, len=parts.length; i<len; i++) {
+								var n = parseInt(parts[i]);
+								if (n == NaN) continue;
+
+								if (n == 12 && !already12) {	// ignore first 12
+									already12 = true;
+									continue;
+								}
+
+								if (n < mmm)
+									mmm = n;
+							}
+
+							return mmm == 999999 ? "" : ""+mmm;
+						}
+						function extractSiteCode(input) {
+							const parts = input.split(' ');
+							for (var i=0, len=parts.length; i<len; i++) {
+								const la = parts[i].trim().toUpperCase();
+
+								if (la.includes("UD") || la.includes("GO")  || la.includes("TS") || la.includes("PN") ||
+									la.includes("UX") || la.includes("GX")  || la.includes("TX") || la.includes("PX"))
+									return la;
+							}
+
+							return "";
 						}
 
-						return mmm == 999999 ? "" : ""+mmm;
-					}
-					function extractSiteCode(input) {
-						const parts = input.split(' ');
-						for (var i=0, len=parts.length; i<len; i++) {
-							const la = parts[i].trim().toUpperCase();
+						$scope.pratiche.forEach(function(x) {
 
-							if (la.includes("UD") || la.includes("GO")  || la.includes("TS") || la.includes("PN") ||
-								la.includes("UX") || la.includes("GX")  || la.includes("TX") || la.includes("PX"))
-								return la;
-						}
+							function calcImporto(p1, p2, p3) {
+								if (p1 == '?' || p2 == '?' || p3 == '?') return "?";
 
-						return "";
-					}
+								const q1 = (p1=='1');	// stesso palo?
+								const q2 = (p2=='S');	// singolo?
+								const q3 = (p3=='S');	// sup terra?
 
-					$scope.pratiche.forEach(function(x) {
+								if (q1 && q2 && q3) return 370;
+								else if (q1 && q2 && !q3) return 300;
+								else if (q1 && !q2 && q3) return 300;
+								else if (q1 && !q2 && !q3) return 150;
+								else if (!q1 && q2 && q3) return 315;
+								else if (!q1 && q2 && !q3) return 300;
+								else if (!q1 && !q2 && q3) return 270;
+								else /*if (!q1 && !q2 && !q3)*/ return 150;
+							}
 
-						function calcImporto(p1, p2, p3) {
-							if (p1 == '?' || p2 == '?' || p3 == '?') return "?";
+							const linksite = getLink(x.ID_SITO);
+							const congiunto = isCongiunto(linksite);
 
-							const q1 = (p1=='1');	// stesso palo?
-							const q2 = (p2=='S');	// singolo?
-							const q3 = (p3=='S');	// sup terra?
+							x.seq = seq++;
+							x.FatturareA = '\u2190';
 
-							if (q1 && q2 && q3) return 370;
-							else if (q1 && q2 && !q3) return 300;
-							else if (q1 && !q2 && q3) return 300;
-							else if (q1 && !q2 && !q3) return 150;
-							else if (!q1 && q2 && q3) return 315;
-							else if (!q1 && q2 && !q3) return 300;
-							else if (!q1 && !q2 && q3) return 270;
-							else /*if (!q1 && !q2 && !q3)*/ return 150;
-						}
+							x.Punto2Tariffario = linksite ? (linksite.flag87bis ? "2" : "1") : "?";
+							x.SingoloCongiunto = linksite ? (congiunto ? "C" : "S") : "?";
+							x.Punto3Tariffario =  linksite ? (linksite.flagSupTerra ? "S" : "N") : "?";
+							x.Importo = calcImporto(x.Punto2Tariffario, x.SingoloCongiunto, x.Punto3Tariffario);
 
-						const linksite = getLink(x.ID_SITO);
-						const congiunto = isCongiunto(linksite);
-
-						x.seq = seq++;
-						x.FatturareA = '\u2190';
-
-						x.Punto2Tariffario = linksite ? (linksite.flag87bis ? "1" : "2") : "?";
-						x.SingoloCongiunto = linksite ? (congiunto ? "C" : "S") : "?";
-						x.Punto3Tariffario =  linksite ? (linksite.flagSupTerra ? "S" : "N") : "?";
-						x.Importo = calcImporto(x.Punto2Tariffario, x.SingoloCongiunto, x.Punto3Tariffario);
-
-						x.operatore = extractOperatore(x.NoteSito);
-						x.proto = extractProto(x.Pt_RilPar);
-						x.riferimento = extractRif(x.Pt_RilPar);
-						x.data = extractData(x.Dt_RilPar);
-						x.sitecode = extractSiteCode(x.NoteSito);
+							x.operatore = extractOperatore(x.NoteSito);
+							x.proto = extractProto(x.Pt_RilPar);
+							x.riferimento = extractRif(x.Pt_RilPar);
+							x.data = extractData(x.Dt_RilPar);
+							x.sitecode = extractSiteCode(x.NoteSito);
+							x.id = linksite ? linksite.idpratica : null;
+							x.idsite = x.ID_SITO;
+						});
 					});
 				});
 			});

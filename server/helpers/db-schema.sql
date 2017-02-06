@@ -392,6 +392,8 @@ CREATE TABLE LinkSitiPratiche(
   flag87bis boolean,
   flagSupTerra boolean,
   flagA24 boolean,
+
+  idriconf int(11),		/* Siti(id) on db_emittenti */
   
   PRIMARY KEY (idsite),
   FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON DELETE CASCADE ON UPDATE CASCADE
