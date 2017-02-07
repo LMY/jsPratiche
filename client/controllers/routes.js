@@ -49,7 +49,7 @@ angular.module('app')
 				controller: 'PraticheCorreggereController'
 			})
 			.when('/pratiche-protocollare', {
-				templateUrl: '/pratiche-storico.html',
+				templateUrl: '/pratiche-protocollare.html',
 				controller: 'PraticheProtocollareController'
 			})
 			.when('/pratiche-all', {

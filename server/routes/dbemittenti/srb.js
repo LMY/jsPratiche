@@ -1,5 +1,6 @@
 var rest = require('../../helpers/rest.js');
 var mssql = require('../../helpers/mssql.js');
+var moment = require('momentjs');
 
 var express = require('express');
 var router = express.Router();
@@ -73,21 +74,6 @@ function getSite(connection, id, callback) {
 				});
 		});
 }
-
-function setStatoParere(connection, id, stato, callback) {
-	/*final int idutente = Query_login(connection_string, username, password);
-	final String updatedate = update_date();
-	
-	final String status_code = stato.getCode();
-	
-	final String query_celle = "UPDATE "+dbname+".dbo.tbl_celle SET Parere='"+status_code+"', ID_UTENTE="+idutente+", DataUltMod='"+updatedate+"' WHERE sito='"+id+"'";
-	final String query_siti = "UPDATE "+dbname+".dbo.tbl_siti SET Stato_Parere='"+status_code+"', ID_UTENTE="+idutente+", DataOperazione='"+updatedate+"' "+
-			(status_code.equals("A")?", Flag_realizzato=3 ":status_code.equals("F")?", Flag_realizzato=4 ":"")+
-			"WHERE id_sito='"+id+"'";	
-	*/
-}
-
-
 
 router.get('/near', function(req, res, next) {
 	var query = "SELECT DISTINCT dbo.TBL_SITI.ID_SITO as id " +
