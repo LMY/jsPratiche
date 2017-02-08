@@ -38,7 +38,14 @@ angular.module('app')
 				templateUrl: '/aasDetails.html',
 				controller: 'AASDetailCtrl'
 			})
-			
+			.when('/studitecnici', {
+				templateUrl: '/studitecnici.html',
+				controller: 'StudiTecniciController'
+			})			
+			.when('/studitecnici/:id', {
+				templateUrl: '/studitecniciDetails.html',
+				controller: 'StudiTecniciDetailCtrl'
+			})
 			
 			.when('/pratiche', {
 				templateUrl: '/pratiche.html',

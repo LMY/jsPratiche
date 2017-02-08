@@ -18,7 +18,12 @@ angular.module('app')
 		return $resource('/gestori/:id', null, {
 			'update': { method:'PUT' }
 		});
-	}])	
+	}])
+	.factory('StudiTecnici', ['$resource', function($resource){
+		return $resource('/studitecnici/:id', null, {
+			'update': { method:'PUT' }
+		});
+	}])
 
 	.controller('ComuneController', ['$scope', 'Me', 'PMcount','Comuni', '$location', function($scope, Me, PMcount, Comuni, $location) {
 		$scope.me = Me.get();
@@ -155,7 +160,7 @@ angular.module('app')
 			if ($scope.isnew) {
 				if (!$scope.data) return;
 				if (!$scope.data.name || $scope.data.name.length < 1) { alert('Specificare nome!'); return; }
-				if (!$scope.data.pec || $scope.data.pec.length < 1) { alert('Specificare PEC!'); return; }				
+				if (!$scope.data.pec || $scope.data.pec.length < 1) { alert('Specificare PEC!'); return; }
 
 				var newdata = new AAS({ id: $scope.data.id, name: $scope.data.name, pec: $scope.data.pec });
 				newdata.$save(function(){
@@ -179,8 +184,8 @@ angular.module('app')
 		$scope.cancel = function() {
 			$location.url('aas');
 		}
-	}])	
-	
+	}])
+
 	.controller('GestoriController', ['$scope', 'Me', 'PMcount', 'Gestori', '$location', function($scope, Me, PMcount, Gestori, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
@@ -232,6 +237,60 @@ angular.module('app')
 
 		$scope.cancel = function() {
 			$location.url('gestori');
+		}
+	}])
+	
+	.controller('StudiTecniciController', ['$scope', 'Me', 'PMcount', 'StudiTecnici', '$location', function($scope, Me, PMcount, StudiTecnici, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
+		$scope.anagrafiche = StudiTecnici.query();
+
+		$scope.new = function() {
+			$location.url('studitecnici/new');
+		}
+
+		$scope.show = function(id) {
+			$location.url('studitecnici/'+id);
+		}
+	}])
+	.controller('StudiTecniciDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount', 'StudiTecnici', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, StudiTecnici, $location, ModalService) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
+		$scope.isnew = ($routeParams.id === "new");
+		$scope.data = $scope.isnew ? {} : StudiTecnici.get({id: $routeParams.id });
+		$scope.title = $scope.isnew ? "Nuovo Studio Tecnico" : "Studio Tecnico "+$routeParams.id;
+
+		$scope.update = function( ){
+			if ($scope.isnew) {
+				if (!$scope.data || $scope.data.length < 1) return;
+				if (!$scope.data.name || $scope.data.name.length < 1) { alert('Specificare nome!'); return; }
+				if (!$scope.data.pec || $scope.data.pec.length < 1) { alert('Specificare PEC!'); return; }
+
+				var gestore = new StudiTecnici({ name: $scope.data.name, PMcount, pec: $scope.data.pec });
+				gestore.$save(function(){
+					$location.url('studitecnici');
+				});
+			}
+			else
+				StudiTecnici.update({id: $scope.data.id}, $scope.data, function() {
+					$location.url('studitecnici');
+				});
+		}
+
+		$scope.remove = function() {
+			askconfirm(ModalService, function() {
+				StudiTecnici.remove({id: $scope.data.id}, function() {
+					$location.url('studitecnici');
+				});
+			}, "Sei sicuro di voler rimovere "+$scope.data.name+"?");
+		}
+
+		$scope.cancel = function() {
+			$location.url('studitecnici');
 		}
 	}])	
 ;

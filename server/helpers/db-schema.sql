@@ -18,6 +18,15 @@ CREATE TABLE Gestori (
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
+CREATE TABLE StudiTecnici (
+  id int(11) NOT NULL AUTO_INCREMENT,
+
+  name varchar(50),
+  pec varchar(50),
+
+  PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8;
+
 CREATE TABLE AAS (
   id int(11) NOT NULL AUTO_INCREMENT,
 
