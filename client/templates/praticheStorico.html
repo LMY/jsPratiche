@@ -28,12 +28,13 @@
 			<th><a ng-click="orderByField='address'; reverseSort=!reverseSort">Indirizzo <span ng-show="orderByField=='address'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			<th class="text-center"><a ng-click="orderByField='sitecode'; reverseSort=!reverseSort">CodiceSito <span ng-show="orderByField=='sitecode'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			<th class="text-center"><a ng-click="orderByField='stringTipo'; reverseSort=!reverseSort">TipoPratica <span ng-show="orderByField=='stringTipo'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='stringStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='stringStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>			
+			<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			<th class="text-center"><a ng-click="orderByField='protoIN'; reverseSort=!reverseSort">ProtoIN <span ng-show="orderByField=='protoIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			<th class="text-center"><a ng-click="orderByField='dateIN'; reverseSort=!reverseSort">DateIN <span ng-show="orderByField=='dateIN'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-			<th class="text-center"><a ng-click="orderByField='stringStato'; reverseSort=!reverseSort">Stato <span ng-show="orderByField=='stringStato'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-			<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			<th class="text-center"><a ng-click="orderByField='protoOUT'; reverseSort=!reverseSort">ProtoOUT <span ng-show="orderByField=='protoOUT'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			<th class="text-center"><a ng-click="orderByField='dateOUT'; reverseSort=!reverseSort">dateOUT <span ng-show="orderByField=='dateOUT'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='days'; reverseSort=!reverseSort">Giorni Emissione <span ng-show="orderByField=='days'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -44,13 +45,16 @@
 			<td>{{x.address}}</td>
 			<td class="text-center">{{x.sitecode}}</td>
 			<td class="text-center">{{x.stringTipo}}</td>
-			<td class="text-center">{{x.protoIN}}</td>
-			<td class="text-center">{{x.dateIN}}</td>
-
+			
 			<td class="text-center">{{x.stringStato}}</td>
 			<td class="text-center">{{x.stringUser}}</td>
+			
+			<td class="text-center">{{x.protoIN}}</td>
+			<td class="text-center">{{x.dateIN}}</td>
 			<td class="text-center">{{x.protoOUT}}</td>
 			<td class="text-center">{{x.dateOUT}}</td>
+			
+			<td class="text-center">{{x.days}}</td>
 		</tr>
 	</tbody>
 </table>

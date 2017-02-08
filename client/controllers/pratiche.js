@@ -186,6 +186,9 @@ angular.module('app')
 				$scope.pratiche.forEach(function(x) {
 					x.rowClass = getTableRowClass(x.idStato);
 					if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
+					
+					if (x.dateOUT)
+						x.days = moment.duration(moment(x.dateOUT).diff(moment(x.dateIN))).subtract(x.diff/2, "days").asDays();
 				});
 			});
 		}
