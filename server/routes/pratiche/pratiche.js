@@ -135,26 +135,25 @@ router.put('/protoout/:id', function(req, res, next) {
 								connection.query('COMMIT;', function(err, data) {
 									if (err) rest.error500(res, err);
 									else {
-										rest.updated(res, datares2);
-
-										/*
+										// update db_emittenti
 										shared.translatePraticaToSites(req.params.id, connection, function(err, idsites) {
 											if (err) rest.error500(res, err);
 											else {
 												function doSetProtoOUT(i, data) {
 													if (i == data.length)
-														rest.updated(res, null);
-													else
-														shared.setProtoParere(req.user.id, idsites[i], connection, req.body.protoOUT, req.body.dateOUT, function(err, data) {
+														rest.updated(res, data);
+													else {
+														shared.setProtoParere(req.user.id, idsites[i], connection, req.body.protoOUT, req.body.dateOUT, function(err) {
 															if (err) rest.error500(res, err);
 															else doSetProtoOUT(i+1, data);
 														});
+													}
 												}
-												
+
 												doSetProtoOUT(0, idsites);
 											}
 										});
-										*/
+
 									}
 								});
 							}

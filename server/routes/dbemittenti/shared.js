@@ -1,5 +1,5 @@
-var mssql = require('../../helpers/mssql.js');
-var sql = require('../../helpers/db.js');
+const mssql = require('../../helpers/mssql.js');
+const sql = require('../../helpers/db.js');
 
 module.exports = {
 
@@ -78,32 +78,32 @@ module.exports = {
 		sql.connect(function(err, connection) {
 			if (err) callback(err, null);
 			else
-				translateUserId(userid, connection, function(err, translated_userid) {
-					if (err || dat.length != 1) rest.error500(res, err);
+				module.exports.translateUserId(userid, connection, function(err, translated_userid) {
+					if (err || !translated_userid) rest.error500(res, err);
 					else
-						mssql.connect(function(err, connection) {
-							if (err) { callback(err, res); connection.close(); }
+						mssql.connect(function(err, mssqlconnection) {
+							if (err) { callback(err, res); mssqlconnection.close(); }
 							else {
-								const now = moment().toISOString();
+								const now = new Date();
 								const realizzato = stato=='A'?3:'F'?4:null;
 
-								new mssql.mssql.Request(connection)
+								new mssql.mssql.Request(mssqlconnection)
 									.input('code', mssql.mssql.VarChar, stato)
 									.input('idutente', mssql.mssql.Int, translated_userid)
 									.input('datamod', mssql.mssql.DateTime, now)
-									.input('siteid', mssql.mssql.Int, id)
+									.input('siteid', mssql.mssql.BigInt, id)
 									.query(query_cells, function(err, data2) {
-										if (err) { callback(err, res); connection.close(); }
+										if (err) { callback(err, res); mssqlconnection.close(); }
 										else
-											new mssql.mssql.Request(connection)
+											new mssql.mssql.Request(mssqlconnection)
 												.input('code', mssql.mssql.VarChar, stato)
 												.input('idutente', mssql.mssql.Int, translated_userid)
 												.input('datamod', mssql.mssql.DateTime, now)
-												.input('siteid', mssql.mssql.Int, id)
+												.input('siteid', mssql.mssql.BigInt, id)
 												.input('realizzato', mssql.mssql.Int, realizzato)
 												.query(query_sites, function(err, data3) {
+													mssqlconnection.close();
 													callback(err, data3);
-													connection.close();
 												});
 									});
 							}
@@ -112,44 +112,49 @@ module.exports = {
 		});
 	},
 
-	setProtoParere: function(userid, id, proto, protodate, callback) {
-		var query_cells = "UPDATE db_emittenti.dbo.tbl_celle SET Pt_RilPar=@proto, Dt_RilPar=@protodate, ID_UTENTE=@idutente, DataUltMod=@datamod WHERE sito=@siteid";
-		var query_sites = "UPDATE db_emittenti.dbo.tbl_siti SET Pt_RilPar=@proto, Dt_RilPar=@protodate, ID_UTENTE=@idutente, DataOperazione=@datamod WHERE id_sito=@siteid";
+	setProtoParere: function(userid, id, connection, proto, protodate, callback) {
+		var query_cells = "UPDATE db_emittenti.dbo.tbl_celle SET Pt_RilPar = @proto, Dt_RilPar = @protodate, ID_UTENTE = @idutente, DataUltMod = @datamod WHERE sito = @siteid";
+		var query_sites = "UPDATE db_emittenti.dbo.tbl_siti SET Pt_RilPar = @proto, Dt_RilPar = @protodate, ID_UTENTE = @idutente, DataOperazione = @datamod WHERE id_sito = @siteid";
+			
+		protodate = new Date(protodate);
 
-		sql.connect(function(err, connection) {
-			if (err) callback(err, null);
+		module.exports.translateUserId(userid, connection, function(err, translated_userid) {
+			if (err || !translated_userid) rest.error500(err, null);
 			else
-				translateUserId(userid, connection, function(err, translated_userid) {
-					if (err || dat.length != 1) rest.error500(res, err);
-					else
-						mssql.connect(function(err, connection) {
-							if (err) { callback(err, res); connection.close(); }
-							else {
-								const now = moment().toISOString();
+				mssql.connect(function(err, mssqlconnection) {
+					if (err) { callback(err); mssqlconnection.close(); }
+					else {
+						const now = new Date();
 
-								new mssql.mssql.Request(connection)
-									.input('proto', mssql.mssql.VarChar, proto)
-									.input('protodate', mssql.mssql.Date, protodate)
-									.input('idutente', mssql.mssql.Int, translated_userid)
-									.input('datamod', mssql.mssql.DateTime, now)
-									.input('siteid', mssql.mssql.Int, id)
-									.query(query_cells, function(err, data2) {
-										if (err) { callback(err, res); connection.close(); }
-										else
-											new mssql.mssql.Request(connection)
-												.input('proto', mssql.mssql.VarChar, proto)
-												.input('protodate', mssql.mssql.Date, protodate)
-												.input('idutente', mssql.mssql.Int, translated_userid)
-												.input('datamod', mssql.mssql.DateTime, now)
-												.input('siteid', mssql.mssql.Int, id)
-												.query(query_sites, function(err, data3) {
-													callback(err, data3);
-													connection.close();
-												});
-									});
-							}
-						});
+						new mssql.mssql.Request(mssqlconnection)
+							.input('proto', mssql.mssql.VarChar(16), proto)
+							.input('protodate', mssql.mssql.DateTime, protodate)
+							.input('idutente', mssql.mssql.Int, translated_userid)
+							.input('datamod', mssql.mssql.DateTime, now)
+							.input('siteid', mssql.mssql.BigInt, id)
+							.query(query_cells, function(err, data2) {
+								if (err) { callback(err); mssqlconnection.close(); }
+								else
+									new mssql.mssql.Request(mssqlconnection)
+										.input('proto', mssql.mssql.VarChar(16), proto)
+										.input('protodate', mssql.mssql.DateTime, protodate)
+										.input('idutente', mssql.mssql.Int, translated_userid)
+										.input('datamod', mssql.mssql.DateTime, now)
+										.input('siteid', mssql.mssql.BigInt, id)
+										.query(query_sites, function(err, data3) {
+											mssqlconnection.close();
+											callback(err);
+										});
+							});
+					}
 				});
 		});
 	},
+
+	conSetProtoParere: function(userid, id, proto, protodate, callback) {
+		sql.connect(function(err, connection) {
+			if (err) callback(err);
+			else module.exports.setProtoParere(userid, id, connection, proto, protodate, callback);
+		});
+	}
 };

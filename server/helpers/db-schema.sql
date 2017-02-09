@@ -417,4 +417,10 @@ CREATE TABLE LinkMisure(
   FOREIGN KEY (idPratica) REFERENCES Pratiche(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8;
 
-
+CREATE TABLE LinkComuni(
+  id int(11),					/* id on jsPratiche */
+  idemittenti varchar(50),		/* Comuni(COMUNE) on db_emittenti. Key because on jsPratiche some Comuni are joined */
+  
+  PRIMARY KEY (idemittenti),
+  FOREIGN KEY (id) REFERENCES Comuni(id) ON DELETE CASCADE ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8;
