@@ -141,7 +141,7 @@ router.put('/protoout/:id', function(req, res, next) {
 											else {
 												function doSetProtoOUT(i, data) {
 													if (i == data.length)
-														rest.updated(res, data);
+														rest.updated(res, null); // null, otherwise Expected response to contain an object but got an array
 													else {
 														shared.setProtoParere(req.user.id, idsites[i], connection, req.body.protoOUT, req.body.dateOUT, function(err) {
 															if (err) rest.error500(res, err);
@@ -153,7 +153,6 @@ router.put('/protoout/:id', function(req, res, next) {
 												doSetProtoOUT(0, idsites);
 											}
 										});
-
 									}
 								});
 							}
