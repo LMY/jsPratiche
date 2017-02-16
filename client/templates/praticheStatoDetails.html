@@ -12,7 +12,7 @@
 		<span class="col-md-4">
 			<div ng-show="epratica.idStato == null || epratica.idStato == 1">
 				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
-				<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)">Prendi in carico</button>
+				<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)">Dai in carico</button>
 			</div>
 			<div ng-show="epratica.idStato == 4">
 				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>

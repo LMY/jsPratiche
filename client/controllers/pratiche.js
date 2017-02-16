@@ -29,7 +29,7 @@ angular.module('app')
 	}])
 	.factory('PraticheCount', ['$resource', function($resource){
 		return $resource('/pratiche/pratiche/count');
-	}])	
+	}])
 
 	.factory('PraticheProtoOUT', ['$resource', function($resource){
 		return $resource('/pratiche/pratiche/protoout/:id', null, {
@@ -186,7 +186,7 @@ angular.module('app')
 				$scope.pratiche.forEach(function(x) {
 					x.rowClass = getTableRowClass(x.idStato);
 					if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
-					
+
 					if (x.dateOUT)
 						x.days = moment.duration(moment(x.dateOUT).diff(moment(x.dateIN))).subtract(x.diff/2, "days").asDays();
 				});
@@ -329,7 +329,7 @@ angular.module('app')
 		});
 
 		$scope.history = StoricoStatoPratiche.get({id: $routeParams.id}, function() {
-			for (var i=0; i<$scope.history.length; i++) {
+			for (var i=0, len=$scope.history.length; i<len; i++) {
 				if ($scope.history[i].idStato ==  2) {
 					if ($scope.history[i].usernameAss)
 						$scope.history[i].descStato +=  " ("+$scope.history[i].usernameAss+")";
@@ -337,7 +337,11 @@ angular.module('app')
 						$scope.history[i].descStato +=  " - " + $scope.history[i].protoIN + " - "+ $scope.history[i].dateIN;
 				}
 				else if ($scope.history[i].idStato ==  7) {
-					$scope.history[i].descStato +=  " - " + $scope.history[i].protoOUT + " - "+ $scope.history[i].dateOUT;
+					
+					if ($scope.history[i].protoOUT)					
+						$scope.history[i].descStato +=  " - " + $scope.history[i].protoOUT + " - "+ $scope.history[i].dateOUT;
+					else
+						$scope.history[i].descStato +=  " - " + "PROTO NON ANCORA SPECIFICATO";
 				}
 
 				$scope.history[i].timePoint += " - "+$scope.history[i].usernameMod;
@@ -571,16 +575,68 @@ angular.module('app')
 			});
 		}
 	}])
-	.controller('PraticheStatistiche', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, Utenti, $location) {
+	.controller('PraticheStatistiche', ['$scope', 'Me', 'PMcount','PraticheAll', 'Utenti', '$location', function($scope, Me, PMcount, PraticheAll, Utenti, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 		$scope.users = Utenti.query();
 
 		$scope.dateFrom = moment().subtract(1, 'month').set('date', 1).format("YYYY-MM-DD");	// day 1 of prev month
 		$scope.dateTo = moment().set('date', 1).subtract(1, 'day').format("YYYY-MM-DD");		// day LAST of prev month
+		$scope.dateTypes = [ "dateIN", "dateOUT" ];
+		$scope.dateType = "dateIN";
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
 
+		$scope.requery = function(from, to, type) {
+
+			$scope.countL10 = 0;
+			$scope.countL20 = 0;
+			$scope.countL30 = 0;
+			$scope.countO30 = 0;
+
+			$scope.totUnknown = 0;
+
+			$scope.percL10 = 0;
+			$scope.percL20 = 0;
+			$scope.percL30 = 0;
+			$scope.percO30 = 0;
+
+			$scope.totDays = 0;
+			$scope.meanDays = 0;
+
+			$scope.pratiche = PraticheAll.query({ dateFrom: from, dateTo: to, dateType: type }, function() {
+				$scope.pratiche.forEach(function(x) {
+					x.rowClass = getTableRowClass(x.idStato);
+					if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
+
+					if (x.dateOUT) {
+						x.days = moment.duration(moment(x.dateOUT).diff(moment(x.dateIN))).subtract(x.diff/2, "days").asDays();
+
+						$scope.totDays += x.days;
+
+						if (x.days <= 10)
+							$scope.countL10++;
+						else if  (x.days <= 20)
+							$scope.countL20++;
+						else if  (x.days <= 30)
+							$scope.countL30++;
+						else
+							$scope.countO30++;
+					}
+					else
+						$scope.totUnknown++;
+
+					$scope.totPratiche = $scope.countL10 + $scope.countL20 + $scope.countL30 + $scope.countO30;
+
+					$scope.percL10 = (100*$scope.countL10/$scope.totPratiche).toFixed(0);
+					$scope.percL20 = (100*$scope.countL20/$scope.totPratiche).toFixed(0);
+					$scope.percL30 = (100*$scope.countL30/$scope.totPratiche).toFixed(0);
+					$scope.percO30 = (100*$scope.countO30/$scope.totPratiche).toFixed(0);
+					$scope.meanDays = ($scope.totDays/$scope.totPratiche).toFixed(1);
+				});
+			});
+		}
+		$scope.requery($scope.dateFrom, $scope.dateTo, $scope.dateType);	// GET $scope.pratiche
 	}])
 ;
