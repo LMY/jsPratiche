@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const logger = require('morgan');
+const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const flash = require('connect-flash');
@@ -62,7 +62,8 @@ app.use(passport.session());
 app.use(flash());
 require('./helpers/passport')(passport);
 
-app.use(logger('dev'));
+//app.use(morgan('dev'));
+app.use(morgan(':date[iso] :method :url :status :response-time ms - :res[content-length]'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
