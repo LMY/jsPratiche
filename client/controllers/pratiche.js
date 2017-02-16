@@ -333,14 +333,17 @@ angular.module('app')
 				if ($scope.history[i].idStato ==  2) {
 					if ($scope.history[i].usernameAss)
 						$scope.history[i].descStato +=  " ("+$scope.history[i].usernameAss+")";
-					else	// arrivata integrazione
-						$scope.history[i].descStato +=  " - " + $scope.history[i].protoIN + " - "+ $scope.history[i].dateIN;
+					else {	// arrivata integrazione
+						if ($scope.history[i].protoIN)
+							$scope.history[i].descStato +=  " - " + $scope.history[i].protoIN + " - "+ $scope.history[i].dateIN;
+						else // proto not specified
+							$scope.history[i].descStato +=  " - " + "NON SPECIFICATO" + " - "+ $scope.history[i].dateIN;
+					}
 				}
-				else if ($scope.history[i].idStato ==  7) {
-					
+				else if ($scope.history[i].idStato ==  7) {					
 					if ($scope.history[i].protoOUT)					
 						$scope.history[i].descStato +=  " - " + $scope.history[i].protoOUT + " - "+ $scope.history[i].dateOUT;
-					else
+					else // if proto is not specified, hide date (is required NOT NULL in db)
 						$scope.history[i].descStato +=  " - " + "PROTO NON ANCORA SPECIFICATO";
 				}
 
