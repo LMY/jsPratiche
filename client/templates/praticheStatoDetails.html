@@ -24,15 +24,11 @@
 		</span>
 
 		<span class="col-md-4">
-			<div ng-show="epratica.idStato == 2 || epratica.idStato == 3">
+			<div ng-show="epratica.idStato == 2 || epratica.idStato == 3 || epratica.idStato == 7">
 				<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
 				<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
-				<button class="col-md-4 btn btn-warning" ng-click="integric()">Richiedi integ</button>
-			</div>
-			<div ng-show="epratica.idStato == 7">
-				<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
-				<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
-				<button class="col-md-4 btn btn-warning" ng-click="integarr()">Arrivate integ</button>
+				<button class="col-md-4 btn btn-warning" ng-click="integric(integProto, integDate)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Richiedi integ</button>
+				<button class="col-md-4 btn btn-warning" ng-click="integarr(integProto, integDate)" ng-show="epratica.idStato == 7">Arrivate integ</button>
 			</div>
 		</span>
 

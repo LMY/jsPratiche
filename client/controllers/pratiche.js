@@ -365,19 +365,18 @@ angular.module('app')
 		}
 
 		$scope.integDate = moment(new Date()).format("YYYY-MM-DD");
-		$scope.integProto = '';
+		$scope.integProto = "";
 
-		$scope.integric = function() {
-			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 7, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
+		$scope.integric = function(proto, date) {
+			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 7, integProto: proto, integData: date, integNote: '' });
 
 			newstate.$save(function(){
 				$window.history.back();
 			});
 		}
 
-		$scope.integarr = function() {
-
-			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 2, integProto: $scope.integProto, integData: $scope.integDate, integNote: '' });
+		$scope.integarr = function(proto, date) {
+			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 2, integProto: proto, integData: date, integNote: '' });
 
 			newstate.$save(function(){
 				$window.history.back();
