@@ -9,7 +9,7 @@
 	<hr>
 	<div class="row">
 
-		<span class="col-md-4">
+		<span class="col-md-2">
 			<div ng-show="epratica.idStato == null || epratica.idStato == 1">
 				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
 				<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)">Dai in carico</button>
@@ -22,18 +22,22 @@
 				<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
 			</div>
 		</span>
+		<span class="col-md-1"><div class="spacer"></div></span>
 
-		<span class="col-md-4">
-			<div ng-show="epratica.idStato == 2 || epratica.idStato == 3 || epratica.idStato == 7">
-				<input class="col-md-4" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
-				<input class="col-md-4" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
-				<button class="col-md-4 btn btn-warning" ng-click="integric(integProto, integDate)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Richiedi integ</button>
-				<button class="col-md-4 btn btn-warning" ng-click="integarr(integProto, integDate)" ng-show="epratica.idStato == 7">Arrivate integ</button>
+		<span class="col-md-6"  ng-show="epratica.idStato == 2 || epratica.idStato == 3 || epratica.idStato == 7 || epratica.idStato == 13">
+			<div class="col-md-6">
+				<input class="col-md-12" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
+				<input class="col-md-12" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
+			</div>
+
+			<div class="col-md-6">
+				<button class="col-md-12 btn btn-warning" ng-click="stato(7, null, integProto, integDate)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Richiedi integ</button>
+				<button class="col-md-12 btn btn-danger" ng-click="stato(13, null, integProto, integDate)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Com. motivi ostativi</button>
+				<button class="col-md-12 btn btn-warning" ng-click="stato(2, null, integProto, integDate)" ng-show="epratica.idStato == 7 || epratica.idStato == 13">Arrivate integ</button>			
 			</div>
 		</span>
-
-		<span class="col-md-2"><div class="spacer"></div></span>
-
+		
+		<span class="col-md-1"><div class="spacer"></div></span>
 		<button class="col-md-2 btn btn-success" ng-click="stato(4)" style="top: 12px;" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
 	</div>
 

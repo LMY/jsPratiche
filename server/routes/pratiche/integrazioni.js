@@ -31,8 +31,8 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var query = sql.format("INSERT INTO ??(??,??,??,??,??) VALUES (?,?,?,?,?)",
-					[tableName, "dateOUT", "dateIN", "protoOUT", "protoIN", "note", req.body.dateOUT, req.body.dateIN, req.body.protoOUT, req.body.protoIN, req.body.note ]);
+	var query = sql.format("INSERT INTO ??(??,??,??,??,??,??) VALUES (?,?,?,?,?,?)",
+					[tableName, "dateOUT", "dateIN", "protoOUT", "protoIN", "ostativi", "note", req.body.dateOUT, req.body.dateIN, req.body.protoOUT, req.body.protoIN, req.body.ostativi, req.body.note ]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
@@ -41,8 +41,8 @@ router.post('/', function(req, res, next) {
 });
 
 router.put('/:id', function(req, res, next) {
-	var query = sql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?",
-					[tableName, "dateOUT", req.body.dateOUT, "dateIN", req.body.dateIN, "protoOUT", req.body.protoOUT, "protoIN", req.body.protoIN, "note", req.body.note, "id", req.params.id ]);
+	var query = sql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?",
+					[tableName, "dateOUT", req.body.dateOUT, "dateIN", req.body.dateIN, "protoOUT", req.body.protoOUT, "protoIN", req.body.protoIN, "ostativi", req.body.ostativi, "note", req.body.note, "id", req.params.id ]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);

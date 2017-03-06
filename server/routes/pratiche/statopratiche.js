@@ -56,16 +56,13 @@ router.post('/', function(req, res, next) {
 				connection.query(query, function(err, data) {
 					if (err) rest.error500(res, err);
 					else {
-						if (req.body.idStato == 7) {	// richiedi integrazioni
-							if (!req.body.integData) {
-								rest.error500(res, "integData not specified");
-								return;
-							}
-
+						if (req.body.idStato == 7 || req.body.idStato == 13) {	// richiedi integrazioni / comunicaz. motivi ostativi
+							var ostativi = req.body.idStato == 7 ? 0 : 1;
+						
 							connection.query("SELECT LAST_INSERT_ID() AS id", function(err, laststatoid) {
 								if (err) rest.error500(res, err);
 								else {
-									var query3 = sql.format("INSERT INTO Integrazioni(dateOUT, dateIN, protoOUT, protoIN, note) VALUES (?,NULL,?,NULL,?)", [ req.body.integData, req.body.integProto, req.body.integNote]);
+									var query3 = sql.format("INSERT INTO Integrazioni(dateOUT, dateIN, protoOUT, protoIN, ostativi, note) VALUES (?,NULL,?,NULL,?,?)", [ req.body.integData, req.body.integProto, ostativi, req.body.integNote]);
 
 									connection.query(query3, function(err, data) {
 										if (err) rest.error500(res, err);
@@ -94,7 +91,7 @@ router.post('/', function(req, res, next) {
 							connection.query("SELECT LAST_INSERT_ID() AS id", function(err, laststatoid) {
 								if (err) rest.error500(res, err);
 								else {
-									var querygetlastidinteg = sql.format("SELECT idInteg as id FROM (SELECT MAX(id) as id FROM StatoPratiche WHERE idPratica=? AND idStato=7 GROUP BY idPratica) as T1 LEFT JOIN AssStatoPraticheIntegrazioni on T1.id = AssStatoPraticheIntegrazioni.idStato", [ req.body.idPratica ]);	// 1.get id last integ -> lastintegid
+									var querygetlastidinteg = sql.format("SELECT idInteg as id FROM (SELECT MAX(id) as id FROM StatoPratiche WHERE idPratica=? AND (idStato=7 OR idStato=13) GROUP BY idPratica) as T1 LEFT JOIN AssStatoPraticheIntegrazioni on T1.id = AssStatoPraticheIntegrazioni.idStato", [ req.body.idPratica ]);	// 1.get id last integ -> lastintegid
 
 									connection.query(querygetlastidinteg, function(err, lastintegid) {
 										if (err) rest.error500(res, err);

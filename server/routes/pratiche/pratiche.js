@@ -111,12 +111,38 @@ router.post('/', function(req, res, next) {
     });
 });
 
+var setProtoOutOnDBEmittenti = function(id, protoOUT, dateOUT, userid) {
+	shared.translatePraticaToSites(id, connection, function(err, idsites) {
+		if (err) rest.error500(res, err);
+		else {
+			function doSetProtoOUT(i, data) {
+				if (i == data.length)
+					rest.updated(res, null); // null, otherwise Expected response to contain an object but got an array
+				else {
+					shared.setProtoParere(userid, idsites[i], connection, protoOUT, dateOUT, function(err) {
+						if (err) rest.error500(res, err);
+						else doSetProtoOUT(i+1, data);
+					});
+				}
+			}
+
+			doSetProtoOUT(0, idsites);
+		}
+	});	
+};
+
 router.put('/:id', function(req, res, next) {
 	var query = sql.format('UPDATE ?? SET idGestore = ?, idComune = ?, address = ?, sitecode = ?, tipopratica = ?, protoIN = ?, dateIN = ?, protoOUT = ?, dateOUT = ?, note = ? WHERE id = ?', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note, req.params.id]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);
-		else rest.updated(res, data);
+		else {
+			// if set proto out, update on db_emittenti
+			if (req.body.protoOUT && req.body.dateOUT)
+				setProtoOutOnDBEmittenti(req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id);
+			else
+				rest.updated(res, data);
+		}
 	});
 });
 
@@ -136,23 +162,7 @@ router.put('/protoout/:id', function(req, res, next) {
 									if (err) rest.error500(res, err);
 									else {
 										// update db_emittenti
-										shared.translatePraticaToSites(req.params.id, connection, function(err, idsites) {
-											if (err) rest.error500(res, err);
-											else {
-												function doSetProtoOUT(i, data) {
-													if (i == data.length)
-														rest.updated(res, null); // null, otherwise Expected response to contain an object but got an array
-													else {
-														shared.setProtoParere(req.user.id, idsites[i], connection, req.body.protoOUT, req.body.dateOUT, function(err) {
-															if (err) rest.error500(res, err);
-															else doSetProtoOUT(i+1, data);
-														});
-													}
-												}
-
-												doSetProtoOUT(0, idsites);
-											}
-										});
+										setProtoOutOnDBEmittenti(req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id);
 									}
 								});
 							}

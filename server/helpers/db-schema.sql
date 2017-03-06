@@ -107,10 +107,11 @@ CREATE TABLE Pratiche (
 CREATE TABLE Integrazioni (
   id int(11) NOT NULL AUTO_INCREMENT,
 
-  dateOUT date NOT NULL,
+  dateOUT date,
   dateIN date,
   protoOUT varchar(50),
   protoIN varchar(50),
+  ostativi boolean,
   note varchar(256),
 
   PRIMARY KEY (id)

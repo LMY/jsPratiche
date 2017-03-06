@@ -340,7 +340,7 @@ angular.module('app')
 							$scope.history[i].descStato +=  " - " + "NON SPECIFICATO" + " - "+ $scope.history[i].dateIN;
 					}
 				}
-				else if ($scope.history[i].idStato ==  7) {					
+				else if ($scope.history[i].idStato ==  7 || $scope.history[i].idStato ==  13) {					
 					if ($scope.history[i].protoOUT)					
 						$scope.history[i].descStato +=  " - " + $scope.history[i].protoOUT + " - "+ $scope.history[i].dateOUT;
 					else // if proto is not specified, hide date (is required NOT NULL in db)
@@ -367,26 +367,16 @@ angular.module('app')
 		$scope.integDate = moment(new Date()).format("YYYY-MM-DD");
 		$scope.integProto = "";
 
-		$scope.integric = function(proto, date) {
-			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 7, integProto: proto, integData: date, integNote: '' });
+		/* Change state.
+			state=2 lavorazione
+			state=7 request integ.
+			state=13 com. motivi ostativi.
+		*/
+		$scope.stato = function(state, user, proto, date) {
+			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state, integProto: proto, integData: date, integNote: '' });
 
-			newstate.$save(function(){
-				$window.history.back();
-			});
-		}
-
-		$scope.integarr = function(proto, date) {
-			var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idStato: 2, integProto: proto, integData: date, integNote: '' });
-
-			newstate.$save(function(){
-				$window.history.back();
-			});
-		}
-
-		$scope.stato = function(state, user) {
 			if (state == 1) {
 				askconfirm(ModalService, function() {
-					var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
 
 					newstate.$save(function(){
 						$window.history.back();
@@ -394,8 +384,6 @@ angular.module('app')
 				}, "Sei sicuro di voler rilasciare la pratica?");
 			}
 			else {
-				var newstate = new StoricoStatoPratiche({ idPratica: $scope.epratica.id, idUtente: user, idStato: state });
-
 				newstate.$save(function(){
 					$window.history.back();
 				});
