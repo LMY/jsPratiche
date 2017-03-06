@@ -334,17 +334,17 @@ angular.module('app')
 					if ($scope.history[i].usernameAss)
 						$scope.history[i].descStato +=  " ("+$scope.history[i].usernameAss+")";
 					else {	// arrivata integrazione
-						if ($scope.history[i].protoIN)
+						if ($scope.history[i].protoIN && $scope.history[i].dateIN)
 							$scope.history[i].descStato +=  " - " + $scope.history[i].protoIN + " - "+ $scope.history[i].dateIN;
 						else // proto not specified
-							$scope.history[i].descStato +=  " - " + "NON SPECIFICATO" + " - "+ $scope.history[i].dateIN;
+							$scope.history[i].descStato +=  " - " + "PROTO NON SPECIFICATO";
 					}
 				}
 				else if ($scope.history[i].idStato ==  7 || $scope.history[i].idStato ==  13) {					
-					if ($scope.history[i].protoOUT)					
+					if ($scope.history[i].protoOUT && $scope.history[i].dateOUT)					
 						$scope.history[i].descStato +=  " - " + $scope.history[i].protoOUT + " - "+ $scope.history[i].dateOUT;
 					else // if proto is not specified, hide date (is required NOT NULL in db)
-						$scope.history[i].descStato +=  " - " + "PROTO NON ANCORA SPECIFICATO";
+						$scope.history[i].descStato +=  " - " + "PROTO NON SPECIFICATO";
 				}
 
 				$scope.history[i].timePoint += " - "+$scope.history[i].usernameMod;
@@ -364,7 +364,7 @@ angular.module('app')
 			$location.url('pratiche/detail/'+$scope.epratica.id);
 		}
 
-		$scope.integDate = moment(new Date()).format("YYYY-MM-DD");
+		$scope.integDate = ""; //moment(new Date()).format("YYYY-MM-DD");
 		$scope.integProto = "";
 
 		/* Change state.
