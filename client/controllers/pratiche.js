@@ -142,6 +142,13 @@ angular.module('app')
 					x.scadenza = "";
 					x.scadenzaData = "";
 				}
+				else if (x.stringStato == "Com. Motivi Ostativi") {
+					x.scadenza = moment.duration(today.diff(moment(x.dateCommOst))).asDays()|0;
+					x.scadenzaData = moment(x.dateCommOst).add(10, "d").format('YYYY-MM-DD');
+					
+					if (x.scadenza < 0 || x.scadenza >= 10) x.scadenzaType = "time-danger";
+					else if (x.scadenza >= 7) x.scadenzaType = "time-red";
+				}
 				else {
 					x.scadenza = ((30-diff + integDiff )|0);
 					x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');

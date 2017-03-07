@@ -9,38 +9,33 @@
 	<hr>
 	<div class="row">
 
-		<span class="col-md-2">
+		<span class="col-md-3">
 			<div ng-show="epratica.idStato == null || epratica.idStato == 1">
 				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
 				<button class="col-md-6 btn btn-primary" ng-click="stato(2, selectedUser)">Dai in carico</button>
 			</div>
 			<div ng-show="epratica.idStato == 4">
 				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
-				<button class="col-md-6 btn btn-primary" ng-click="stato(6, selectedUser)">Corretto</button>
+				<button class="btn btn-primary" ng-click="stato(6, selectedUser)">Corretto</button>
 			</div>
 			<div class="div-border-invisible" ng-show="epratica.idStato == 2">
 				<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
 			</div>
 		</span>
-		<span class="col-md-1"><div class="spacer"></div></span>
 
-		<span class="col-md-6"  ng-show="epratica.idStato == 2 || epratica.idStato == 3 || epratica.idStato == 7 || epratica.idStato == 13">
-			<div class="col-md-6">
-				<input class="col-md-12" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
-				<input class="col-md-12" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
-			</div>
-
-			<div class="col-md-6">
-				<button class="col-md-12 btn btn-warning" ng-click="stato(7, null, integProto, integDate)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Richiedi integ</button>
-				<button class="col-md-12 btn btn-danger" ng-click="stato(13, null, integProto, integDate)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Com. motivi ostativi</button>
-				<button class="col-md-12 btn btn-warning" ng-click="stato(2, null, integProto, integDate)" ng-show="epratica.idStato == 7 || epratica.idStato == 13">Arrivate integ</button>			
-			</div>
+		<span class="col-md-3"  ng-show="epratica.idStato == 2 || epratica.idStato == 3 || epratica.idStato == 7 || epratica.idStato == 13">
+			<input class="col-md-12" type="text" ng-model="integProto" placeholder="Protocollo" style="top: 4px;">
+			<input class="col-md-12" type="text" datetimepicker ng-model="integDate" placeholder="Data" style="top: 4px;">
 		</span>
-		
+		<span class="col-md-3"  ng-show="epratica.idStato == 2 || epratica.idStato == 3 || epratica.idStato == 7 || epratica.idStato == 13">
+			<button class="col-md-12 btn btn-warning" ng-click="stato(7, null, integProto, integDate)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Richiedi integ</button>			
+			<button class="col-md-12 btn btn-danger" ng-click="stato(13, null, integProto, integDate)" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Com. motivi ostativi</button>			
+			<button class="col-md-12 btn btn-warning" ng-click="stato(2, null, integProto, integDate)" ng-show="epratica.idStato == 7 || epratica.idStato == 13">Arrivate integ</button>
+		</span>
+
 		<span class="col-md-1"><div class="spacer"></div></span>
 		<button class="col-md-2 btn btn-success" ng-click="stato(4)" style="top: 12px;" ng-show="epratica.idStato == 2 || epratica.idStato == 3">Fatto</button>
 	</div>
-
 
 	<hr>
 	<table class="table table-hover">
@@ -69,7 +64,7 @@
 				<th class="text-center"><a ng-click="orderByField2='flag87bis'; reverseSort2=!reverseSort2">87bis <span ng-show="orderByField2=='flag87bis'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField2='flagSupTerra'; reverseSort2=!reverseSort2">Sup. Terra <span ng-show="orderByField2=='flagSupTerra'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField2='idriconf'; reverseSort2=!reverseSort2">ID Riconf. <span ng-show="orderByField2=='idriconf'"><span ng-show="!reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort2"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-								
+
 				<th class="text-center">Azioni </th>
 			</tr>
 		</thead>
@@ -86,11 +81,11 @@
 				</td>
 			</tr>
 		</tbody>
-	</table>	
+	</table>
 	<div class="text-center">
 		<button class="btn btn-success" ng-click="newsiteinfo()">Nuovo Sito</button>
 	</div>
-	
+
 	<hr>
 	<div>
 		<button class="btn btn-default" ng-click="cancel()">Indietro</button>
