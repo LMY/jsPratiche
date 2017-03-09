@@ -15,6 +15,48 @@ var getTableRowClass = function(id) {
 	return "";
 }
 
+var adjustPratica = function(pratiche) {
+
+	var today = moment();
+
+	pratiche.forEach(function(x) {
+		x.rowClass = getTableRowClass(x.idStato);
+
+		if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
+		if (x.dateOUT)
+			x.days = moment.duration(moment(x.dateOUT).diff(moment(x.dateIN))).subtract(x.diff/2, "days").asDays()|0;
+					
+		var arrivo = moment(x.dateIN);
+		var diff = moment.duration(today.diff(arrivo)).asDays();
+		var integDiff = (x.diff?x.diff/2:0);				// /2 = fix alla query che conta doppie le integrazioni!
+
+		if (x.stringStato == "Attesa Integrazione") {
+			x.scadenza = "";
+			x.scadenzaData = "";
+		}
+		else if (x.stringStato == "Com. Motivi Ostativi") {
+			x.scadenza = 10-moment.duration(today.diff(moment(x.dateCommOst))).asDays()|0;
+			x.scadenzaData = moment(x.dateCommOst).add(10, "d").format('YYYY-MM-DD');
+			
+			if (x.scadenza <= 0 || x.scadenza > 10) x.scadenzaType = "time-danger";
+			else if (x.scadenza <= 3) x.scadenzaType = "time-red";
+		}
+		else {
+			x.scadenza = ((30-diff + integDiff )|0);
+			x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
+
+			if (x.scadenza < 0)
+				x.scadenzaType = "time-danger";
+			else if (x.scadenza < 7)
+				x.scadenzaType = "time-red";
+			else if (x.scadenza < 15)
+				x.scadenzaType = "time-orange";
+			else //if (x.scadenza < 30)
+				x.scadenzaType = "time-green";
+		}
+	});
+}
+
 angular.module('app')
 	.factory('Pratiche', ['$resource', function($resource){
 		return $resource('/pratiche/pratiche/:id', null, {
@@ -126,43 +168,7 @@ angular.module('app')
 		$scope.reverseSort = false;
 
 		$scope.pratiche = Pratiche.query(function() {
-
-			var today = moment();
-
-			$scope.pratiche.forEach(function(x) {
-				x.rowClass = getTableRowClass(x.idStato);
-
-				if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
-
-				var arrivo = moment(x.dateIN);
-				var diff = moment.duration(today.diff(arrivo)).asDays();
-				var integDiff = (x.diff?x.diff/2:0);				// /2 = fix alla query che conta doppie le integrazioni!
-
-				if (x.stringStato == "Attesa Integrazione") {
-					x.scadenza = "";
-					x.scadenzaData = "";
-				}
-				else if (x.stringStato == "Com. Motivi Ostativi") {
-					x.scadenza = 10-moment.duration(today.diff(moment(x.dateCommOst))).asDays()|0;
-					x.scadenzaData = moment(x.dateCommOst).add(10, "d").format('YYYY-MM-DD');
-					
-					if (x.scadenza <= 0 || x.scadenza > 10) x.scadenzaType = "time-danger";
-					else if (x.scadenza <= 3) x.scadenzaType = "time-red";
-				}
-				else {
-					x.scadenza = ((30-diff + integDiff )|0);
-					x.scadenzaData = arrivo.add(30 + integDiff, 'd').format('YYYY-MM-DD');
-
-					if (x.scadenza < 0)
-						x.scadenzaType = "time-danger";
-					else if (x.scadenza < 7)
-						x.scadenzaType = "time-red";
-					else if (x.scadenza < 15)
-						x.scadenzaType = "time-orange";
-					else //if (x.scadenza < 30)
-						x.scadenzaType = "time-green";
-				}
-			});
+			adjustPratica($scope.pratiche);
 		});
 
 		$scope.new = function() {
@@ -190,13 +196,7 @@ angular.module('app')
 
 		$scope.requery = function(from, to, type) {
 			$scope.pratiche = PraticheAll.query({ dateFrom: from, dateTo: to, dateType: type }, function() {
-				$scope.pratiche.forEach(function(x) {
-					x.rowClass = getTableRowClass(x.idStato);
-					if (x.stringStato == "Arrivata") x.stringUser = "";	// fix: pratiche arrivate non sono in carico di nessuno
-
-					if (x.dateOUT)
-						x.days = moment.duration(moment(x.dateOUT).diff(moment(x.dateIN))).subtract(x.diff/2, "days").asDays()|0;
-				});
+				adjustPratica($scope.pratiche);
 			});
 		}
 		$scope.requery($scope.dateFrom, $scope.dateTo, $scope.dateType);	// GET $scope.pratiche
@@ -208,9 +208,7 @@ angular.module('app')
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
 		$scope.pratiche = PraticheCorreggere.query(function() {
-			$scope.pratiche.forEach(function(x) {
-				x.rowClass = getTableRowClass(x.idStato);
-			});
+			adjustPratica($scope.pratiche);
 		});
 		$scope.show = function(id) {
 			$location.url('pratiche/'+id);
@@ -224,9 +222,7 @@ angular.module('app')
 		$scope.reverseSort = false;
 
 		$scope.pratiche = PraticheProtocollare.query(function() {
-			$scope.pratiche.forEach(function(x) {
-				x.rowClass = getTableRowClass(x.idStato);
-			});
+			adjustPratica($scope.pratiche);
 		});
 		$scope.show = function(id) {
 			ModalService.showModal({
