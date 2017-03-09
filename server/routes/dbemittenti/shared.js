@@ -113,8 +113,8 @@ module.exports = {
 	},
 
 	setProtoParere: function(userid, id, connection, proto, protodate, callback) {
-		var query_cells = "UPDATE db_emittenti.dbo.tbl_celle SET Pt_RilPar = @proto, Dt_RilPar = @protodate, ID_UTENTE = @idutente, DataUltMod = @datamod WHERE sito = @siteid";
-		var query_sites = "UPDATE db_emittenti.dbo.tbl_siti SET Pt_RilPar = @proto, Dt_RilPar = @protodate, ID_UTENTE = @idutente, DataOperazione = @datamod WHERE id_sito = @siteid";
+		var query_cells = "UPDATE db_emittenti.dbo.tbl_celle SET Pt_RilPar = @proto, Dt_RilPar = @protodate, ID_Utente = @idutente, DataUltMod = @datamod WHERE Sito = @siteid";
+		var query_sites = "UPDATE db_emittenti.dbo.tbl_siti SET Pt_RilPar = @proto, Dt_RilPar = @protodate, ID_Utente = @idutente, DataOperazione = @datamod WHERE ID_SITO = @siteid";
 			
 		protodate = new Date(protodate);
 
@@ -122,7 +122,7 @@ module.exports = {
 			if (err || !translated_userid) rest.error500(err, null);
 			else
 				mssql.connect(function(err, mssqlconnection) {
-					if (err) { callback(err); mssqlconnection.close(); }
+					if (err) { mssqlconnection.close(); callback(err); }
 					else {
 						const now = new Date();
 
@@ -133,10 +133,10 @@ module.exports = {
 							.input('datamod', mssql.mssql.DateTime, now)
 							.input('siteid', mssql.mssql.BigInt, id)
 							.query(query_cells, function(err, data2) {
-								if (err) { callback(err); mssqlconnection.close(); }
+								if (err) { mssqlconnection.close(); callback(err); }
 								else
 									new mssql.mssql.Request(mssqlconnection)
-										.input('proto', mssql.mssql.VarChar(16), proto)
+										.input('proto', mssql.mssql.VarChar(20), proto)
 										.input('protodate', mssql.mssql.DateTime, protodate)
 										.input('idutente', mssql.mssql.Int, translated_userid)
 										.input('datamod', mssql.mssql.DateTime, now)
