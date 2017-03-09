@@ -113,7 +113,7 @@ router.post('/', function(req, res, next) {
     });
 });
 
-var setProtoOutOnDBEmittenti = function(id, protoOUT, dateOUT, userid) {
+var setProtoOutOnDBEmittenti = function(connection, id, protoOUT, dateOUT, userid, res) {
 	shared.translatePraticaToSites(id, connection, function(err, idsites) {
 		if (err) rest.error500(res, err);
 		else {
@@ -130,21 +130,23 @@ var setProtoOutOnDBEmittenti = function(id, protoOUT, dateOUT, userid) {
 
 			doSetProtoOUT(0, idsites);
 		}
-	});	
+	});
 };
 
 router.put('/:id', function(req, res, next) {
 	var query = sql.format('UPDATE ?? SET idGestore = ?, idComune = ?, address = ?, sitecode = ?, tipopratica = ?, protoIN = ?, dateIN = ?, protoOUT = ?, dateOUT = ?, note = ? WHERE id = ?', [tableName, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note, req.params.id]);
 
-	sql.query(query, function(err, data) {
-		if (err) rest.error500(res, err);
-		else {
-			// if set proto out, update on db_emittenti
-			if (req.body.protoOUT && req.body.dateOUT)
-				setProtoOutOnDBEmittenti(req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id);
-			else
-				rest.updated(res, data);
-		}
+	sql.connect(function (err, connection) {
+		connection.query(query, function(err, data) {
+			if (err) rest.error500(res, err);
+			else {
+				// if set proto out, update on db_emittenti
+				if (req.body.protoOUT && req.body.dateOUT)
+					setProtoOutOnDBEmittenti(connection, req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id, res);
+				else
+					rest.updated(res, data);
+			}
+		});
 	});
 });
 
@@ -164,7 +166,7 @@ router.put('/protoout/:id', function(req, res, next) {
 									if (err) rest.error500(res, err);
 									else {
 										// update db_emittenti
-										setProtoOutOnDBEmittenti(req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id);
+										setProtoOutOnDBEmittenti(connection, req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id, res);
 									}
 								});
 							}

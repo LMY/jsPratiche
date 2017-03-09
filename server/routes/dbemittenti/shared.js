@@ -125,7 +125,6 @@ module.exports = {
 					if (err) { mssqlconnection.close(); callback(err); }
 					else {
 						const now = new Date();
-
 						new mssql.mssql.Request(mssqlconnection)
 							.input('proto', mssql.mssql.VarChar(16), proto)
 							.input('protodate', mssql.mssql.DateTime, protodate)
