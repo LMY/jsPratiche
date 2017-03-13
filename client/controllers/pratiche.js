@@ -423,7 +423,7 @@ angular.module('app')
 		$scope.pmcount = PMcount.query();
 
 		$scope.dateFrom = moment().subtract(1, 'month').set('date', 1).format("YYYY-MM-DD");	// day 1 of prev month
-		$scope.dateTo = moment().set('date', 1).subtract(1, 'day').format("YYYY-MM-DD");		// day LAST of prev month
+		$scope.dateTo = moment().set('date', 1).format("YYYY-MM-DD");							// day 1 of current month
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
@@ -574,7 +574,7 @@ angular.module('app')
 		$scope.users = Utenti.query();
 
 		$scope.dateFrom = moment().subtract(1, 'month').set('date', 1).format("YYYY-MM-DD");	// day 1 of prev month
-		$scope.dateTo = moment().set('date', 1).subtract(1, 'day').format("YYYY-MM-DD");		// day LAST of prev month
+		$scope.dateTo = moment().set('date', 1).format("YYYY-MM-DD");							// day 1 of current month
 		$scope.dateTypes = [ "dateIN", "dateOUT" ];
 		$scope.dateType = "dateIN";
 
