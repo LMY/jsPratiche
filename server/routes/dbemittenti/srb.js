@@ -13,7 +13,7 @@ router.get('/all', function(req, res, next) {
 				"dbo.TBL_SITI.Pt_RilPar AS 'Protocollo Out', dbo.TBL_SITI.Dt_RilPar AS 'Data Protocollo Out', dbo.TBL_SITI.Data_Attivazione AS 'Data Attivazione', "+
 				"dbo.TBL_SITI.quota_slm as Quota, dbo.TBL_SITI.utmx as UTMX, dbo.TBL_SITI.utmy as UTMY, TempRealizzato.descr_flag as Realizzato "+
 				"FROM dbo.TBL_SITI INNER JOIN dbo.TBL_GESTORI ON (dbo.TBL_SITI.gestore = dbo.TBL_GESTORI.codice), dbo.TBL_CELLE, (SELECT id_flag,descr_flag  FROM dbo.TBL_DESCRIZIONE_FLAG_realizz UNION SELECT 0 as id_flag, 'NON SPECIFICATO' as descr_flag) as TempRealizzato "+
-				"WHERE dbo.TBL_SITI.Flag_realizzato = TempRealizzato.id_flag"
+				"WHERE dbo.TBL_SITI.Flag_realizzato = TempRealizzato.id_flag";
 
 	mssql.connect(function(err, connection) {
 		const errorHandler = function(err) { rest.error500(res, err); connection.close(); }
@@ -26,6 +26,51 @@ router.get('/all', function(req, res, next) {
 					else {
 						connection.close();
 						rest.json(res, data2);
+					}
+				});
+	});
+});
+
+function jsonToCsv(data) {
+	var ret = "";
+	
+	const columns = ["id Sito","Realizzazione","Gestore","Provincia","Comune","Indirizzo","ETRS89X","ETRS89Y","Quota","ETRS89XCELLA","ETRS89YCELLA","Frequenza","Guadagno","Direzione","Tilt Elettrico","Tilt Meccanico","Altezza cella","Potenza","Alfa24","Marca Antenna","Modello Antenna","Codice sito","Data rilascio parere"];
+	
+	for (var k=0; k<columns.length; k++)
+		ret += columns[k] + (k<columns.length-1?";":"\n");
+	
+	for (var i=0; i<data.length; i++)
+		for (var k=0; k<columns.length; k++) {
+			if (k == 18) // alfa24: if not defined, default to 1
+				ret += data[i][columns[k]]&&data[i][columns[k]]>0&&data[i][columns[k]]<=1 ? data[i][columns[k]] : 1;
+				
+			else if (k == columns.length-1) // if defined, format Data rilascio parere
+				ret += data[i][columns[k]] ? moment(data[i][columns[k]]).format("DD/MM/YYYY") : "";
+				
+			else
+				ret += data[i][columns[k]];
+			
+			ret += k<columns.length-1?";":"\n";
+		}
+	
+	return ret;
+}
+
+router.get('/exportgestori', function(req, res, next) {
+	var query = "SELECT Sito as \"id Sito\", descr_flag as \"Realizzazione\", TBL_GESTORI.DESCRIZIONE as Gestore, Pr as \"Provincia\", TBL_SITI.Comune as Comune, TBL_SITI.Indirizzo as Indirizzo, TBL_SITI.UTMX as ETRS89X, TBL_SITI.UTMY as ETRS89Y, Quota_slm as Quota, TBL_CELLE.UTMX as ETRS89XCELLA, TBL_CELLE.UTMY as ETRS89YCELLA, Frequenza, Guadagno, Direzione, Tilt_Elettrico as \"Tilt Elettrico\", Tilt_Mecc as \"Tilt Meccanico\", Altezza as \"Altezza cella\", Potenza, Alfa24, Marca_Antenna as \"Marca Antenna\", Modello_Antenna as \"Modello Antenna\", codice_sito as \"Codice sito\", TBL_CELLE.Dt_RilPar as \"Data rilascio parere\" FROM TBL_CELLE JOIN TBL_SITI on TBL_CELLE.Sito = TBL_SITI.ID_SITO JOIN TBL_GESTORI on TBL_CELLE.Gestore = TBL_GESTORI.CODICE JOIN TBL_DESCRIZIONE_FLAG_realizz on TBL_SITI.Flag_realizzato = TBL_DESCRIZIONE_FLAG_realizz.id_flag JOIN TBL_COMUNI on TBL_SITI.comune = TBL_COMUNI.comune WHERE TBL_CELLE.Parere='F' AND TBL_SITI.Stato_Parere='F' AND TBL_SITI.Tipologia=0 ORDER BY Sito";
+
+	mssql.connect(function(err, connection) {
+		const errorHandler = function(err) { rest.error500(res, err); connection.close(); }
+
+		if (err) errorHandler(err);
+		else
+			new mssql.mssql.Request(connection)
+				.batch(query, function(err, data2) {	// batch, not query (res is ~3mb)
+					if (err) errorHandler(err);
+					else {
+						connection.close();
+						res.set({"Content-Disposition":"attachment; filename=\"export.csv\""});
+						res.status(202).send(jsonToCsv(data2));
 					}
 				});
 	});
