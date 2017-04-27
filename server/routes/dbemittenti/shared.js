@@ -1,15 +1,27 @@
 const mssql = require('../../helpers/mssql.js');
 const sql = require('../../helpers/db.js');
+const config = require('../../config/config.js');
+
 
 module.exports = {
 
 	translateUserId: function(id, connection, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, "");
+			return;
+		}
+
 		connection.query(sql.format('SELECT idlink as id FROM LinkUtenti WHERE id=?', [id]), function(err, data) {
 			callback(err, data[0].id);
 		});
 	},
 
 	translateUsername: function(username, connection, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, "");
+			return;
+		}
+		
 		connection.query(sql.format('SELECT id from Utenti WHERE username=?', [username]), function(err, data) {
 			if (err) callback(err, []);
 			else
@@ -20,12 +32,22 @@ module.exports = {
 	},
 
 	translateSiteToPratica: function(id, connection, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, "");
+			return;
+		}
+		
 		connection.query(sql.format('SELECT idpratica as id FROM LinkSitiPratiche WHERE idsite=?', [id]), function(err, data) {
 			callback(err, data[0].id);
 		});
 	},
 
 	translatePraticaToSites: function(id, connection, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, []);
+			return;
+		}
+		
 		connection.query(sql.format('SELECT idsite as id FROM LinkSitiPratiche WHERE idpratica=?', [id]), function(err, data) {
 			if (err) callback(err, data);
 
@@ -44,6 +66,11 @@ module.exports = {
 
 
 	conTranslateUserId: function(id, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, "");
+			return;
+		}
+		
 		sql.connect(function(err, connection) {
 			if (err) callback(err, null);
 			else module.exports.translateUserId(id, connection, callback);
@@ -51,6 +78,11 @@ module.exports = {
 	},
 
 	conTranslateUsername: function(username, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, "");
+			return;
+		}
+		
 		sql.connect(function(err, connection) {
 			if (err) callback(err, null);
 			else module.exports.translateUsername(username, connection, callback);
@@ -58,6 +90,11 @@ module.exports = {
 	},
 
 	conTranslateSiteToPratica: function(id, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, "");
+			return;
+		}
+		
 		sql.connect(function(err, connection) {
 			if (err) callback(err, null);
 			else module.exports.translateSiteToPratica(id, connection, callback);
@@ -65,6 +102,11 @@ module.exports = {
 	},
 
 	conTranslatePraticaToSites: function(id, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, []);
+			return;
+		}
+		
 		sql.connect(function(err, connection) {
 			if (err) callback(err, null);
 			else module.exports.translatePraticaToSites(id, connection, callback);
@@ -72,6 +114,11 @@ module.exports = {
 	},
 
 	setStatoParere: function(userid, id, stato, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, []);
+			return;
+		}
+		
 		var query_cells = "UPDATE db_emittenti.dbo.tbl_celle SET Parere=@code, ID_UTENTE=@idutente, DataUltMod=@datamod WHERE sito=@siteid";
 		var query_sites = "UPDATE db_emittenti.dbo.tbl_siti SET Stato_Parere=@code, ID_UTENTE=@idutente, DataOperazione=@datamod, Flag_realizzato=@realizzato WHERE id_sito=@siteid";
 
@@ -113,6 +160,11 @@ module.exports = {
 	},
 
 	setProtoParere: function(userid, id, connection, proto, protodate, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, []);
+			return;
+		}
+		
 		var query_cells = "UPDATE db_emittenti.dbo.tbl_celle SET Pt_RilPar = @proto, Dt_RilPar = @protodate, ID_Utente = @idutente, DataUltMod = @datamod WHERE Sito = @siteid";
 		var query_sites = "UPDATE db_emittenti.dbo.tbl_siti SET Pt_RilPar = @proto, Dt_RilPar = @protodate, ID_Utente = @idutente, DataOperazione = @datamod WHERE ID_SITO = @siteid";
 			
@@ -151,6 +203,11 @@ module.exports = {
 	},
 
 	conSetProtoParere: function(userid, id, proto, protodate, callback) {
+		if (!config.usedbemittenti) {
+			callback(err, []);
+			return;
+		}
+		
 		sql.connect(function(err, connection) {
 			if (err) callback(err);
 			else module.exports.setProtoParere(userid, id, connection, proto, protodate, callback);
