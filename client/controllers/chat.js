@@ -22,6 +22,7 @@ angular.module('app')
 		$scope.me = Me.get(function() { $scope.selectedUser = $scope.me.id; });
 		$scope.pmcount = PMcount.query();
 
+		$scope.newline = "";		
 		$scope.orderByField = 'timePoint';
 		$scope.reverseSort = true;
 		$scope.messages = ChatPM.query(function() {
