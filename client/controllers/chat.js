@@ -18,11 +18,12 @@ angular.module('app')
 		});
 	}])
 	
-	.controller('ChatPMCtrl', ['$scope', 'Me', 'PMcount','ChatPM', 'Utenti', '$route', function($scope, Me, PMcount, ChatPM, Utenti, $route) {
-		$scope.me = Me.get(function() { $scope.selectedUser = $scope.me.id; });
+	.controller('ChatPMCtrl', ['$scope', 'Me', 'PMcount', 'ChatPM', 'Utenti', '$route', function($scope, Me, PMcount, ChatPM, Utenti, $route) {
+		$scope.me = Me.get(function() { 
+			$scope.newmsg = new ChatPM({ msg: "", userto: $scope.me.id });
+		});
 		$scope.pmcount = PMcount.query();
 
-		$scope.newline = "";		
 		$scope.orderByField = 'timePoint';
 		$scope.reverseSort = true;
 		$scope.messages = ChatPM.query(function() {
@@ -34,33 +35,28 @@ angular.module('app')
 		$scope.utenti = Utenti.query();
 
 		$scope.send = function() {
-			var newmsg = new ChatPM({ msg: $scope.newline, userto: $scope.selectedUser });
-
-			newmsg.$save(function(){
-				$scope.newline = "";
-				$scope.selectedUser = $scope.me.id;
+			$scope.newmsg.$save(function(){
+				$scope.newmsg = new ChatPM({ msg: "", userto: $scope.me.id });
 				$route.reload();
 			});
 		}
 	}])
-	.controller('ChatBoardCtrl', ['$scope', 'Me', 'PMcount','ChatBoard', '$route', function($scope, Me, PMcount, ChatBoard, $route) {
+	.controller('ChatBoardCtrl', ['$scope', 'Me', 'PMcount', 'ChatBoard', '$route', function($scope, Me, PMcount, ChatBoard, $route) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 
 		$scope.orderByField = 'timePoint';
 		$scope.reverseSort = true;
-		$scope.newline = "";
 		$scope.messages = ChatBoard.query(function() {
 			$scope.messages.forEach( x => {
 				x.line = x.timePoint+" <"+x.username+"> "+x.msg;
 			});
 		});
+		$scope.newmsg = new ChatBoard({ msg: ""});
 
 		$scope.send = function() {
-			var newmsg = new ChatBoard({ msg: $scope.newline });
-
-			newmsg.$save(function(){
-				$scope.newline = "";
+			$scope.newmsg.$save(function(){
+				$scope.newmsg = new ChatBoard({ msg: ""});
 				$route.reload();
 			});
 		}
