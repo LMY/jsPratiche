@@ -343,6 +343,10 @@ angular.module('app')
 							$scope.history[i].descStato +=  " - " + "PROTO NON SPECIFICATO";
 					}
 				}
+				else if ($scope.history[i].idStato ==  5) {
+					if ($scope.history[i].usernameAss)
+						$scope.history[i].descStato +=  " ("+$scope.history[i].usernameAss+")";
+				}
 				else if ($scope.history[i].idStato ==  7 || $scope.history[i].idStato ==  13) {					
 					if ($scope.history[i].protoOUT && $scope.history[i].dateOUT)					
 						$scope.history[i].descStato +=  " - " + $scope.history[i].protoOUT + " - "+ $scope.history[i].dateOUT;

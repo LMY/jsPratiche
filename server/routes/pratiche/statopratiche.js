@@ -119,7 +119,7 @@ router.post('/', function(req, res, next) {
 								}
 							});
 						}
-						else if (req.body.idStato == 2) {	// lavorazione
+						else if (req.body.idStato == 2 || req.body.idStato == 5) {	// lavorazione or "in correzione"
 							connection.query("SELECT LAST_INSERT_ID() AS id", function(err, lastid) {
 								if (err) rest.error500(res, err);
 								else {

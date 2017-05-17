@@ -16,7 +16,10 @@
 			</div>
 			<div ng-show="epratica.idStato == 4">
 				<select class="col-md-6" data-ng-options="g.id as g.name for g in utenti" data-ng-model="selectedUser" style="top: 8px;"></select>
-				<button class="btn btn-primary" ng-click="stato(6, selectedUser)">Corretto</button>
+				<button class="col-md-6 btn btn-primary" ng-click="stato(5, selectedUser)">Dai da correggere</button>
+			</div>
+			<div ng-show="epratica.idStato == 5">
+				<button class="btn btn-success" ng-click="stato(6, selectedUser)">Corretto</button>
 			</div>
 			<div class="div-border-invisible" ng-show="epratica.idStato == 2">
 				<button class="btn btn-primary" ng-click="stato(3)">Mancano misure</button>
