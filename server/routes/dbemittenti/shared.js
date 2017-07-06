@@ -6,7 +6,7 @@ const config = require('../../config/config.js');
 module.exports = {
 
 	translateUserId: function(id, connection, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, "");
 			return;
 		}
@@ -17,7 +17,7 @@ module.exports = {
 	},
 
 	translateUsername: function(username, connection, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, "");
 			return;
 		}
@@ -32,7 +32,7 @@ module.exports = {
 	},
 
 	translateSiteToPratica: function(id, connection, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, "");
 			return;
 		}
@@ -43,7 +43,7 @@ module.exports = {
 	},
 
 	translatePraticaToSites: function(id, connection, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, []);
 			return;
 		}
@@ -66,7 +66,7 @@ module.exports = {
 
 
 	conTranslateUserId: function(id, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, "");
 			return;
 		}
@@ -78,7 +78,7 @@ module.exports = {
 	},
 
 	conTranslateUsername: function(username, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, "");
 			return;
 		}
@@ -90,7 +90,7 @@ module.exports = {
 	},
 
 	conTranslateSiteToPratica: function(id, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, "");
 			return;
 		}
@@ -102,7 +102,7 @@ module.exports = {
 	},
 
 	conTranslatePraticaToSites: function(id, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, []);
 			return;
 		}
@@ -114,7 +114,7 @@ module.exports = {
 	},
 
 	setStatoParere: function(userid, id, stato, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, []);
 			return;
 		}
@@ -160,7 +160,7 @@ module.exports = {
 	},
 
 	setProtoParere: function(userid, id, connection, proto, protodate, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, []);
 			return;
 		}
@@ -203,7 +203,7 @@ module.exports = {
 	},
 
 	conSetProtoParere: function(userid, id, proto, protodate, callback) {
-		if (!config.usedbemittenti) {
+		if (typeof config.usedbemittenti ==='boolean' && config.usedbemittenti === false) {
 			callback(err, []);
 			return;
 		}

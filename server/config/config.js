@@ -3,12 +3,15 @@ module.exports = {
 	'db': {
         connectionLimit : 100,
         host     : 'localhost',
-        user     : 'certest',
-        password : 'certest',
-        database : 'jsTest',
+        user     : 'ceruser',
+        password : 'cerpass',
+        database : 'jsPratiche',
 		dateStrings: 'date',
         debug    :  false
 	},
+
+	'usedbemittenti':false,
+
 	'mssql': {
 		user: 'user',
 		password: 'pass',
