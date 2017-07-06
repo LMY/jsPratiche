@@ -28,7 +28,7 @@ var getUserLevel = function(inputid, cb) {
 	});
 };
 
-var checkPassword = function(id, password, cb, err) {
+var checkPassword = function(id, password, cb, errcb) {
 
 	if (!id || !password)	{	// ensure they do exist
 		err("old password not provided");
@@ -41,7 +41,7 @@ var checkPassword = function(id, password, cb, err) {
 		if (!err && data && data.length == 1 && bCrypt.compareSync(password, data[0].hash))
 			return cb();
 		else
-			err("wrong password");
+			errcb("wrong password");
 	});
 }
 
