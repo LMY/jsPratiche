@@ -30,7 +30,7 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var query =  sql.format("INSERT INTO Comuni(name,pec,idaas,province) VALUES (?,?,?)", [req.body.name, req.body.pec, req.body.idaas, req.body.province]);
+	var query =  sql.format("INSERT INTO Comuni(name,pec,idaas,province) VALUES (?,?,?,?)", [req.body.name, req.body.pec, req.body.idaas, req.body.province]);
 
 	sql.query(query, function(err, data) {
 		if (err) rest.error500(res, err);

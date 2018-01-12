@@ -7,7 +7,8 @@
   },
   "dependencies": {
     "angularjs-datepicker": "^2.1.6",
-    "bcrypt": "^0.8.5",
+    "bcrypt": "^1.0.3",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.2",
     "bower": "^1.7.9",
     "connect-flash": "~0.1.1",
