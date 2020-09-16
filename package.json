@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "angularjs-datepicker": "^2.1.6",
-    "bcrypt": "^1.0.3",
+    "bcrypt": "^5.0.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.2",
     "bower": "^1.7.9",
@@ -15,20 +15,20 @@
     "cookie-parser": "^1.4.3",
     "debug": "~2.6.9",
     "ejs": "^2.4.2",
-    "express": "~4.13.4",
+    "express": "^4.17.1",
     "express-favicon": "^2.0.0",
     "express-mysql-session": "^1.2.0",
     "express-session": "^1.14.0",
     "gulp": "^3.9.1",
     "momentjs": "^1.1.17",
-    "morgan": "~1.7.0",
+    "morgan": "^1.10.0",
     "mssql": "^3.3.0",
     "multer": "^1.1.0",
     "mysql": ">=2.5.0",
     "passport": "^0.3.0",
     "passport-jwt": "^1.2.1",
     "passport-local": "~1.0.0",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
