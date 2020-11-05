@@ -1,6 +1,6 @@
 var rest = require('../../helpers/rest.js');
 var mssql = require('../../helpers/mssql.js');
-var moment = require('momentjs');
+var moment = require('moment');
 
 var express = require('express');
 var router = express.Router();
