@@ -3,7 +3,7 @@ const concat = require('gulp-concat');
 const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
 const babel = require('gulp-babel');
-const minifyHtml = require('gulp-minify-html');
+const htmlMin = require('gulp-htmlmin');
 const ngAnnotate = require('gulp-ng-annotate');
 const stripDebug = require('gulp-strip-debug');
 const size = require('gulp-size');
@@ -64,13 +64,13 @@ gulp.task('libs', function() {
 
 gulp.task('html-main', function() {
 	return gulp.src(clientHtmlFiles)
-        .pipe(minifyHtml())
+        .pipe(htmlMin({ collapseWhitespace: true }))
 		.pipe(gulp.dest(clientHtmlDest));
 });
 
 gulp.task('html-templates', function() {
 	return gulp.src(clientHtmlTemplateFiles)
-        .pipe(minifyHtml())
+        .pipe(htmlMin({ collapseWhitespace: true }))
 		.pipe(gulp.dest(clientHtmlTemplateDest));
 });
 
