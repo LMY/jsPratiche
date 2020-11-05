@@ -39,7 +39,8 @@ var libFiles = 	[ 'client/libs/jquery/dist/jquery.min.js',
 
 gulp.task('js', function() {
 	return gulp.src(clientNgFiles)
-		.pipe(babel({ presets: ['es2017', 'es2016', 'es2015'] }))
+//		.pipe(babel({ presets: ['es2017', 'es2016', 'es2015'] }))
+		.pipe(babel({ presets: ['@babel/preset-env'] }))
 //        .pipe(stripDebug())
 		.pipe(concat('app.js'))
 		.pipe(gulp.dest(clientNgDest))		
@@ -91,9 +92,9 @@ gulp.task('images', function () {
 });
 
 
-gulp.task('html', ['html-main', 'html-templates']);
-gulp.task('angular', ['html', 'js']);
-gulp.task('all', ['js', 'html-main', 'html-templates', 'css', 'images', 'libs', 'fonts']);
+gulp.task('html', gulp.parallel('html-main', 'html-templates'));
+gulp.task('angular', gulp.parallel('html', 'js'));
+gulp.task('all', gulp.parallel('js', 'html-main', 'html-templates', 'css', 'images', 'libs', 'fonts'));
 
 
 // WATCHES
@@ -110,5 +111,5 @@ gulp.task('watch-js', function() {
 	gulp.watch(clientNgFiles, ['js']);
 });
 
-gulp.task('watch-html', ['watch-html-main', 'watch-html-templates']);
-gulp.task('watch-angular', ['watch-html', 'watch-js']);
+gulp.task('watch-html', gulp.parallel('watch-html-main', 'watch-html-templates'));
+gulp.task('watch-angular', gulp.parallel('watch-html', 'watch-js'));
