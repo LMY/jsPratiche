@@ -7,7 +7,7 @@ const minifyHtml = require('gulp-minify-html');
 const ngAnnotate = require('gulp-ng-annotate');
 const stripDebug = require('gulp-strip-debug');
 const size = require('gulp-size');
-const minifyCss = require('gulp-minify-css');
+const cleanCSS = require('gulp-clean-css');
 
 
 var clientNgFiles = ['client/app.js', 'client/controllers/*.js' ],
@@ -76,7 +76,7 @@ gulp.task('html-templates', function() {
 
 gulp.task('css', function () {
 	return gulp.src(clientCssFiles)
-		.pipe(minifyCss())
+		.pipe(cleanCSS({compatibility: 'ie8'}))
 		.pipe(concat('main.css'))		
 		.pipe(gulp.dest(clientCssDest));
 });
