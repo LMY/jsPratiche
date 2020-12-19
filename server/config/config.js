@@ -1,11 +1,12 @@
 module.exports = {
 	'secret': 'eo8tnr8q23g4q238yvo782qg3mqch478nq7yo43umx,pqh3',
 	'db': {
-        connectionLimit : 100,
+		connectionLimit : 100,
+		type     : 'pg',
         host     : 'localhost',
-        user     : 'ceruser',
-        password : 'cerpass',
-        database : 'jsPratiche',
+        user     : 'lmy',
+        password : 'waterstr',
+        database : 'postgres',
 		dateStrings: 'date',
         debug    :  false
 	},
@@ -13,14 +14,15 @@ module.exports = {
 	'usedbemittenti':false,
 
 	'mssql': {
-		user: 'user',
-		password: 'pass',
+		type: 'pg',
+		user: 'lmy',
+		password: 'watersr',
 		server: 'localhost',
 		database: 'db_emittenti',
-		port: 1433,
-		options: {
-			encrypt: false,
-			tdsVersion: '7_1'	// https://github.com/patriksimek/node-mssql/issues/36 issue with mssql2000
-		}
+		// port: 1433,
+		// options: {
+		// 	encrypt: false,
+		// 	tdsVersion: '7_1'	// https://github.com/patriksimek/node-mssql/issues/36 issue with mssql2000
+		// }
 	}
 };
