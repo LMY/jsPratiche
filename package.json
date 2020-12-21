@@ -30,6 +30,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "~1.0.0",
     "pg": "^8.5.1",
+    "pg-format": "^1.0.4",
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {

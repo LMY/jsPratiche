@@ -37,48 +37,47 @@ module.exports = function(passport) {
     });
 
 	passport.deserializeUser(function(id, done) {
-		var query = sql.format('SELECT id,username,userlevel,pareri,correzioni FROM Utenti WHERE id=?', [id]);
 
-		sql.query(query, function(err, user) {
-			done(err, user[0]);
+		sql.pool.query('SELECT id,username,userlevel,pareri,correzioni FROM utenti WHERE id=$1', [id], (err, user) => {
+			if (err)
+				return done(err, "");
+			else
+				done(err, user.rows[0]);
 		});
 	});
 
 	passport.use('login', new LocalStrategy({ passReqToCallback : true }, function(req, username, password, done) {
-
-		var query = sql.format('SELECT * FROM Utenti WHERE username=?', [username]);
-		sql.query(query, function(err, data) {
-
+		sql.pool.query('SELECT * FROM utenti WHERE username=$1', [username], (err, results) => {
 			if (err)
 				return done(err);
 
-			if (!data || data.length != 1) {
+			if (!results || results.rows.length != 1) {
 //					console.log('User Not Found with username '+username);
 				return done(null, false, req.flash('message', 'User Not found.'));
 			}
 
-			if (!bCrypt.compareSync(password, data[0].hash)) {
-/*
+			if (!bCrypt.compareSync(password, results.rows[0].hash)) {
+
 				// because sometimes you forget your hashes
-				console.log('Invalid Password');
-				console.log("data[0].hash: "+data[0].hash);
-				console.log("password given: "+password);
-				calculatehash(password);
-*/
+				// console.log('Invalid Password');
+				// console.log("results[0].hash: "+results.rows[0].hash);
+				// console.log("password given: "+password);
+				// calculatehash(password);
+
 				return done(null, false, req.flash('message', 'Invalid Password'));
 			}
+				
 
 			// set lastlogin
-			var query2 = sql.format('UPDATE Utenti SET lastlogin=? WHERE username=?', [formatLocalDate(), username]);
-			sql.query(query2, function(err, data2) {
+			sql.pool.query('UPDATE utenti SET lastlogin=$1 WHERE username=$2', [formatLocalDate(), username], (err, data2) => {
 
 				if (err) {
 //							console.log("error: "+err);
 					return done(err);
 				}
 
-				return done(null, data[0]);
+				return done(null, results.rows[0]);
 			});
-		});
+		  })
 	}));
 }

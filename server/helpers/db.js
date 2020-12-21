@@ -1,61 +1,36 @@
-var mysql = require('mysql');
-var pg = require('pg');
 var config = require('../config/config.js');
-var mysqlpool = config.db.type=="mysql"? mysql.createPool(config.db) : null;
-var pgpool = config.db.type=="mysql"? null : mysql.createPool(config.db);
+
+const Pool = require('pg').Pool
+const pgpool = new Pool({
+  user: config.db.user,
+  host: config.db.host,
+  database: config.db.database,
+  password: config.db.password,
+  port: 5432,
+});
+var pgformat = require('pg-format');
+
 
 module.exports = {
-	pool: config.db.type=="mysql"? mysqlpool : pgpool,
+	pool: pgpool,
 
 	connect: function(callback) {
-		if (config.db.type=="mysql")
-		{
-			console.log("CONNECT MSQL");
-
-			mysqlpool.getConnection((err, connection) => {
-				callback(err, connection);
-				connection.release();
-			});
-		}
-			else
-		{
-console.log("CONNECT PG");
-			pgpool.getConnection((err, connection) => {
-				callback(err, connection);
-				connection.release();
-			});
-		}
+		pgpool.getConnection((err, connection) => {
+			callback(err, connection);
+			connection.release();
+		});
 	},
 	
-	query: function(query, callback) {
-		if (config.db.type=="mysql")
-		mysqlpool.getConnection(function(err, connection) {
-			connection.query(query,
-				(err, data) => { callback(err, data); }
-			);
-
-			connection.release();
-		});
-		else
-		pgpool.getConnection(function(err, connection) {
-			connection.query(query,
-				(err, data) => { callback(err, data); }
-			);
-
-			connection.release();
-		});
+	query: function(querytxt, callback) {
+		console.log("QUERY ["+query+"]");
+		pgpool.query(querytxt, (err, res) => {
+		  console.log(err, res.rows);
+		  pgpool.end();
+		});		
 	},
 
 	queryfmt: function(query, args, callback) {
-		if (config.db.type=="mysql")
-		mysqlpool.getConnection(function(err, connection) {
-			connection.query(mysql.format(query, args),
-				(err, data) => { callback(err, data); }
-			);
 
-			connection.release();
-		});
-		else
 		pgpool.getConnection(function(err, connection) {
 			connection.query(mysql.format(query, args),
 				(err, data) => { callback(err, data); }
@@ -65,5 +40,5 @@ console.log("CONNECT PG");
 		});
 	},
 	
-	format: config.db.type=="mysql"? mysql.format : pg.format,
+	format: pgformat,
 }

@@ -6,7 +6,8 @@ module.exports = {
         host     : 'localhost',
         user     : 'lmy',
         password : 'waterstr',
-        database : 'postgres',
+		database : 'postgres',
+		schema : 'jsPratiche',
 		dateStrings: 'date',
         debug    :  false
 	},
@@ -18,7 +19,9 @@ module.exports = {
 		user: 'lmy',
 		password: 'watersr',
 		server: 'localhost',
-		database: 'db_emittenti',
+		database: 'postgres',
+		schema : 'dbnir',
+
 		// port: 1433,
 		// options: {
 		// 	encrypt: false,
