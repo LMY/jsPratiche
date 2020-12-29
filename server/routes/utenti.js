@@ -17,9 +17,8 @@ var calculatehash = function(input, cb) {
 }
 
 var getUserLevel = function(inputid, cb) {
-	var query = sql.format('SELECT * FROM ?? WHERE id=?', [tableName, inputid]);
 
-	sql.query(query, function(err, data) {
+	sql.pool.query('SELECT * FROM $1 WHERE id=$2', [tableName, inputid], function(err, data) {
 		var ret = false;
 		if (err);
 		else if (!data || data.length != 1);
@@ -35,8 +34,7 @@ var checkPassword = function(id, password, cb, errcb) {
 		return;
 	}
 
-	var query = sql.format('SELECT * FROM ?? WHERE id=?', [tableName, id]);
-	sql.query(query, function(err, data) {
+	sql.pool.query('SELECT * FROM $1 WHERE id=$2', [tableName, id], function(err, data) {
 
 		if (!err && data && data.length == 1 && bCrypt.compareSync(password, data[0].hash))
 			return cb();
@@ -57,16 +55,14 @@ router.get('/me', function(req, res, next) {
 
 
 router.get('/', function(req, res, next) {
-	sql.query('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM '+tableName, function(err, data) {
+	sql.pool.query('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM '+tableName, function(err, data) {
 		if (err) rest.error500(res, err);
 		else res.json(data);
 	});
 });
 
 router.get('/:id', function(req, res, next) {
-	var query = sql.format('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM ?? WHERE id=?', [tableName, req.params.id]);
-
-	sql.query(query, function(err, data) {
+	sql.pool.query('SELECT id, username, name, surname, email, phone, lastlogin, userlevel FROM $1 WHERE id=$2', [tableName, req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
 		else res.json(data.length == 1 ? data[0] : []);
 	});
@@ -79,9 +75,7 @@ router.delete('/:id', function(req, res, next) {
 		if (req.user.userlevel != 0 && requserlvl <= req.user.userlevel)
 			rest.error403(res);
 		else {
-			var query = sql.format('DELETE FROM ?? WHERE id=?', [tableName, req.params.id]);
-
-			sql.query(query, function(err, data) {
+			sql.pool.query('DELETE FROM $1 WHERE id=$2', [tableName, req.params.id], function(err, data) {
 				if (err) rest.error500(res, err);
 				else rest.deleted(res, data);
 			});
@@ -96,9 +90,7 @@ router.post('/', function(req, res, next) {
 		rest.error403(res);
 	else
 		calculatehash(req.body.password, function(err, newhash) {
-			var query = sql.format("INSERT INTO ??(??,??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?,?)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, newhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1]);
-
-			sql.query(query, function(err, data) {
+			sql.pool.query("INSERT INTO $1($2,$3,$4,$5,$6,$7,$8,$9) VALUES ($10,$11,$12,$13,$14,$15,$16,$17)", [tableName, "username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, newhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1], function(err, data) {
 				if (err) rest.error500(res, err);
 				else rest.created(res, data);
 			});
@@ -113,9 +105,7 @@ router.put('/:id', function(req, res, next) {
 		rest.error403(res);
 	else
 		calculatehash(req.body.password, function(err, newhash) {
-			var query = sql.format("UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?", [tableName, "username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id]);
-
-			sql.query(query, function(err, data) {
+			sql.pool.query("UPDATE $1 SET $2 = $3, $4 = $5, $6 = $7, $8 = $9, $10 = $11, $12 = $13 WHERE $14 = $15", [tableName, "username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id], function(err, data) {
 				if (err) rest.error500(res, err);
 				else rest.updated(res, data);
 			});
@@ -130,9 +120,7 @@ router.put('/password/:id', function(req, res, next) {
 	else {
 		checkPassword(req.user.id, req.body.oldpassword, function() {
 			calculatehash(req.body.password, function(err, newhash) {
-				var query = sql.format("UPDATE ?? SET ?? = ? WHERE ?? = ?", [tableName, "hash", newhash, "id", req.params.id]);
-
-				sql.query(query, function(err, data) {
+				sql.pool.query("UPDATE $1 SET $2 = $3 WHERE $4 = $5", [tableName, "hash", newhash, "id", req.params.id], function(err, data) {
 					if (err) rest.error500(res, err);
 					else rest.updated(res, data);
 				});
