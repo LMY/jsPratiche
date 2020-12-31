@@ -1,42 +1,42 @@
 var rest = require('../helpers/rest.js');
 var sql = require('../helpers/db.js');
+var tableName = 'jspratiche."StudiTecnici"';
 
 var express = require('express');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-	console.log("forza roma");
-	sql.pool.query('SELECT * FROM StudiTecnici', (err, data) => {
+	sql.pool.query('SELECT * FROM '+tableName, (err, data) => {
 		if (err) rest.error500(res, err);
 		else res.json(data.rows);
 	});
 });
 
 router.post('/', function(req, res, next) {
-	sql.pool.query("INSERT INTO StudiTecnici($1,$2) VALUES ($3,$4)", ["name", "pec", req.body.name, req.body.pec], function(err, data) {
+	sql.pool.query('INSERT INTO '+tableName+'($1,$2) VALUES ($3,$4)', ["name", "pec", req.body.name, req.body.pec], function(err, data) {
 		if (err) rest.error500(res, err);
-		else rest.created(res, data);
+		else rest.created(res, data.rows);
 	});
 });
 
 router.get('/:id', function(req, res, next) {
-	sql.pool.query('SELECT * FROM StudiTecnici WHERE id=$1', [req.params.id], function(err, data) {
+	sql.pool.query('SELECT * FROM '+tableName+' WHERE id=$1', [req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
-		else res.json(data.length == 1 ? data[0] : []);
+		else res.json(data.rows.length == 1 ? data.rows[0] : []);
 	});
 });
 
 router.put('/:id', function(req, res, next) {
-	sql.pool.query("UPDATE StudiTecnici SET $1 = $2, $3 = $4 WHERE $5 = $6", ["name", req.body.name, "pec", req.body.pec, "id", req.params.id], function(err, data) {
+	sql.pool.query('UPDATE '+tableName+' SET $1 = $2, $3 = $4 WHERE $5 = $6', ["name", req.body.name, "pec", req.body.pec, "id", req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
-		else rest.updated(res, data);
+		else rest.updated(res, data.rows);
 	});
 });
 
 router.delete('/:id', function(req, res, next) {
-	sql.pool.query('DELETE FROM StudiTecnici WHERE id=$1', [req.params.id], function(err, data) {
+	sql.pool.query('DELETE FROM '+tableName+' WHERE id=$1', [req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
-		else rest.deleted(res, data);
+		else rest.deleted(res, data.rows);
 	});
 });
 

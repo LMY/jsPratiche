@@ -9,35 +9,35 @@ router.get('/', function(req, res, next) {
 
 	sql.pool.query('SELECT jspratiche."SharedNotes".*, jspratiche."Utenti".username FROM jspratiche."SharedNotes" LEFT JOIN jspratiche."Utenti" on jspratiche."SharedNotes".create_user = jspratiche."Utenti".id', function(err, data) {
 		if (err) rest.error500(res, err);
-		else res.json(data);
+		else res.json(data.rows);
 	});
 });
 
 router.get('/:id', function(req, res, next) {
 	sql.pool.query('SELECT * FROM SharedNotes WHERE id=$1', [req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
-		else res.json(data.length == 1 ? data[0] : []);
+		else res.json(data.rows.length == 1 ? data.rows[0] : []);
 	});
 });
 
 router.delete('/:id', function(req, res, next) {
 	sql.pool.query('DELETE FROM $1 WHERE id=$2', [tableName, req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
-		else rest.deleted(res, data);
+		else rest.deleted(res, data.rows);
 	});
 });
 
 router.post('/', function(req, res, next) {
 	sql.pool.query("INSERT INTO $1($2,$3,$4) VALUES ($1,$2, NOW())", [tableName, "create_user", "text", "create_timePoint", req.user.id, req.body.text ], function(err, data) {
 		if (err) rest.error500(res, err);
-		else rest.created(res, data);
+		else rest.created(res, data.rows);
 	});
 });
 
 router.put('/:id', function(req, res, next) {
 	sql.pool.query("UPDATE $1 SET $2 = $3, $4 = $5, create_timePoint=create_timePoint WHERE $6 = $7", [tableName, "text", req.body.text, "mod_user", req.user.id, "id", req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
-		else rest.updated(res, data);
+		else rest.updated(res, data.rows);
 	});
 });
 
