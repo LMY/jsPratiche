@@ -1,46 +1,48 @@
 var rest = require('../../helpers/rest.js');
 var sql = require('../../helpers/db.js');
-var tableNameCurrent = 'StatoPratiche';
 
 var express = require('express');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-	sql.query('SELECT * FROM StatoPratiche', function(err, data) {
+	sql.pool.query('SELECT * FROM '+sql.tables.Pratiche, function(err, data) {
 		if (err) rest.error500(res, err);
-		else res.json(data);
+		else res.json(data.rows);
 	});
 });
 
 router.get('/stati', function(req, res, next) {
-	sql.query('SELECT * FROM ConstStatoPratiche', function(err, data) {
+	sql.pool.query('SELECT * FROM '+sql.tables.ConstStatoPratiche, function(err, data) {
 		if (err) rest.error500(res, err);
-		else res.json(data);
+		else res.json(data.rows);
 	});
 });
 
 router.get('/tipi', function(req, res, next) {
-	sql.query('SELECT * FROM ConstTipoPratiche', function(err, data) {
+	sql.pool.query('SELECT * FROM '+sql.tables.ConstStatoPratiche, function(err, data) {
 		if (err) rest.error500(res, err);
-		else res.json(data);
+		else res.json(data.rows);
 	});
 });
 
 router.get('/history/:id', function(req, res, next) {
-	var query = sql.format('SELECT StatoPratiche.*, ConstStatoPratiche.descrizione as descStato, A.username as usernameAss, B.username as usernameMod, Integrazioni.id as integID, Integrazioni.dateOUT, Integrazioni.dateIN, Integrazioni.protoOUT, Integrazioni.protoIN, Integrazioni.note as noteInteg FROM StatoPratiche LEFT JOIN ConstStatoPratiche on StatoPratiche.idStato=ConstStatoPratiche.id LEFT JOIN AssStatoPraticheUtenti on StatoPratiche.id = AssStatoPraticheUtenti.idStato LEFT JOIN Utenti AS A on idUtente=A.id LEFT JOIN Utenti AS B on idUtenteModifica=B.id LEFT JOIN AssStatoPraticheIntegrazioni ON StatoPratiche.id = AssStatoPraticheIntegrazioni.idStato LEFT JOIN Integrazioni ON AssStatoPraticheIntegrazioni.idInteg = Integrazioni.id WHERE idPratica=?', [req.params.id]);
-
-	sql.query(query, function(err, data) {
+	sql.pool.query('SELECT '+sql.tables.Pratiche+'.*, '+sql.tables.ConstStatoPratiche+'.descrizione as descStato, A.username as usernameAss, B.username as usernameMod, '+
+	sql.tables.Integrazioni+'.id as integID, '+
+	sql.tables.Integrazioni+'.dateOUT, '+sql.tables.Integrazioni+'.dateIN, '+sql.tables.Integrazioni+'.protoOUT, '+sql.tables.Integrazioni+'.protoIN, '+sql.tables.Integrazioni+'.note as noteInteg FROM '+
+	''+sql.tables.Pratiche+' LEFT JOIN '+sql.tables.ConstStatoPratiche+' on '+sql.tables.Pratiche+'.idStato='+sql.tables.ConstStatoPratiche+'.id LEFT JOIN '+
+	''+sql.tables.AssStatoPraticheUtenti+' on '+sql.tables.Pratiche+'.id = '+sql.tables.AssStatoPraticheUtenti+'.idStato LEFT JOIN '+
+	sql.tables.Utenti+' AS A on idUtente=A.id LEFT JOIN '+sql.tables.Utenti+' AS B on idUtenteModifica=B.id '+
+	'LEFT JOIN '+sql.tables.AssStatoPraticheIntegrazioni+' ON '+sql.tables.Pratiche+'.id = '+sql.tables.AssStatoPraticheIntegrazioni+'.idStato LEFT JOIN '+
+	sql.tables.Integrazioni+' ON AssStatoPraticheIntegrazioni.idInteg = '+sql.tables.Integrazioni+'.id WHERE idPratica=$1', [req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
-		else res.json(data);
+		else res.json(data.rows);
 	});
 });
 
 router.get('/:id', function(req, res, next) {
-	var query = sql.format('SELECT * FROM StatoPratiche WHERE id=?', [req.params.id]);
-
-	sql.query(query, function(err, data) {
+	sql.pool.query('SELECT * FROM '+sql.tables.Pratiche+' WHERE id=$1', [req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
-		else res.json(data.length == 1 ? data[0] : []);
+		else res.json(data.rows.length == 1 ? data.rows[0] : []);
 	});
 });
 
@@ -51,9 +53,7 @@ router.post('/', function(req, res, next) {
 		connection.query('START TRANSACTION;', function(err, data) {
 			if (err) rest.error500(res, err);
 			else {
-				var query =  sql.format("INSERT INTO StatoPratiche(idPratica,idStato,idUtenteModifica) VALUES (?,?,?)", [ req.body.idPratica, req.body.idStato, userid ]);
-
-				connection.query(query, function(err, data) {
+				connection.query('INSERT INTO StatoPratiche(idPratica,idStato,idUtenteModifica) VALUES (?,?,?)', [ req.body.idPratica, req.body.idStato, userid ], function(err, data) {
 					if (err) rest.error500(res, err);
 					else {
 						if (req.body.idStato == 7 || req.body.idStato == 13) {	// richiedi integrazioni / comunicaz. motivi ostativi
@@ -62,7 +62,7 @@ router.post('/', function(req, res, next) {
 							connection.query("SELECT LAST_INSERT_ID() AS id", function(err, laststatoid) {
 								if (err) rest.error500(res, err);
 								else {
-									var query3 = sql.format("INSERT INTO Integrazioni(dateOUT, dateIN, protoOUT, protoIN, ostativi, note) VALUES (?,NULL,?,NULL,?,?)", [ req.body.integData, req.body.integProto, ostativi, req.body.integNote]);
+									var query3 = sql.format('INSERT INTO '+sql.tables.Integrazioni+'(dateOUT, dateIN, protoOUT, protoIN, ostativi, note) VALUES (?,NULL,?,NULL,?,?)', [ req.body.integData, req.body.integProto, ostativi, req.body.integNote]);
 
 									connection.query(query3, function(err, data) {
 										if (err) rest.error500(res, err);
@@ -70,7 +70,7 @@ router.post('/', function(req, res, next) {
 											connection.query("SELECT LAST_INSERT_ID() AS id", function(err, lastintegid) {
 												if (err) rest.error500(res, err);
 												else {
-													var query4 = sql.format("INSERT INTO AssStatoPraticheIntegrazioni(idStato,idInteg) VALUES (?,?)", [ laststatoid[0].id, lastintegid[0].id ]);
+													var query4 = sql.format('INSERT INTO AssStatoPraticheIntegrazioni(idStato,idInteg) VALUES (?,?)', [ laststatoid[0].id, lastintegid[0].id ]);
 
 													connection.query(query4, function(err, data) {
 														if (err) rest.error500(res, err);
@@ -97,12 +97,12 @@ router.post('/', function(req, res, next) {
 										if (err) rest.error500(res, err);
 										else {
 
-											var query3 = sql.format("UPDATE Integrazioni SET dateIN=?, protoIN=? WHERE id=?", [ req.body.integData, req.body.integProto, lastintegid[0].id ]);	// 2.update that integ
+											var query3 = sql.format('UPDATE Integrazioni SET dateIN=?, protoIN=? WHERE id=?', [ req.body.integData, req.body.integProto, lastintegid[0].id ]);	// 2.update that integ
 
 											connection.query(query3, function(err, data) {
 												if (err) rest.error500(res, err);
 												else {
-													var query4 = sql.format("INSERT INTO AssStatoPraticheIntegrazioni(idStato,idInteg) VALUES (?,?)", [ laststatoid[0].id, lastintegid[0].id ]);	// 3.add AssStatoPraticheIntegrazioni(laststatoid, lastintegid)
+													var query4 = sql.format('INSERT INTO AssStatoPraticheIntegrazioni(idStato,idInteg) VALUES (?,?)', [ laststatoid[0].id, lastintegid[0].id ]);	// 3.add AssStatoPraticheIntegrazioni(laststatoid, lastintegid)
 
 													connection.query(query4, function(err, data) {
 														if (err) rest.error500(res, err);
@@ -123,7 +123,7 @@ router.post('/', function(req, res, next) {
 							connection.query("SELECT LAST_INSERT_ID() AS id", function(err, lastid) {
 								if (err) rest.error500(res, err);
 								else {
-									var query3 = sql.format("INSERT INTO AssStatoPraticheUtenti(idStato,idUtente) VALUES (?,?)", [ lastid[0].id, req.body.idUtente]);
+									var query3 = sql.format('INSERT INTO '+sql.tables.AssStatoPraticheUtenti+'(idStato,idUtente) VALUES (?,?)', [ lastid[0].id, req.body.idUtente]);
 
 									connection.query(query3, function(err, data) {
 										if (err) rest.error500(res, err);

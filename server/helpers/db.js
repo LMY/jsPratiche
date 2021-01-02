@@ -1,4 +1,5 @@
 var config = require('../config/config.js');
+var config_tables = require('../config/config.tables.js');
 
 const Pool = require('pg').Pool
 const pgpool = new Pool({
@@ -13,6 +14,9 @@ var pgformat = require('pg-format');
 
 module.exports = {
 	pool: pgpool,
+
+	// export all table names defined in config.tables.js
+	tables : config_tables.tables,
 
 	connect: function(callback) {
 		pgpool.getConnection((err, connection) => {
