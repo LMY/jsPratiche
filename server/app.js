@@ -8,7 +8,7 @@ const passport = require('passport');
 const expressSession = require('express-session');
 const pgSession = require('express-pg-session')(expressSession);
 const config = require('./config/config');
-const favicon = require('express-favicon');
+const favicon = require('serve-favicon');
 
 const app = express();
 
@@ -35,7 +35,7 @@ app.use(expressSession({
 	store: new pgSession({
 		pool : config.deps.sql.pool,                // Connection pool
 		conString : 'postgresql://' + config.db.user + ':' + config.db.password + '@' + config.db.host + '/' + config.db.database,
-		// tableName : 'sessions'   // Use another table-name than the default "session" one
+		// tableName : config.deps.sql.tables.Sessions   // Use another table-name than the default "session" one
 	  }),
 	secret: config.secret,
 	// proxy: true,
@@ -55,8 +55,8 @@ app.use(morgan(':date[iso] :method :url :status :response-time ms - :res[content
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-//app.use(favicon(path.join(__dirname, 'client', 'imgs', 'favicon.ico')));
-
+// app.use(favicon(path.join(__dirname, 'client', 'imgs', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, '..', 'dist', 'imgs', 'favicon.ico')));
 
 // routes
 require('./routes/index')(config, './server/routes');

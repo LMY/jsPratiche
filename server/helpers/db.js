@@ -26,9 +26,10 @@ module.exports = {
 	},
 	
 	query: function(querytxt, callback) {
-		console.log("QUERY ["+query+"]");
-		pgpool.query(querytxt, (err, res) => {
-		  console.log(err, res.rows);
+		console.log("QUERY ["+querytxt+"]");
+		pgpool.query(querytxt, (err, data) => {
+			console.log(err, data.rows);
+			callback(err, data);
 		  pgpool.end();
 		});		
 	},

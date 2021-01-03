@@ -26,5 +26,10 @@ module.exports = {
     StrumentiDelleCatene: 'jspratiche."StrumentiDelleCatene"',
     
     LinkSitiPratiche: 'jspratiche."LinkSitiPratiche"',
+
+    Bookmarks: 'jspratiche."Bookmarks"',
+    Links: 'jspratiche."Links"',
+    
+    Sessions: 'jspratiche."sessions"',
   },
 };

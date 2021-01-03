@@ -38,7 +38,7 @@ module.exports = function(passport) {
 
 	passport.deserializeUser(function(id, done) {
 
-		sql.pool.query('SELECT id,username,userlevel,pareri,correzioni FROM utenti WHERE id=$1', [id], (err, user) => {
+		sql.pool.query('SELECT id,username,userlevel,pareri,correzioni FROM '+sql.tables.Utenti+' WHERE id=$1', [id], (err, user) => {
 			if (err)
 				return done(err, "");
 			else
@@ -47,7 +47,7 @@ module.exports = function(passport) {
 	});
 
 	passport.use('login', new LocalStrategy({ passReqToCallback : true }, function(req, username, password, done) {
-		sql.pool.query('SELECT * FROM utenti WHERE username=$1', [username], (err, results) => {
+		sql.pool.query('SELECT * FROM '+sql.tables.Utenti+' WHERE username=$1', [username], (err, results) => {
 			if (err)
 				return done(err);
 
@@ -69,7 +69,7 @@ module.exports = function(passport) {
 				
 
 			// set lastlogin
-			sql.pool.query('UPDATE utenti SET lastlogin=$1 WHERE username=$2', [formatLocalDate(), username], (err, data2) => {
+			sql.pool.query('UPDATE '+sql.tables.Utenti+' SET lastlogin=$1 WHERE username=$2', [formatLocalDate(), username], (err, data2) => {
 
 				if (err) {
 //							console.log("error: "+err);
