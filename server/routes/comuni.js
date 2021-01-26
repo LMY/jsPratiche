@@ -32,6 +32,7 @@ router.post('/', function(req, res, next) {
 	});
 });
 
+// update jspratiche."Comuni" set name = 'Aiello del Friuli', pec = 'comune.aiellodelfriuli@certgov.fvg.it', idaas = 2, province = 'GO' WHERE id = 1;
 router.put('/:id', function(req, res, next) {
 	sql.pool.query('UPDATE '+sql.tables.Comuni+' SET name = $1, pec = $2, idaas = $3, province = $4 WHERE id = $5', [req.body.name, req.body.pec, req.body.idaas, req.body.province, req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);

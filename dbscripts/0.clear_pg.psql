@@ -1,0 +1,6 @@
+drop schema dbnir cascade;
+drop schema jspratiche cascade;
+drop schema misure cascade;
+drop schema public cascade;
+
+create schema public;

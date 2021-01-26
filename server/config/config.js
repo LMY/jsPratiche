@@ -4,10 +4,10 @@ module.exports = {
 		connectionLimit : 100,
 		type     : 'pg',
         host     : 'localhost',
-        user     : 'lmy',
-        password : 'waterstr',
+        user     : 'nirweb',
+        password : 'n1rw3b',
 		database : 'postgres',
-		schema : 'jsPratiche',
+		schema : 'jspratiche',
 		dateStrings: 'date',
         debug    :  false
 	},
@@ -16,8 +16,8 @@ module.exports = {
 
 	'mssql': {
 		type: 'pg',
-		user: 'lmy',
-		password: 'watersr',
+        user     : 'nirweb',
+        password : 'n1rw3b',
 		server: 'localhost',
 		database: 'postgres',
 		schema : 'dbnir',
