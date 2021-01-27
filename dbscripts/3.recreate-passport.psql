@@ -1,5 +1,13 @@
 -- recreate table session  for passport.js
-DROP TABLE public.session
+DROP TABLE IF EXISTS public.session;
+
+
+-- CREATE TABLE public.session (
+-- id character varying NOT NULL,
+-- expire timestamp with time zone NOT NULL,
+-- --expire timestamp(6) with time zone NOT NULL,
+-- -- "data" text
+-- );
 
 
 CREATE TABLE public.session (
@@ -7,4 +15,6 @@ sid character varying NOT NULL,
 sess json NOT NULL,
 expire timestamp(6) without time zone NOT NULL
 );
+
+GRANT ALL PRIVILEGES ON TABLE public.session TO nirweb;
 
