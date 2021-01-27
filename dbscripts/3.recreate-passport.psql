@@ -18,3 +18,7 @@ expire timestamp(6) without time zone NOT NULL
 
 GRANT ALL PRIVILEGES ON TABLE public.session TO nirweb;
 
+
+
+-- execute this as user postgres
+-- REASSIGN OWNED BY adm TO nirweb;
