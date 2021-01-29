@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	sql.pool.query('INSERT INTO '+sql.tables.Gestori+'($1,$2) VALUES ($3,$4)', ["name", "pec", req.body.name, req.body.pec], function(err, data) {
+	sql.pool.query('INSERT INTO '+sql.tables.Gestori+'("name", "pec") VALUES ($1,$2)', [req.body.name, req.body.pec], function(err, data) {
 		if (err) rest.error500(res, err);
 		else rest.created(res, data.rows);
 	});
@@ -26,7 +26,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 router.put('/:id', function(req, res, next) {
-	sql.pool.query('UPDATE '+sql.tables.Gestori+' SET $1 = $2, $3 = $4 WHERE $5 = $6', ["name", req.body.name, "pec", req.body.pec, "id", req.params.id], function(err, data) {
+	sql.pool.query('UPDATE '+sql.tables.Gestori+' SET "name" = $1, "pec" = $2 WHERE "id" = $3', [req.body.name, req.body.pec, req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
 		else rest.updated(res, data.rows);
 	});
