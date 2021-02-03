@@ -6,7 +6,7 @@ module.exports = {
         host     : 'localhost',
         user     : 'nirweb',
         password : 'n1rw3b',
-		database : 'postgres',
+		database : 'dbnir',
 		schema : 'jspratiche',
 		dateStrings: 'date',
         debug    :  false
@@ -19,7 +19,7 @@ module.exports = {
         user     : 'nirweb',
         password : 'n1rw3b',
 		server: 'localhost',
-		database: 'postgres',
+		database: 'dbnir',
 		schema : 'dbnir',
 
 		// port: 1433,

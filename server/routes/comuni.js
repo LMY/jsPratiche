@@ -6,6 +6,11 @@ var router = express.Router();
 
 router.get('/', function(req, res, next) {
     sql.pool.query('SELECT * FROM '+sql.tables.Comuni, function(err, data) {
+
+		console.log("query to: "+data.rows);
+		console.log("query to: "+data.rows[0]);
+		console.log("query to: "+JSON.stringify(data.rows));
+
 		if (err) rest.error500(res, err);
 		else res.json(data.rows);
 	});

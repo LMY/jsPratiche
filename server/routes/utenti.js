@@ -89,7 +89,8 @@ router.post('/', function(req, res, next) {
 		rest.error403(res);
 	else
 		calculatehash(req.body.password, function(err, newhash) {
-			sql.pool.query('INSERT INTO '+sql.tables.Utenti+'($1,$2,$3,$4,$5,$6,$7,$8) VALUES ($9,$10,$11,$12,$13,$14,$15,$16)', ["username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel", req.body.username, newhash, req.body.name, req.body.surname, req.body.email, req.body.phone, "NULL", 1], function(err, data) {
+			sql.pool.query('INSERT INTO '+sql.tables.Utenti+'("username", "hash", "name", "surname", "email", "phone", "lastlogin", "userlevel") VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+			 [req.body.username, newhash, req.body.name, req.body.surname, req.body.email, req.body.phone, null, 1], function(err, data) {
 				if (err) rest.error500(res, err);
 				else rest.created(res, data.rows);
 			});
@@ -104,7 +105,8 @@ router.put('/:id', function(req, res, next) {
 		rest.error403(res);
 	else
 		calculatehash(req.body.password, function(err, newhash) {
-			sql.pool.query('UPDATE '+sql.tables.Utenti+' SET $1 = $2, $3 = $4, $5 = $6, $7 = $8, $9 = $10, $11 = $12 WHERE $13 = $14', ["username", req.body.username, "name", req.body.name, "surname", req.body.surname, "email", req.body.email, "phone", req.body.phone, "userlevel", req.body.userlevel, "id", req.params.id], function(err, data) {
+			sql.pool.query('UPDATE '+sql.tables.Utenti+' SET "username" = $1, "name" = $2, "surname" = $3, "email" = $4, "phone" = $5, "userlevel" = $6 WHERE "id" = $7',
+			[req.body.username, req.body.name, req.body.surname, req.body.email, req.body.phone, req.body.userlevel, req.params.id], function(err, data) {
 				if (err) rest.error500(res, err);
 				else rest.updated(res, data.rows);
 			});
@@ -119,7 +121,7 @@ router.put('/password/:id', function(req, res, next) {
 	else {
 		checkPassword(req.user.id, req.body.oldpassword, function() {
 			calculatehash(req.body.password, function(err, newhash) {
-				sql.pool.query('UPDATE '+sql.tables.Utenti+' SET $1 = $2 WHERE $3 = $4', ["hash", newhash, "id", req.params.id], function(err, data) {
+				sql.pool.query('UPDATE '+sql.tables.Utenti+' SET "hash" = $1 WHERE "id" = $2', [newhash,  req.params.id], function(err, data) {
 					if (err) rest.error500(res, err);
 					else rest.updated(res, data.rows);
 				});

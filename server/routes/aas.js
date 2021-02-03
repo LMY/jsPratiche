@@ -26,7 +26,7 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	sql.pool.query('INSERT INTO '+sql.tables.AAS+'("name", "pec") VALUES ($1,$2)', [req.body.name, req.body.pec ], function(err, data) {
+	sql.pool.query('INSERT INTO '+sql.tables.AAS+'(name,pec) VALUES ($1,$2)', [req.body.name, req.body.pec ], function(err, data) {
 		if (err) rest.error500(res, err);
 		else rest.created(res, data.rows);
 	});

@@ -37,11 +37,8 @@ router.delete('/:id', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
   sql.pool.query(
-      'INSERT INTO ' + sql.tables.Sedi + '($1,$2,$3) VALUES ($4,$5,$6)',
-      [
-        'nome', 'telefono', 'note', req.body.nome, req.body.telefono,
-        req.body.note
-      ],
+      'INSERT INTO ' + sql.tables.Sedi + '(nome,telefono,note) VALUES ($1,$2,$3)',
+      [req.body.nome, req.body.telefono,req.body.note],
       function(err, data) {
         if (err)
           rest.error500(res, err);
@@ -52,11 +49,8 @@ router.post('/', function(req, res, next) {
 
 router.put('/:id', function(req, res, next) {
   sql.pool.query(
-      'UPDATE ' + sql.tables.Sedi + ' SET $1 = $2, $3 = $4, $5 = $6 WHERE $7 = $8',
-      [
-        'nome', req.body.nome, 'telefono', req.body.telefono, 'note',
-        req.body.note, 'id', req.params.id
-      ],
+      'UPDATE ' + sql.tables.Sedi + ' SET nome = $1, telefono = $2, note = $3 WHERE id = $4',
+      [ req.body.nome, req.body.telefono, req.body.note, req.params.id ],
       function(err, data) {
         if (err)
           rest.error500(res, err);

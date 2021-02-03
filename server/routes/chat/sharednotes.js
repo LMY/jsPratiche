@@ -28,14 +28,15 @@ router.delete('/:id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	sql.pool.query('INSERT INTO '+sql.tables.SharedNotes+'($1,$2,$3) VALUES ($4,$5, NOW())', ["create_user", "text", "create_timePoint", req.user.id, req.body.text ], function(err, data) {
+	sql.pool.query('INSERT INTO '+sql.tables.SharedNotes+'("create_user","text","create_timePoint") VALUES ($1,$2, NOW())', [req.user.id, req.body.text ], function(err, data) {
 		if (err) rest.error500(res, err);
 		else rest.created(res, data.rows);
 	});
 });
 
 router.put('/:id', function(req, res, next) {
-	sql.pool.query('UPDATE '+sql.tables.SharedNotes+' SET $1 = $2, $3 = $4, create_timePoint=create_timePoint WHERE $5 = $6', ["text", req.body.text, "mod_user", req.user.id, "id", req.params.id], function(err, data) {
+	sql.pool.query('UPDATE '+sql.tables.SharedNotes+' SET "text" = $1, "mod_user" = $2, create_timePoint=create_timePoint WHERE id = $3', 
+	[req.body.text, req.user.id, req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
 		else rest.updated(res, data.rows);
 	});
