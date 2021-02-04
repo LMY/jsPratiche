@@ -1968,20 +1968,6 @@ CREATE TABLE jspratiche."Utenti" (
 
 ALTER TABLE jspratiche."Utenti" OWNER TO adm;
 
---
--- Name: aas_seq; Type: SEQUENCE; Schema: jspratiche; Owner: adm
---
-
-CREATE SEQUENCE jspratiche.aas_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE jspratiche.aas_seq OWNER TO adm;
-
 
 --
 -- Name: session; Type: TABLE; Schema: public; Owner: adm
