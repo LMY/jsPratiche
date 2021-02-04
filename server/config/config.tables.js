@@ -32,5 +32,8 @@ module.exports = {
     
     SessionsSchema: 'jspratiche',
     SessionsName: 'session',
+    SessionsColumnID: 'sid',
+    SessionsColumnData: 'sess',
+    SessionsColumnExpire: 'expire',
   },
 };

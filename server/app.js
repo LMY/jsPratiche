@@ -38,9 +38,9 @@ app.use(expressSession({
 		tableName : config.deps.sql.tables.SessionsName,   // Use another table-name than the default "session" one
 		schemaName : config.deps.sql.tables.SessionsSchema,
 		columns : {
-			session_id: 'sid',
-			session_data: 'sess',
-			expire: 'expire'
+			session_id: config.deps.sql.tables.SessionsColumnID,
+			session_data: config.deps.sql.tables.SessionsColumnData,
+			expire: config.deps.sql.tables.SessionsColumnExpire,
 		  }
 	  }),
 	secret: config.secret,
