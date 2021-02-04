@@ -1571,7 +1571,7 @@ COMMENT ON VIEW dbnir.v_impianti IS 'Utilizzata per l''export dello shapefile de
 --
 
 CREATE TABLE jspratiche."AAS" (
-    id integer NOT NULL,
+    id SERIAL,
     name character varying(50) DEFAULT NULL::character varying,
     pec character varying(50) DEFAULT NULL::character varying
 );
@@ -1650,7 +1650,7 @@ ALTER TABLE jspratiche."Catene" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."Comuni" (
-    id integer NOT NULL,
+    id SERIAL,
     name character varying(50) DEFAULT NULL::character varying,
     pec character varying(50) DEFAULT NULL::character varying,
     idaas integer,
@@ -1690,7 +1690,7 @@ ALTER TABLE jspratiche."ConstTipoPratiche" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."Gestori" (
-    id integer NOT NULL,
+    id SERIAL,
     name character varying(50) DEFAULT NULL::character varying,
     pec character varying(50) DEFAULT NULL::character varying
 );
@@ -1772,7 +1772,7 @@ ALTER TABLE jspratiche."LinkUtenti" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."Links" (
-    id integer NOT NULL,
+    id SERIAL,
     url character varying(256) DEFAULT NULL::character varying
 );
 
@@ -1784,7 +1784,7 @@ ALTER TABLE jspratiche."Links" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."Messages" (
-    id integer NOT NULL,
+    id SERIAL,
     userfrom integer,
     msg text,
     "timePoint" timestamp(0) without time zone DEFAULT now() NOT NULL
@@ -1798,7 +1798,7 @@ ALTER TABLE jspratiche."Messages" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."Pratiche" (
-    id integer NOT NULL,
+    id SERIAL,
     "idGestore" integer,
     "idComune" integer,
     address character varying(50) DEFAULT NULL::character varying,
@@ -1819,7 +1819,7 @@ ALTER TABLE jspratiche."Pratiche" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."PrivateMessages" (
-    id integer NOT NULL,
+    id SERIAL,
     userfrom integer,
     userto integer,
     msg text,
@@ -1863,7 +1863,7 @@ ALTER TABLE jspratiche."RegistroStrumenti" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."Sedi" (
-    id integer NOT NULL,
+    id SERIAL,
     nome character varying(50) DEFAULT NULL::character varying,
     telefono character varying(50) DEFAULT NULL::character varying,
     note character varying(256) DEFAULT NULL::character varying
@@ -1877,7 +1877,7 @@ ALTER TABLE jspratiche."Sedi" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."SharedNotes" (
-    id integer NOT NULL,
+    id SERIAL,
     text text,
     create_user integer,
     "create_timePoint" timestamp(0) without time zone NOT NULL,
@@ -1908,7 +1908,7 @@ ALTER TABLE jspratiche."StatoPratiche" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."Strumenti" (
-    id integer NOT NULL,
+    id SERIAL,
     name character varying(256) DEFAULT NULL::character varying,
     marca character varying(50) DEFAULT NULL::character varying,
     modello character varying(50) DEFAULT NULL::character varying,
@@ -1939,7 +1939,7 @@ ALTER TABLE jspratiche."StrumentiDelleCatene" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."StudiTecnici" (
-    id integer NOT NULL,
+    id SERIAL,
     name character varying(50) DEFAULT NULL::character varying,
     pec character varying(50) DEFAULT NULL::character varying
 );

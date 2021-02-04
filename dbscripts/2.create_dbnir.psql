@@ -1,0 +1,11 @@
+drop schema if exists dbnir cascade;
+
+
+--
+-- Name: dbnir; Type: SCHEMA; Schema: -; Owner: dbnir
+--
+
+CREATE SCHEMA dbnir;
+
+
+ALTER SCHEMA dbnir OWNER TO dbnir;
