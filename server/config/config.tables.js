@@ -30,6 +30,7 @@ module.exports = {
     Bookmarks: 'jspratiche."Bookmarks"',
     Links: 'jspratiche."Links"',
     
-    Sessions: 'jspratiche.session',
+    SessionsSchema: 'jspratiche',
+    SessionsName: 'session',
   },
 };

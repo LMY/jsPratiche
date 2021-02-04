@@ -35,7 +35,13 @@ app.use(expressSession({
 	store: new pgSession({
 		pool : config.deps.sql.pool,                // Connection pool
 		conString : 'postgresql://' + config.db.user + ':' + config.db.password + '@' + config.db.host + '/' + config.db.database,
-		tableName : config.deps.sql.tables.Sessions   // Use another table-name than the default "session" one
+		tableName : config.deps.sql.tables.SessionsName,   // Use another table-name than the default "session" one
+		schemaName : config.deps.sql.tables.SessionsSchema,
+		columns : {
+			session_id: 'sid',
+			session_data: 'sess',
+			expire: 'expire'
+		  }
 	  }),
 	secret: config.secret,
 	// proxy: true,

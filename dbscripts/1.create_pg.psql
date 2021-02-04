@@ -1974,10 +1974,10 @@ ALTER TABLE jspratiche."Utenti" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche.session (
-    sid character varying(128) NOT NULL,
-    data text,
-    sess character varying,
-    expire timestamp without time zone DEFAULT now()
+sid character varying NOT NULL,
+data text,
+sess json NOT NULL,
+expire timestamp(6) without time zone NOT NULL DEFAULT now()
 );
 
 
@@ -3921,3 +3921,26 @@ GRANT ALL ON TABLE jspratiche.session TO nirweb;
 -- PostgreSQL database dump complete
 --
 
+
+
+-- GRANTS
+
+GRANT CONNECT ON DATABASE dbnir TO nirweb;
+
+GRANT USAGE ON SCHEMA dbnir TO nirweb;
+GRANT USAGE ON SCHEMA jspratiche TO nirweb;
+GRANT USAGE ON SCHEMA public TO nirweb;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA dbnir TO nirweb;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA jspratiche TO nirweb;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO nirweb;
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbnir TO nirweb;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA jspratiche TO nirweb;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO nirweb;
+
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbnir TO nirweb;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA jspratiche TO nirweb;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO nirweb;
+
+GRANT ALL PRIVILEGES ON DATABASE dbnir TO nirweb;
