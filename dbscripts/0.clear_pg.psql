@@ -1,6 +1,6 @@
-drop schema dbnir cascade;
-drop schema jspratiche cascade;
-drop schema misure cascade;
-drop schema public cascade;
+drop schema if exists dbnir cascade;
+drop schema if exists jspratiche cascade;
+drop schema if exists misure cascade;
+drop schema if exists public cascade;
 
 create schema public;

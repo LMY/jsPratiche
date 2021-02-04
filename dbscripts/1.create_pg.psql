@@ -1,0 +1,4413 @@
+-- drop schemas and recreate public based on 0.clear_pg.psql
+drop schema if exists dbnir cascade;
+drop schema if exists jspratiche cascade;
+drop schema if exists misure cascade;
+drop schema if exists public cascade;
+
+create schema public;
+
+-- INITIALIZE DB FROM schema.dump
+
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.5.23
+-- Dumped by pg_dump version 9.5.23
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: dbnir; Type: SCHEMA; Schema: -; Owner: dbnir
+--
+
+CREATE SCHEMA dbnir;
+
+
+ALTER SCHEMA dbnir OWNER TO dbnir;
+
+--
+-- Name: jspratiche; Type: SCHEMA; Schema: -; Owner: dbnir
+--
+
+CREATE SCHEMA jspratiche;
+
+
+ALTER SCHEMA jspratiche OWNER TO dbnir;
+
+--
+-- Name: misure; Type: SCHEMA; Schema: -; Owner: dbnir
+--
+
+CREATE SCHEMA misure;
+
+
+ALTER SCHEMA misure OWNER TO dbnir;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
+
+
+--
+-- Name: tr_antenne(); Type: FUNCTION; Schema: dbnir; Owner: adm
+--
+
+CREATE FUNCTION dbnir.tr_antenne() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+	cod_gruppo dbnir.diz_utenti.gid%TYPE;
+	prov dbnir.diz_gruppi.idprovincia%TYPE;
+	prov_sito dbnir.siti.idprov%TYPE;
+    BEGIN
+	--gruppo dell'utente:
+	SELECT u.gid INTO cod_gruppo FROM dbnir.diz_utenti as u WHERE u.uname=current_user;
+
+	RAISE NOTICE ' utente= % , gruppo dell'' utente= %', current_user,cod_gruppo;
+
+	IF cod_gruppo IS NOT NULL THEN --utente delle province o nirgismaster
+		RAISE NOTICE 'caso utente di province o master ';
+		IF (TG_OP = 'DELETE') THEN  --solo nirgismaster ha permesso di cancellazione
+			RAISE NOTICE 'elimino';
+			--RAISE EXCEPTION '% non puoi cancellare le antenne', current_user;
+			RETURN OLD;
+		ELSE
+			IF cod_gruppo<>0 THEN --utente delle province
+				--codice numerico della provincia dell'utente:
+				SELECT g.idprovincia INTO prov
+				fROM  dbnir.diz_gruppi as g, dbnir.diz_utenti as u
+				WHERE u.gid=g.gid and u.uname=current_user;
+
+				RAISE NOTICE 'codice numerico della provincia dell''utente= %', prov;
+
+				--codice numerico della provincia del sito:
+				SELECT s.idprov INTO prov_sito FROM dbnir.siti as s where new.idsito=s.idsito;
+
+				RAISE NOTICE 'codice numerico della provincia del sito= %',prov_sito;
+			END IF;
+			
+			IF (cod_gruppo<>0 AND prov_sito = prov) OR (cod_gruppo=0) THEN --utente delle province o nirgismaster
+				RAISE NOTICE 'la provincia è adeguata o master';
+				
+				IF (TG_OP = 'INSERT') THEN
+					RAISE NOTICE 'aggiorno data_ini';
+					new.data_ini=current_date;
+				END IF;
+				IF (TG_OP = 'UPDATE') THEN  
+					IF NEW::text IS NOT DISTINCT FROM OLD::text THEN
+						RAISE NOTICE 'OLD and NEW are the same!';
+					ELSE
+						RAISE NOTICE 'OLD and NEW are different!';
+						RAISE NOTICE 'flag antenna precedente attiva= %', OLD.attiva;
+						RAISE NOTICE 'aggiorno attivazion';
+						new.attivazion=current_date;  --aggiorna data modifica
+						IF new.attiva='NO' AND OLD.attiva='SI' THEN --arriva la disattivazione su antenna attiva
+							RAISE NOTICE 'aggiorno data_fin';
+							new.data_fin=current_date;   --riempie data di dismissione
+						ELSIF new.attiva='SI' AND OLD.attiva='NO' THEN --arriva la riattivazione su antenna non attiva
+							RAISE NOTICE 'annullo data_fin';
+							new.data_fin=NULL;    --svuota data dismissione
+						END IF;
+						RAISE NOTICE ' new aggiornato con le date: %', NEW;
+					END IF;
+				END IF;
+					
+			ELSE
+				RAISE EXCEPTION '% non è della provincia giusta', current_user;
+			END IF;
+			
+			RAISE NOTICE 'up o ins - %', NEW;
+			RETURN NEW;
+		END IF;
+	ELSE    --utente non presente nella tabella diz_utenti
+		RAISE NOTICE 'caso utente non presente nella tabella diz_utenti';
+		IF (TG_OP = 'DELETE') THEN 
+			RETURN OLD;
+		ELSE
+			RAISE NOTICE 'ritorno new - %',NEW;
+			RETURN NEW;
+		END IF;
+	END IF;
+	
+   END;
+$$;
+
+
+ALTER FUNCTION dbnir.tr_antenne() OWNER TO adm;
+
+--
+-- Name: tr_audit_antenne(); Type: FUNCTION; Schema: dbnir; Owner: adm
+--
+
+CREATE FUNCTION dbnir.tr_audit_antenne() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_old_data TEXT;
+    v_new_data TEXT;
+BEGIN
+    IF (TG_OP = 'UPDATE') THEN
+        v_old_data := ROW(OLD.*);
+        v_new_data := ROW(NEW.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,idsito,original_data,new_data,query) 
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),NEW.idsito,v_old_data,v_new_data, current_query());
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        v_old_data := ROW(OLD.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,idsito,original_data,query)
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),OLD.idsito,v_old_data, current_query());
+        RETURN OLD;
+    ELSIF (TG_OP = 'INSERT') THEN
+        v_new_data := ROW(NEW.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,idsito,new_data,query)
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),NEW.idsito,v_new_data, current_query());
+        RETURN NEW;
+    ELSE
+        RAISE WARNING '[dbnir.tr_audit_antenne] - altra azione capitata: %, at %',TG_OP,now();
+        RETURN NULL;
+    END IF;
+ 
+EXCEPTION
+    WHEN data_exception THEN
+        RAISE WARNING '[dbnir.tr_audit_antenne] - UDF ERROR [DATA EXCEPTION] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+    WHEN unique_violation THEN
+        RAISE WARNING '[dbnir.tr_audit_antenne] - UDF ERROR [UNIQUE] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+    WHEN OTHERS THEN
+        RAISE WARNING '[dbnir.tr_audit_antenne] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+END;
+$$;
+
+
+ALTER FUNCTION dbnir.tr_audit_antenne() OWNER TO adm;
+
+--
+-- Name: tr_audit_edifici(); Type: FUNCTION; Schema: dbnir; Owner: dbnir
+--
+
+CREATE FUNCTION dbnir.tr_audit_edifici() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_old_data TEXT;
+    v_new_data TEXT;
+BEGIN
+    IF (TG_OP = 'UPDATE') THEN
+        v_old_data := ROW(OLD.*);
+        v_new_data := ROW(NEW.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,original_data,new_data,query) 
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),v_old_data,v_new_data, current_query());
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        v_old_data := ROW(OLD.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,original_data,query)
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),v_old_data, current_query());
+        RETURN OLD;
+    ELSIF (TG_OP = 'INSERT') THEN
+        v_new_data := ROW(NEW.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,new_data,query)
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),v_new_data, current_query());
+        RETURN NEW;
+    ELSE
+        RAISE WARNING '[dbnir.tr_audit_edifici] - altra azione capitata: %, at %',TG_OP,now();
+        RETURN NULL;
+    END IF;
+ 
+EXCEPTION
+    WHEN data_exception THEN
+        RAISE WARNING '[dbnir.tr_audit_edifici] - UDF ERROR [DATA EXCEPTION] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+    WHEN unique_violation THEN
+        RAISE WARNING '[dbnir.tr_audit_edifici] - UDF ERROR [UNIQUE] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+    WHEN OTHERS THEN
+        RAISE WARNING '[dbnir.tr_audit_edifici] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+END;
+$$;
+
+
+ALTER FUNCTION dbnir.tr_audit_edifici() OWNER TO dbnir;
+
+--
+-- Name: tr_audit_modelli(); Type: FUNCTION; Schema: dbnir; Owner: adm
+--
+
+CREATE FUNCTION dbnir.tr_audit_modelli() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_old_data TEXT;
+    v_new_data TEXT;
+BEGIN
+    IF (TG_OP = 'UPDATE') THEN
+        v_old_data := ROW(OLD.*);
+        v_new_data := ROW(NEW.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,original_data,new_data,query) 
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),v_old_data,v_new_data, current_query());
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        v_old_data := ROW(OLD.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,original_data,query)
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),v_old_data, current_query());
+        RETURN OLD;
+    ELSIF (TG_OP = 'INSERT') THEN
+        v_new_data := ROW(NEW.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,new_data,query)
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),v_new_data, current_query());
+        RETURN NEW;
+    ELSE
+        RAISE WARNING '[dbnir.tr_audit_modelli] - altra azione capitata: %, at %',TG_OP,now();
+        RETURN NULL;
+    END IF;
+ 
+EXCEPTION
+    WHEN data_exception THEN
+        RAISE WARNING '[dbnir.tr_audit_modelli] - UDF ERROR [DATA EXCEPTION] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+    WHEN unique_violation THEN
+        RAISE WARNING '[dbnir.tr_audit_modelli] - UDF ERROR [UNIQUE] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+    WHEN OTHERS THEN
+        RAISE WARNING '[dbnir.tr_audit_modelli] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+END;
+$$;
+
+
+ALTER FUNCTION dbnir.tr_audit_modelli() OWNER TO adm;
+
+--
+-- Name: tr_audit_siti(); Type: FUNCTION; Schema: dbnir; Owner: adm
+--
+
+CREATE FUNCTION dbnir.tr_audit_siti() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_old_data TEXT;
+    v_new_data TEXT;
+BEGIN
+    IF (TG_OP = 'UPDATE') THEN
+        v_old_data := ROW(OLD.*);
+        v_new_data := ROW(NEW.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,idsito,original_data,new_data,query) 
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),NEW.idsito,v_old_data,v_new_data, current_query());
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        v_old_data := ROW(OLD.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,idsito,original_data,query)
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),OLD.idsito,v_old_data, current_query());
+        RETURN OLD;
+    ELSIF (TG_OP = 'INSERT') THEN
+        v_new_data := ROW(NEW.*);
+        INSERT INTO dbnir.audit_tab (schema_name,table_name,user_name,action,idsito,new_data,query)
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),NEW.idsito,v_new_data, current_query());
+        RETURN NEW;
+    ELSE
+        RAISE WARNING '[dbnir.tr_audit_siti] - altra azione capitata: %, at %',TG_OP,now();
+        RETURN NULL;
+    END IF;
+ 
+EXCEPTION
+    WHEN data_exception THEN
+        RAISE WARNING '[dbnir.tr_audit_siti] - UDF ERROR [DATA EXCEPTION] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+    WHEN unique_violation THEN
+        RAISE WARNING '[dbnir.tr_audit_siti] - UDF ERROR [UNIQUE] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+    WHEN OTHERS THEN
+        RAISE WARNING '[dbnir.tr_audit_siti] - UDF ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+        RETURN NULL;
+END;
+$$;
+
+
+ALTER FUNCTION dbnir.tr_audit_siti() OWNER TO adm;
+
+--
+-- Name: tr_edifici(); Type: FUNCTION; Schema: dbnir; Owner: dbnir
+--
+
+CREATE FUNCTION dbnir.tr_edifici() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+	cod_gruppo dbnir.diz_utenti.gid%TYPE;
+	prov dbnir.diz_gruppi.idprovincia%TYPE;
+	nome_schema    varchar :='dbnir'; --prova con variabile
+	query text;
+    BEGIN
+	--gruppo dell'utente:
+	query:='SELECT u.gid FROM ' ||nome_schema||'.diz_utenti as u WHERE u.uname='''||current_user||'''';
+	EXECUTE query INTO cod_gruppo;
+	--RAISE NOTICE ' utente= % , gruppo dell'' utente= %', current_user,cod_gruppo;
+
+	IF cod_gruppo <> 0 AND cod_gruppo IS NOT NULL THEN --utente delle province lavora sulla sua provincia
+		--RAISE NOTICE 'caso utente di province ';
+		
+		--codice numerico della provincia dell'utente:
+		SELECT g.idprovincia INTO prov
+		fROM  dbnir.diz_gruppi as g, dbnir.diz_utenti as u
+		WHERE u.gid=g.gid and u.uname=current_user;
+
+		--RAISE NOTICE 'codice numerico della provincia dell''utente= %', prov;
+
+		IF (TG_OP = 'DELETE') THEN
+			IF (old.idprov=prov) THEN  
+				RAISE NOTICE ' cancello edificio ';
+			ELSE
+				RAISE EXCEPTION '% non deve cancellare questi edifici ', current_user;
+			END IF;
+			RETURN OLD;
+		ELSE
+			--RAISE NOTICE 'codice numerico della provincia dell''edificio= %', new.idprov;
+			IF (TG_op='INSERT') THEN
+				IF new.idprov = prov THEN 
+					--RAISE NOTICE 'I: aggiorno creazione';
+					new.data_ini:=current_date;
+				ELSE
+					RAISE EXCEPTION '% non deve inserire edifici appartenenti ad altre province', current_user;
+				END IF;
+			ELSIF (TG_op='UPDATE') THEN  --impedire di appropiarsi dell'edificio
+				IF new.idprov <> old.idprov THEN
+					RAISE EXCEPTION '%  non puoi cambiare la provincia ', current_user;
+				END IF;
+				IF new.idprov = prov THEN 
+					IF NEW::text IS  DISTINCT FROM OLD::text THEN
+						--old.data_fin:=current_date;
+						new.data_ini:=current_date;
+						--RAISE NOTICE ' aggiorno data_ini su NEW  ';
+					END IF;
+				ELSE
+					RAISE EXCEPTION '% non deve modificare edifici appartenenti ad altre province', current_user;
+				END IF;
+			END IF;
+			--RAISE NOTICE 'up o ins - %', NEW;
+			RETURN NEW;
+		END IF;
+		
+	ELSE  --utente amministratore o non presente nella tabella diz_utenti
+		--RAISE NOTICE 'caso utente amministratore o non presente nella tabella diz_utenti';
+		IF cod_gruppo=0 or  current_user='dbnir' THEN   --amministratore non ha vincoli
+			IF (TG_OP = 'DELETE') THEN 
+				--RAISE NOTICE ' cancello edificio di %',old.idprov;
+				RETURN OLD;
+			ELSE
+				IF (TG_op='INSERT') THEN
+					--RAISE NOTICE 'I: aggiorno creazione';
+					new.data_ini:=current_date;
+				ELSIF (TG_op='UPDATE') THEN 
+					IF NEW::text IS DISTINCT FROM OLD::text THEN
+						--old.data_fin:=current_date;
+						new.data_ini:=current_date;
+						--RAISE NOTICE ' aggiorno data_ini su NEW  ';
+					END IF;
+				END IF;
+				--RAISE NOTICE 'ritorno new - %',NEW;
+				RETURN NEW;
+			END IF;
+		ELSE  --utente esterno non fa nulla
+			RAISE EXCEPTION '% : utente esterno ', current_user;
+		END IF;
+	END IF;
+	
+   END;
+$$;
+
+
+ALTER FUNCTION dbnir.tr_edifici() OWNER TO dbnir;
+
+--
+-- Name: tr_siti(); Type: FUNCTION; Schema: dbnir; Owner: adm
+--
+
+CREATE FUNCTION dbnir.tr_siti() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+	cod_gruppo dbnir.diz_utenti.gid%TYPE;
+	prov dbnir.diz_gruppi.idprovincia%TYPE;
+	nome_schema    varchar :='dbnir'; --prova con variabile
+	query text;
+    BEGIN
+	--gruppo dell'utente:
+	query:='SELECT u.gid FROM ' ||nome_schema||'.diz_utenti as u WHERE u.uname='''||current_user||'''';
+	EXECUTE query INTO cod_gruppo;
+	RAISE NOTICE ' utente= % , gruppo dell'' utente= %', current_user,cod_gruppo;
+
+	IF cod_gruppo <> 0 THEN --utente delle province 
+		RAISE NOTICE 'caso utente di province ';
+		IF (TG_OP = 'DELETE') THEN  --non usato perchè delete non permesso all'utente
+			RAISE EXCEPTION '% non puoi cancellare i siti', current_user;
+			RETURN OLD;
+		ELSE
+			--codice numerico della provincia dell'utente:
+			SELECT g.idprovincia INTO prov
+			fROM  dbnir.diz_gruppi as g, dbnir.diz_utenti as u
+			WHERE  u.gid=g.gid and u.uname=current_user;
+
+			RAISE NOTICE 'codice numerico della provincia dell''utente= %', prov;
+			RAISE NOTICE 'codice numerico della provincia del sito= %', new.idprov;
+						
+			IF new.idprov = prov THEN
+				RAISE NOTICE 'utente ha la provincia giusta';
+				IF (TG_op='INSERT') THEN 
+					RAISE NOTICE 'aggiorno creazione';
+					new.creazione:=current_date;
+				END IF;
+				IF (TG_op='UPDATE') THEN
+					IF NEW::text IS NOT DISTINCT FROM OLD::text THEN
+						RAISE NOTICE 'OLD and NEW are the same!';
+					ELSE
+						RAISE NOTICE 'OLD and NEW are different!';
+						NEW:=dbnir.update_Date_Siti(NEW, OLD );
+						RAISE NOTICE ' new aggiornato con le date: %', NEW;
+					END IF;
+				END IF;
+			ELSE
+				RAISE EXCEPTION '% non è della provincia giusta', current_user;
+			END IF;
+			
+			RAISE NOTICE 'up o ins - %', NEW;
+			RETURN NEW;
+		END IF;
+	ELSE  --utente amministratore o non presente nella tabella diz_utenti
+		RAISE NOTICE 'caso utente amministratore o non presente nella tabella diz_utenti';
+		IF (TG_OP = 'DELETE') THEN 
+			RETURN OLD;
+		ELSE
+			IF cod_gruppo = 0 THEN
+				IF (TG_op='INSERT') THEN 
+					RAISE NOTICE 'aggiorno creazione';
+					new.creazione:=current_date;
+				END IF;
+				IF (TG_op='UPDATE') THEN
+					IF NEW::text IS NOT DISTINCT FROM OLD::text THEN
+						RAISE NOTICE 'OLD and NEW are the same!';
+					ELSE
+						RAISE NOTICE 'OLD and NEW are different!';
+						NEW:=dbnir.update_Date_Siti(NEW, OLD );
+						RAISE NOTICE ' new aggiornato con le date: %', NEW;
+					END IF;
+				END IF;
+			END IF;
+			RAISE NOTICE 'ritorno new - %',NEW;
+			RETURN NEW;
+		END IF;
+	END IF;
+	
+   END;
+$$;
+
+
+ALTER FUNCTION dbnir.tr_siti() OWNER TO adm;
+
+--
+-- Name: seq_siti; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_siti
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_siti OWNER TO adm;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: siti; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.siti (
+    idsito integer DEFAULT nextval('dbnir.seq_siti'::regclass) NOT NULL,
+    geom public.geometry(MultiPoint,3045),
+    nome character varying(50),
+    codsito character varying(50),
+    indirizzo character varying(250),
+    respimp character varying(250),
+    idgest integer NOT NULL,
+    idprov integer NOT NULL,
+    idcomune integer,
+    idstato integer NOT NULL,
+    note1 character varying(250),
+    immagine character varying(250),
+    idresp integer,
+    id_padre integer,
+    idpost integer,
+    idponte integer,
+    x_sito double precision,
+    y_sito double precision,
+    z_sito double precision,
+    note2 character varying(250),
+    creazione date,
+    datamodify date,
+    parere date,
+    comunicaz date,
+    dismission date,
+    comdir boolean,
+    attedif boolean,
+    ricdiretta boolean,
+    tipologia_old smallint,
+    dt_ricarp_old date,
+    pt_ricarp_old character varying(20),
+    pt_rilpar_old character varying(20),
+    flag_realizzato_old smallint,
+    flag_impianto_old smallint,
+    stato_parere_old character varying(1),
+    geometry character varying(1024),
+    pt_rilarp_old character varying(1024)
+);
+
+
+ALTER TABLE dbnir.siti OWNER TO adm;
+
+--
+-- Name: update_date_siti(dbnir.siti, dbnir.siti); Type: FUNCTION; Schema: dbnir; Owner: adm
+--
+
+CREATE FUNCTION dbnir.update_date_siti(n dbnir.siti, o dbnir.siti) RETURNS dbnir.siti
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+	RAISE NOTICE ' campo comunicazione precedente= %  , campo dismissione precedente= % ',o.comunicaz, o.dismission;
+	IF n.idstato<>1 AND n.idstato<>2 AND n.idstato<>4  THEN --arriva lo stato diverso da comunicato, dismesso e parere favorevole
+		RAISE NOTICE 'aggiorno datamodify';
+		n.datamodify:=current_date;
+	ELSIF n.idstato=1 AND o.comunicaz IS NULL THEN -- arriva lo stato comunicato e il sito non è mai stato comunicato
+		RAISE NOTICE 'aggiorno comunicaz';
+		n.comunicaz=current_date;
+	ELSIF n.idstato=2 AND o.dismission IS NULL THEN -- arriva lo stato dismesso e il sito non è mai stato dismesso
+		RAISE NOTICE  'aggiorno dismission';
+		n.dismission=current_date;
+	ELSIF n.idstato=4 AND o.parere IS NULL THEN --  --arriva lo stato parere favorevole e il sito non ha ancora avuto par fav
+		RAISE NOTICE  'aggiorno parere ';
+		n.parere=current_date;
+		
+	ELSIF n.idstato=1 AND o.idstato=1 AND  n::text IS DISTINCT FROM o::text THEN
+		RAISE NOTICE  'aggiorno datamodify dopo comunicazione';
+		n.datamodify:=current_date;
+	ELSIF n.idstato=2 AND o.idstato=2 AND  n::text IS DISTINCT FROM o::text THEN
+		RAISE NOTICE  'aggiorno datamodify dopo dismissione';
+		n.datamodify:=current_date;
+	ELSIF n.idstato=4 AND o.idstato=4 AND  n::text IS DISTINCT FROM o::text THEN
+		RAISE NOTICE 'aggiorno datamodify dopo parere fav';
+		n.datamodify:=current_date;
+		
+	END IF;
+	RETURN n;
+END;
+$$;
+
+
+ALTER FUNCTION dbnir.update_date_siti(n dbnir.siti, o dbnir.siti) OWNER TO adm;
+
+--
+-- Name: seq_antenne; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_antenne
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_antenne OWNER TO adm;
+
+--
+-- Name: antenne; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.antenne (
+    idant integer DEFAULT nextval('dbnir.seq_antenne'::regclass) NOT NULL,
+    geom public.geometry(MultiPoint,3045),
+    n_tx integer,
+    tilt bigint,
+    direzione bigint,
+    data_ini character varying(10),
+    data_fin character varying(10),
+    id_padre integer,
+    attiva character varying(2),
+    idsito integer NOT NULL,
+    idmod integer,
+    idserv integer,
+    note1 character varying(254),
+    immagine character varying(254),
+    x_ant double precision,
+    y_ant double precision,
+    h double precision,
+    pot_tx double precision,
+    fmin double precision,
+    fmax double precision,
+    attivazion character varying(10),
+    sorttmp integer,
+    fase double precision,
+    pperc double precision,
+    idstato integer,
+    alfa24 double precision,
+    att_pc double precision,
+    att_dtx double precision,
+    frequenza double precision,
+    idpolar integer,
+    att_tdd double precision,
+    rotazione integer,
+    att_fpr double precision,
+    marca_antenna_old character varying,
+    modello_antenna_old character varying,
+    parere_old character varying(1),
+    pt_domarp_old character varying,
+    dt_domarp_old date,
+    pt_rilpar_old character varying,
+    dt_rilpar_old date
+);
+
+
+ALTER TABLE dbnir.antenne OWNER TO adm;
+
+--
+-- Name: seq_audit_tab; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_audit_tab
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_audit_tab OWNER TO adm;
+
+--
+-- Name: audit_tab; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.audit_tab (
+    id integer DEFAULT nextval('dbnir.seq_audit_tab'::regclass) NOT NULL,
+    schema_name text NOT NULL,
+    table_name text NOT NULL,
+    user_name text,
+    action_tstamp timestamp with time zone DEFAULT now() NOT NULL,
+    action text NOT NULL,
+    idsito integer,
+    original_data text,
+    new_data text,
+    query text,
+    CONSTRAINT audit_tab_action_check CHECK ((action = ANY (ARRAY['I'::text, 'D'::text, 'U'::text])))
+);
+
+
+ALTER TABLE dbnir.audit_tab OWNER TO adm;
+
+--
+-- Name: comuni; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.comuni (
+    id integer NOT NULL,
+    geom public.geometry,
+    nomcom character varying(72),
+    provincia character varying(2),
+    nome_ulss character varying(254),
+    ato character varying(254),
+    sup_ato double precision,
+    c_montane character varying(254),
+    zona_alt character varying(254),
+    altimetria double precision,
+    codist character varying(6),
+    asl integer,
+    superficie_ha double precision,
+    perimetro_km double precision,
+    comune character varying(70),
+    idcomune integer,
+    provin character varying(3)
+);
+
+
+ALTER TABLE dbnir.comuni OWNER TO adm;
+
+--
+-- Name: seq_bande; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_bande
+    START WITH 16
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_bande OWNER TO adm;
+
+--
+-- Name: dec_banda; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_banda (
+    idbanda integer DEFAULT nextval('dbnir.seq_bande'::regclass) NOT NULL,
+    idserv integer NOT NULL,
+    banda numeric,
+    alfa24 boolean,
+    att_pc boolean,
+    att_dtx boolean,
+    att_tdd boolean,
+    att_fpr boolean
+);
+
+
+ALTER TABLE dbnir.dec_banda OWNER TO adm;
+
+--
+-- Name: seq_categorie; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_categorie
+    START WITH 6
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_categorie OWNER TO adm;
+
+--
+-- Name: dec_categorie; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_categorie (
+    idcat integer DEFAULT nextval('dbnir.seq_categorie'::regclass) NOT NULL,
+    categoria character varying(30) NOT NULL
+);
+
+
+ALTER TABLE dbnir.dec_categorie OWNER TO adm;
+
+--
+-- Name: dec_comuni; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_comuni (
+    idcomune integer NOT NULL,
+    comune character varying(50) NOT NULL,
+    provincia character varying(30) NOT NULL
+);
+
+
+ALTER TABLE dbnir.dec_comuni OWNER TO adm;
+
+--
+-- Name: dec_comuni_all; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_comuni_all (
+    idcomune integer NOT NULL,
+    comune character varying(50) NOT NULL,
+    provincia character varying(30) NOT NULL
+);
+
+
+ALTER TABLE dbnir.dec_comuni_all OWNER TO adm;
+
+--
+-- Name: seq_polar; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_polar
+    START WITH 8
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_polar OWNER TO adm;
+
+--
+-- Name: dec_polar; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_polar (
+    idpolar integer DEFAULT nextval('dbnir.seq_polar'::regclass) NOT NULL,
+    polarizz character varying(50) NOT NULL
+);
+
+
+ALTER TABLE dbnir.dec_polar OWNER TO adm;
+
+--
+-- Name: seq_ponti; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_ponti
+    START WITH 4
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_ponti OWNER TO adm;
+
+--
+-- Name: dec_pontiradio; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_pontiradio (
+    idponte integer DEFAULT nextval('dbnir.seq_ponti'::regclass) NOT NULL,
+    ponteradio character varying(50) NOT NULL
+);
+
+
+ALTER TABLE dbnir.dec_pontiradio OWNER TO adm;
+
+--
+-- Name: seq_postazione; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_postazione
+    START WITH 16
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_postazione OWNER TO adm;
+
+--
+-- Name: dec_postazioni; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_postazioni (
+    idpost integer DEFAULT nextval('dbnir.seq_postazione'::regclass) NOT NULL,
+    postazione character varying(50) NOT NULL
+);
+
+
+ALTER TABLE dbnir.dec_postazioni OWNER TO adm;
+
+--
+-- Name: dec_province; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_province (
+    idprov integer NOT NULL,
+    provincia character varying(30) NOT NULL
+);
+
+
+ALTER TABLE dbnir.dec_province OWNER TO adm;
+
+--
+-- Name: dec_province_all; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_province_all (
+    idprov integer NOT NULL,
+    provincia character varying(30) NOT NULL
+);
+
+
+ALTER TABLE dbnir.dec_province_all OWNER TO adm;
+
+--
+-- Name: seq_servizi; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_servizi
+    START WITH 29
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_servizi OWNER TO adm;
+
+--
+-- Name: dec_servizi; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_servizi (
+    idserv integer DEFAULT nextval('dbnir.seq_servizi'::regclass) NOT NULL,
+    servizio character varying(30) NOT NULL,
+    idcat integer
+);
+
+
+ALTER TABLE dbnir.dec_servizi OWNER TO adm;
+
+--
+-- Name: dec_stati; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.dec_stati (
+    idstato integer NOT NULL,
+    stato character varying(50) NOT NULL
+);
+
+
+ALTER TABLE dbnir.dec_stati OWNER TO adm;
+
+--
+-- Name: seq_diagrammi; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_diagrammi
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_diagrammi OWNER TO adm;
+
+--
+-- Name: seq_modelli; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_modelli
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_modelli OWNER TO adm;
+
+--
+-- Name: diagrammi; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.diagrammi (
+    iddiag bigint DEFAULT nextval('dbnir.seq_diagrammi'::regclass) NOT NULL,
+    idmod integer DEFAULT nextval('dbnir.seq_modelli'::regclass) NOT NULL,
+    grado integer NOT NULL,
+    atto double precision NOT NULL,
+    attv double precision NOT NULL
+);
+
+
+ALTER TABLE dbnir.diagrammi OWNER TO adm;
+
+--
+-- Name: seq_gruppi; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_gruppi
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_gruppi OWNER TO adm;
+
+--
+-- Name: diz_gruppi; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.diz_gruppi (
+    gid integer DEFAULT nextval('dbnir.seq_gruppi'::regclass) NOT NULL,
+    gname character varying(30) NOT NULL,
+    note1 character varying(50),
+    indirizzo character varying(50),
+    cap character(5),
+    idcomune integer,
+    idprovincia integer
+);
+
+
+ALTER TABLE dbnir.diz_gruppi OWNER TO adm;
+
+--
+-- Name: seq_utenti; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_utenti
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_utenti OWNER TO adm;
+
+--
+-- Name: diz_utenti; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.diz_utenti (
+    userid integer DEFAULT nextval('dbnir.seq_utenti'::regclass) NOT NULL,
+    uname character varying(30) NOT NULL,
+    pwd character varying(30) NOT NULL,
+    email character varying(254) NOT NULL,
+    last character(10),
+    term character varying(50),
+    ulock character(1),
+    note1 character varying(50),
+    gid integer
+);
+
+
+ALTER TABLE dbnir.diz_utenti OWNER TO adm;
+
+--
+-- Name: edifici; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.edifici (
+    idedi integer NOT NULL,
+    geom public.geometry(MultiPolygon,3003),
+    id bigint,
+    piede double precision,
+    altezza double precision,
+    gronda double precision,
+    desuso character varying(60),
+    npft integer,
+    piede_min double precision,
+    piede_max double precision,
+    import character varying(19),
+    utente character varying(50),
+    nomefile character varying(50),
+    gestore character varying(254),
+    modifica character varying(19),
+    data_ini date,
+    data_fin date,
+    e_tot double precision,
+    h_critica double precision,
+    e_cautela double precision,
+    h_campo double precision,
+    idprov integer
+);
+
+
+ALTER TABLE dbnir.edifici OWNER TO adm;
+
+--
+-- Name: edifici_idedi_seq; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.edifici_idedi_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+
+ALTER TABLE dbnir.edifici_idedi_seq OWNER TO adm;
+
+--
+-- Name: edificiarc; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.edificiarc (
+    idedi integer NOT NULL,
+    geom public.geometry(MultiPolygon,3003),
+    id bigint,
+    piede double precision,
+    altezza double precision,
+    gronda double precision,
+    desuso character varying(60),
+    npft integer,
+    piede_min double precision,
+    piede_max double precision,
+    import character varying(19),
+    utente character varying(50),
+    gestore character varying(254),
+    modifica character varying(19),
+    data_ini date,
+    data_fin date,
+    e_tot double precision,
+    h_critica double precision,
+    e_cautela double precision,
+    h_campo double precision,
+    idprov integer
+);
+
+
+ALTER TABLE dbnir.edificiarc OWNER TO adm;
+
+--
+-- Name: edificiarc_idedi_seq; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.edificiarc_idedi_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+
+ALTER TABLE dbnir.edificiarc_idedi_seq OWNER TO adm;
+
+--
+-- Name: entilocali; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.entilocali (
+    cod_istat integer NOT NULL,
+    nome character varying(100),
+    descrizione character varying(30),
+    livello integer,
+    cap character varying(5),
+    sigla_provincia character varying(2),
+    prefisso integer,
+    cod_catastale character varying(4)
+);
+
+
+ALTER TABLE dbnir.entilocali OWNER TO adm;
+
+--
+-- Name: seq_gestori; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_gestori
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_gestori OWNER TO adm;
+
+--
+-- Name: gestori; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.gestori (
+    idgest integer DEFAULT nextval('dbnir.seq_gestori'::regclass) NOT NULL,
+    gestore character varying(254) NOT NULL,
+    titolare character varying(254) NOT NULL,
+    indirizzo character varying(254) NOT NULL,
+    cap character(5) NOT NULL,
+    telefono character varying(50) NOT NULL,
+    fax character varying(50),
+    email character varying(254),
+    sedelegale character varying(254),
+    riftecnico character varying(254),
+    tel_rif character varying(254),
+    note1 character varying(100),
+    idprov integer,
+    idcomune integer,
+    idcat integer,
+    idserv integer,
+    cap_so character(5),
+    idcomune_so integer,
+    idprov_so integer,
+    telefono_so character varying(50),
+    fax_so character varying(50),
+    email_so character varying(254),
+    pec character(254),
+    piva character(11),
+    codfisc character(16),
+    rea character(10),
+    sitoweb character(150),
+    rappr_legale character(254),
+    indirizzo_rappr_legale character(254),
+    cap_rappr_legale character(5),
+    idcomune_rappr_leg integer,
+    idprov_rappr_legale integer,
+    tel_rappr_legale character(50),
+    email_rappr_legale character(254),
+    cf_rappr_legale character(16),
+    pec_rappr_legale character(254)
+);
+
+
+ALTER TABLE dbnir.gestori OWNER TO adm;
+
+--
+-- Name: COLUMN gestori.indirizzo; Type: COMMENT; Schema: dbnir; Owner: adm
+--
+
+COMMENT ON COLUMN dbnir.gestori.indirizzo IS 'Indirizzo della sede operativa';
+
+
+--
+-- Name: COLUMN gestori.cap; Type: COMMENT; Schema: dbnir; Owner: adm
+--
+
+COMMENT ON COLUMN dbnir.gestori.cap IS 'cap della sede legale';
+
+
+--
+-- Name: COLUMN gestori.telefono; Type: COMMENT; Schema: dbnir; Owner: adm
+--
+
+COMMENT ON COLUMN dbnir.gestori.telefono IS 'telefono della sede  legale';
+
+
+--
+-- Name: COLUMN gestori.fax; Type: COMMENT; Schema: dbnir; Owner: adm
+--
+
+COMMENT ON COLUMN dbnir.gestori.fax IS 'fax della sede legale';
+
+
+--
+-- Name: COLUMN gestori.email; Type: COMMENT; Schema: dbnir; Owner: adm
+--
+
+COMMENT ON COLUMN dbnir.gestori.email IS 'email della sede legale';
+
+
+--
+-- Name: COLUMN gestori.sedelegale; Type: COMMENT; Schema: dbnir; Owner: adm
+--
+
+COMMENT ON COLUMN dbnir.gestori.sedelegale IS 'Indirizzo della sede legale';
+
+
+--
+-- Name: modelli; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.modelli (
+    idmod integer DEFAULT nextval('dbnir.seq_modelli'::regclass) NOT NULL,
+    modello character varying(500) NOT NULL,
+    marca character varying(30),
+    frequenza double precision NOT NULL,
+    tilt_el double precision,
+    guadagno double precision NOT NULL,
+    lunghezza double precision NOT NULL,
+    note1 character varying(250),
+    immagine character varying(250),
+    uname character varying(80),
+    larghezza double precision,
+    profondita double precision,
+    fmin double precision,
+    fmax double precision,
+    idpolar integer,
+    pmax double precision,
+    returnloss double precision,
+    idgest integer,
+    idresp integer,
+    data_ins date,
+    modifica date,
+    mmimo boolean
+);
+
+
+ALTER TABLE dbnir.modelli OWNER TO adm;
+
+--
+-- Name: paramdrupal; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.paramdrupal (
+    pot_limite numeric,
+    dist_antenne numeric,
+    est_edifici numeric,
+    toll_confine numeric
+);
+
+
+ALTER TABLE dbnir.paramdrupal OWNER TO adm;
+
+--
+-- Name: province; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.province (
+    id integer NOT NULL,
+    geom public.geometry(MultiPolygon,3045),
+    nome character varying(20),
+    sigla character varying(2),
+    idprov integer
+);
+
+
+ALTER TABLE dbnir.province OWNER TO adm;
+
+--
+-- Name: province_id_seq; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.province_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+
+ALTER TABLE dbnir.province_id_seq OWNER TO adm;
+
+--
+-- Name: regione; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.regione (
+    id integer NOT NULL,
+    geom public.geometry(MultiPolygon,3045),
+    nome character varying(25),
+    codice character varying(2)
+);
+
+
+ALTER TABLE dbnir.regione OWNER TO adm;
+
+--
+-- Name: regione_id_seq; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.regione_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+
+ALTER TABLE dbnir.regione_id_seq OWNER TO adm;
+
+--
+-- Name: seq_ut_gest; Type: SEQUENCE; Schema: dbnir; Owner: adm
+--
+
+CREATE SEQUENCE dbnir.seq_ut_gest
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dbnir.seq_ut_gest OWNER TO adm;
+
+--
+-- Name: utenze_gestori; Type: TABLE; Schema: dbnir; Owner: adm
+--
+
+CREATE TABLE dbnir.utenze_gestori (
+    idresp integer DEFAULT nextval('dbnir.seq_ut_gest'::regclass) NOT NULL,
+    username character varying(250),
+    loginame character varying(30),
+    idgest integer NOT NULL
+);
+
+
+ALTER TABLE dbnir.utenze_gestori OWNER TO adm;
+
+--
+-- Name: v_antenneenti; Type: VIEW; Schema: dbnir; Owner: adm
+--
+
+CREATE VIEW dbnir.v_antenneenti AS
+ SELECT a.idant AS id_antenna,
+    a.geom,
+    a.id_padre,
+    a.idmod AS id_modello,
+    modelli.modello,
+    modelli.marca,
+    a.x_ant AS coord_x,
+    a.y_ant AS coord_y,
+    a.h AS h_ce,
+    a.n_tx AS n_trasm,
+    a.pot_tx AS potenza_trasm,
+    a.tilt AS tilt_mecc,
+    a.direzione,
+    a.idserv AS id_serv,
+    s.servizio AS sistema,
+    a.frequenza,
+    a.alfa24 AS alfa_24h,
+    a.att_pc AS alfa_pc,
+    a.att_dtx AS alfa_dtx,
+    a.att_tdd AS alfa_tdd,
+    a.att_fpr AS alfa_fpr,
+    a.data_ini AS data_inserimento,
+    a.data_fin AS data_dismissione_annullamento,
+    a.attiva,
+    a.note1 AS note,
+    a.idsito AS id_impianto,
+    com.comune
+   FROM dbnir.antenne a,
+    dbnir.modelli,
+    dbnir.dec_servizi s,
+    dbnir.siti,
+    dbnir.dec_comuni com
+  WHERE ((a.idmod = modelli.idmod) AND (a.idserv = s.idserv) AND (siti.idsito = a.idsito) AND (siti.idcomune = com.idcomune));
+
+
+ALTER TABLE dbnir.v_antenneenti OWNER TO adm;
+
+--
+-- Name: VIEW v_antenneenti; Type: COMMENT; Schema: dbnir; Owner: adm
+--
+
+COMMENT ON VIEW dbnir.v_antenneenti IS 'Utilizzata per l''export dello shapefile delle antenne in NirWeb';
+
+
+--
+-- Name: v_edifici; Type: VIEW; Schema: dbnir; Owner: adm
+--
+
+CREATE VIEW dbnir.v_edifici AS
+ SELECT edifici.idedi,
+    edifici.geom,
+    edifici.piede,
+    edifici.piede_min,
+    edifici.piede_max,
+    edifici.altezza,
+    edifici.gronda,
+    edifici.desuso,
+    edifici.npft AS piani_fuori_terra,
+    edifici.data_ini,
+    edifici.idprov
+   FROM dbnir.edifici;
+
+
+ALTER TABLE dbnir.v_edifici OWNER TO adm;
+
+--
+-- Name: v_impianti; Type: VIEW; Schema: dbnir; Owner: adm
+--
+
+CREATE VIEW dbnir.v_impianti AS
+ SELECT s.idsito AS id_impianto,
+    s.id_padre,
+    s.geom,
+    s.codsito AS codice,
+    s.nome,
+    s.idgest AS id_gest,
+    g.gestore,
+    s.idresp AS id_resp,
+    s.respimp AS responsabile,
+    s.idstato AS id_stato,
+    st.stato,
+    s.indirizzo,
+    s.idcomune AS id_comune,
+    com.comune,
+    s.idprov AS id_prov,
+    com.provincia,
+    s.x_sito AS coord_x,
+    s.y_sito AS coord_y,
+    s.z_sito AS quota_slm,
+    s.idpost AS id_post,
+    pos.postazione,
+    s.idponte AS id_ponte,
+    pon.ponteradio AS ponti_radio,
+    s.creazione AS data_inserimento,
+    s.parere AS data_parere_arpav,
+    s.comunicaz AS data_comunicazione,
+    s.datamodify AS data_ultima_modifica,
+    s.dismission AS data_dismissione_annullamento,
+    s.note1 AS note,
+    s.attedif AS attenuazione_edifici
+   FROM dbnir.siti s,
+    dbnir.dec_comuni com,
+    dbnir.dec_pontiradio pon,
+    dbnir.dec_postazioni pos,
+    dbnir.dec_stati st,
+    dbnir.gestori g
+  WHERE ((s.idcomune = com.idcomune) AND (s.idponte = pon.idponte) AND (s.idpost = pos.idpost) AND (s.idstato = st.idstato) AND (s.idgest = g.idgest));
+
+
+ALTER TABLE dbnir.v_impianti OWNER TO adm;
+
+--
+-- Name: VIEW v_impianti; Type: COMMENT; Schema: dbnir; Owner: adm
+--
+
+COMMENT ON VIEW dbnir.v_impianti IS 'Utilizzata per l''export dello shapefile degli impianti in NirWeb';
+
+
+--
+-- Name: AAS; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."AAS" (
+    id integer NOT NULL,
+    name character varying(50) DEFAULT NULL::character varying,
+    pec character varying(50) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."AAS" OWNER TO adm;
+
+--
+-- Name: AssStatoPraticheIntegrazioni; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."AssStatoPraticheIntegrazioni" (
+    "idStato" integer NOT NULL,
+    "idInteg" integer
+);
+
+
+ALTER TABLE jspratiche."AssStatoPraticheIntegrazioni" OWNER TO adm;
+
+--
+-- Name: AssStatoPraticheUtenti; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."AssStatoPraticheUtenti" (
+    "idStato" integer NOT NULL,
+    "idUtente" integer
+);
+
+
+ALTER TABLE jspratiche."AssStatoPraticheUtenti" OWNER TO adm;
+
+--
+-- Name: Bookmarks; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Bookmarks" (
+    iduser integer DEFAULT 0 NOT NULL,
+    idurl integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE jspratiche."Bookmarks" OWNER TO adm;
+
+--
+-- Name: Calibrazioni; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Calibrazioni" (
+    id integer NOT NULL,
+    "idCatena" integer NOT NULL,
+    lab character varying(256) DEFAULT NULL::character varying,
+    certn character varying(256) DEFAULT NULL::character varying,
+    "dateCal" date NOT NULL,
+    note character varying(256) DEFAULT NULL::character varying,
+    scadenza date NOT NULL
+);
+
+
+ALTER TABLE jspratiche."Calibrazioni" OWNER TO adm;
+
+--
+-- Name: Catene; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Catene" (
+    id integer NOT NULL,
+    name character varying(50) DEFAULT NULL::character varying,
+    note character varying(256) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."Catene" OWNER TO adm;
+
+--
+-- Name: Comuni; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Comuni" (
+    id integer NOT NULL,
+    name character varying(50) DEFAULT NULL::character varying,
+    pec character varying(50) DEFAULT NULL::character varying,
+    idaas integer,
+    province character varying(2) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."Comuni" OWNER TO adm;
+
+--
+-- Name: ConstStatoPratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."ConstStatoPratiche" (
+    id integer NOT NULL,
+    descrizione character varying(50) DEFAULT NULL::character varying,
+    final integer
+);
+
+
+ALTER TABLE jspratiche."ConstStatoPratiche" OWNER TO adm;
+
+--
+-- Name: ConstTipoPratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."ConstTipoPratiche" (
+    id integer NOT NULL,
+    descrizione character varying(50) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."ConstTipoPratiche" OWNER TO adm;
+
+--
+-- Name: Gestori; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Gestori" (
+    id integer NOT NULL,
+    name character varying(50) DEFAULT NULL::character varying,
+    pec character varying(50) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."Gestori" OWNER TO adm;
+
+--
+-- Name: Integrazioni; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Integrazioni" (
+    id integer NOT NULL,
+    "dateOUT" date,
+    "dateIN" date,
+    "protoOUT" character varying(50) DEFAULT NULL::character varying,
+    "protoIN" character varying(50) DEFAULT NULL::character varying,
+    ostativi integer,
+    note character varying(256) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."Integrazioni" OWNER TO adm;
+
+--
+-- Name: LinkComuni; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."LinkComuni" (
+    id integer,
+    idemittenti character varying(50) DEFAULT ''::character varying NOT NULL
+);
+
+
+ALTER TABLE jspratiche."LinkComuni" OWNER TO adm;
+
+--
+-- Name: LinkMisure; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."LinkMisure" (
+    idpratica integer,
+    "idMisura" integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE jspratiche."LinkMisure" OWNER TO adm;
+
+--
+-- Name: LinkSitiPratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."LinkSitiPratiche" (
+    idsite integer DEFAULT 0 NOT NULL,
+    idpratica integer,
+    flag87bis smallint,
+    "flagSupTerra" smallint,
+    "flagA24" smallint,
+    idriconf integer
+);
+
+
+ALTER TABLE jspratiche."LinkSitiPratiche" OWNER TO adm;
+
+--
+-- Name: LinkUtenti; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."LinkUtenti" (
+    id integer DEFAULT 0 NOT NULL,
+    idlink integer
+);
+
+
+ALTER TABLE jspratiche."LinkUtenti" OWNER TO adm;
+
+--
+-- Name: Links; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Links" (
+    id integer NOT NULL,
+    url character varying(256) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."Links" OWNER TO adm;
+
+--
+-- Name: Messages; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Messages" (
+    id integer NOT NULL,
+    userfrom integer,
+    msg text,
+    "timePoint" timestamp(0) without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE jspratiche."Messages" OWNER TO adm;
+
+--
+-- Name: Pratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Pratiche" (
+    id integer NOT NULL,
+    "idGestore" integer,
+    "idComune" integer,
+    address character varying(50) DEFAULT NULL::character varying,
+    sitecode character varying(50) DEFAULT NULL::character varying,
+    tipopratica integer,
+    "protoIN" character varying(50) DEFAULT NULL::character varying,
+    "dateIN" date,
+    "protoOUT" character varying(50) DEFAULT NULL::character varying,
+    "dateOUT" date,
+    note character varying(256) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."Pratiche" OWNER TO adm;
+
+--
+-- Name: PrivateMessages; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."PrivateMessages" (
+    id integer NOT NULL,
+    userfrom integer,
+    userto integer,
+    msg text,
+    readen smallint,
+    "timePoint" timestamp(0) without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE jspratiche."PrivateMessages" OWNER TO adm;
+
+--
+-- Name: Province; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Province" (
+    id character varying(2) DEFAULT ''::character varying NOT NULL,
+    name character varying(50) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."Province" OWNER TO adm;
+
+--
+-- Name: RegistroStrumenti; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."RegistroStrumenti" (
+    id integer NOT NULL,
+    "idCatena" integer NOT NULL,
+    "idUtente" integer,
+    "timePointFrom" timestamp(0) without time zone DEFAULT now() NOT NULL,
+    "timePointTo" timestamp(0) without time zone NOT NULL,
+    "idSedeTo" integer
+);
+
+
+ALTER TABLE jspratiche."RegistroStrumenti" OWNER TO adm;
+
+--
+-- Name: Sedi; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Sedi" (
+    id integer NOT NULL,
+    nome character varying(50) DEFAULT NULL::character varying,
+    telefono character varying(50) DEFAULT NULL::character varying,
+    note character varying(256) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."Sedi" OWNER TO adm;
+
+--
+-- Name: SharedNotes; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."SharedNotes" (
+    id integer NOT NULL,
+    text text,
+    create_user integer,
+    "create_timePoint" timestamp(0) without time zone NOT NULL,
+    mod_user integer,
+    "mod_timePoint" timestamp(0) without time zone NOT NULL
+);
+
+
+ALTER TABLE jspratiche."SharedNotes" OWNER TO adm;
+
+--
+-- Name: StatoPratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."StatoPratiche" (
+    id integer NOT NULL,
+    "idPratica" integer,
+    "idStato" integer,
+    "idUtenteModifica" integer,
+    "timePoint" timestamp(0) without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE jspratiche."StatoPratiche" OWNER TO adm;
+
+--
+-- Name: Strumenti; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Strumenti" (
+    id integer NOT NULL,
+    name character varying(256) DEFAULT NULL::character varying,
+    marca character varying(50) DEFAULT NULL::character varying,
+    modello character varying(50) DEFAULT NULL::character varying,
+    serial character varying(50) DEFAULT NULL::character varying,
+    inventario character varying(50) DEFAULT NULL::character varying,
+    tipo character varying(50) DEFAULT NULL::character varying,
+    taratura character varying(256) DEFAULT NULL::character varying,
+    note character varying(256) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."Strumenti" OWNER TO adm;
+
+--
+-- Name: StrumentiDelleCatene; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."StrumentiDelleCatene" (
+    "idCatena" integer NOT NULL,
+    "idStrumento" integer NOT NULL
+);
+
+
+ALTER TABLE jspratiche."StrumentiDelleCatene" OWNER TO adm;
+
+--
+-- Name: StudiTecnici; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."StudiTecnici" (
+    id integer NOT NULL,
+    name character varying(50) DEFAULT NULL::character varying,
+    pec character varying(50) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE jspratiche."StudiTecnici" OWNER TO adm;
+
+--
+-- Name: Utenti; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche."Utenti" (
+    id integer NOT NULL,
+    username character varying(50) DEFAULT NULL::character varying,
+    hash character varying(256) DEFAULT NULL::character varying,
+    name character varying(50) DEFAULT NULL::character varying,
+    surname character varying(50) DEFAULT NULL::character varying,
+    email character varying(50) DEFAULT NULL::character varying,
+    phone character varying(50) DEFAULT NULL::character varying,
+    lastlogin timestamp without time zone DEFAULT now() NOT NULL,
+    userlevel integer,
+    pareri integer,
+    correzioni integer
+);
+
+
+ALTER TABLE jspratiche."Utenti" OWNER TO adm;
+
+--
+-- Name: aas_seq; Type: SEQUENCE; Schema: jspratiche; Owner: adm
+--
+
+CREATE SEQUENCE jspratiche.aas_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE jspratiche.aas_seq OWNER TO adm;
+
+--
+-- Name: sessions; Type: TABLE; Schema: jspratiche; Owner: adm
+--
+
+CREATE TABLE jspratiche.sessions (
+    id character varying(128) NOT NULL,
+    expires integer NOT NULL,
+    data text
+);
+
+
+ALTER TABLE jspratiche.sessions OWNER TO adm;
+
+--
+-- Name: _aas; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._aas (
+    id smallint,
+    name character varying(50) DEFAULT NULL::character varying,
+    pec character varying(30) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._aas OWNER TO rebasedata;
+
+--
+-- Name: _assstatopraticheintegrazioni; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._assstatopraticheintegrazioni (
+    idstato integer,
+    idinteg smallint
+);
+
+
+ALTER TABLE public._assstatopraticheintegrazioni OWNER TO rebasedata;
+
+--
+-- Name: _assstatopraticheutenti; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._assstatopraticheutenti (
+    idstato integer,
+    idutente character varying(2) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._assstatopraticheutenti OWNER TO rebasedata;
+
+--
+-- Name: _bookmarks; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._bookmarks (
+    iduser character varying(1) DEFAULT NULL::character varying,
+    idurl character varying(1) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._bookmarks OWNER TO rebasedata;
+
+--
+-- Name: _calibrazioni; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._calibrazioni (
+    id smallint,
+    idcatena smallint,
+    lab character varying(13) DEFAULT NULL::character varying,
+    certn character varying(13) DEFAULT NULL::character varying,
+    datecal character varying(10) DEFAULT NULL::character varying,
+    note character varying(1) DEFAULT NULL::character varying,
+    scadenza character varying(10) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._calibrazioni OWNER TO rebasedata;
+
+--
+-- Name: _catene; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._catene (
+    id smallint,
+    name character varying(26) DEFAULT NULL::character varying,
+    note character varying(25) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._catene OWNER TO rebasedata;
+
+--
+-- Name: _comuni; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._comuni (
+    id smallint,
+    name character varying(32) DEFAULT NULL::character varying,
+    pec character varying(50) DEFAULT NULL::character varying,
+    idaas smallint,
+    province character varying(2) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._comuni OWNER TO rebasedata;
+
+--
+-- Name: _conststatopratiche; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._conststatopratiche (
+    id smallint,
+    descrizione character varying(26) DEFAULT NULL::character varying,
+    final smallint
+);
+
+
+ALTER TABLE public._conststatopratiche OWNER TO rebasedata;
+
+--
+-- Name: _consttipopratiche; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._consttipopratiche (
+    id smallint,
+    descrizione character varying(14) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._consttipopratiche OWNER TO rebasedata;
+
+--
+-- Name: _gestori; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._gestori (
+    id smallint,
+    name character varying(12) DEFAULT NULL::character varying,
+    pec character varying(37) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._gestori OWNER TO rebasedata;
+
+--
+-- Name: _integrazioni; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._integrazioni (
+    id smallint,
+    dateout character varying(10) DEFAULT NULL::character varying,
+    datein character varying(10) DEFAULT NULL::character varying,
+    protoout character varying(25) DEFAULT NULL::character varying,
+    protoin character varying(9) DEFAULT NULL::character varying,
+    ostativi smallint,
+    note character varying(60) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._integrazioni OWNER TO rebasedata;
+
+--
+-- Name: _linkcomuni; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._linkcomuni (
+    id smallint,
+    idemittenti character varying(29) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._linkcomuni OWNER TO rebasedata;
+
+--
+-- Name: _linkmisure; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._linkmisure (
+    idpratica character varying(1) DEFAULT NULL::character varying,
+    idmisura character varying(1) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._linkmisure OWNER TO rebasedata;
+
+--
+-- Name: _links; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._links (
+    id character varying(1) DEFAULT NULL::character varying,
+    url character varying(1) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._links OWNER TO rebasedata;
+
+--
+-- Name: _linksitipratiche; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._linksitipratiche (
+    idsite integer,
+    idpratica smallint,
+    flag87bis smallint,
+    flagsupterra smallint,
+    flaga24 smallint,
+    idriconf character varying(4) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._linksitipratiche OWNER TO rebasedata;
+
+--
+-- Name: _linkutenti; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._linkutenti (
+    id smallint,
+    idlink smallint
+);
+
+
+ALTER TABLE public._linkutenti OWNER TO rebasedata;
+
+--
+-- Name: _messages; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._messages (
+    id smallint,
+    userfrom smallint,
+    msg character varying(45) DEFAULT NULL::character varying,
+    timepoint character varying(19) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._messages OWNER TO rebasedata;
+
+--
+-- Name: _pratiche; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._pratiche (
+    id smallint,
+    idgestore smallint,
+    idcomune smallint,
+    address character varying(50) DEFAULT NULL::character varying,
+    sitecode character varying(27) DEFAULT NULL::character varying,
+    tipopratica smallint,
+    protoin character varying(7) DEFAULT NULL::character varying,
+    datein character varying(10) DEFAULT NULL::character varying,
+    protoout character varying(15) DEFAULT NULL::character varying,
+    dateout character varying(10) DEFAULT NULL::character varying,
+    note character varying(256) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._pratiche OWNER TO rebasedata;
+
+--
+-- Name: _privatemessages; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._privatemessages (
+    id smallint,
+    userfrom smallint,
+    userto character varying(1) DEFAULT NULL::character varying,
+    msg character varying(159) DEFAULT NULL::character varying,
+    readen smallint,
+    timepoint character varying(19) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._privatemessages OWNER TO rebasedata;
+
+--
+-- Name: _province; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._province (
+    id character varying(2) DEFAULT NULL::character varying,
+    name character varying(9) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._province OWNER TO rebasedata;
+
+--
+-- Name: _registrostrumenti; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._registrostrumenti (
+    id smallint,
+    idcatena smallint,
+    idutente smallint,
+    timepointfrom character varying(19) DEFAULT NULL::character varying,
+    timepointto character varying(19) DEFAULT NULL::character varying,
+    idsedeto smallint
+);
+
+
+ALTER TABLE public._registrostrumenti OWNER TO rebasedata;
+
+--
+-- Name: _sedi; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._sedi (
+    id smallint,
+    nome character varying(9) DEFAULT NULL::character varying,
+    telefono character varying(1) DEFAULT NULL::character varying,
+    note character varying(1) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._sedi OWNER TO rebasedata;
+
+--
+-- Name: _sessions; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._sessions (
+    id character varying(32) DEFAULT NULL::character varying,
+    expires bigint,
+    data character varying(109) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._sessions OWNER TO rebasedata;
+
+--
+-- Name: _sharednotes; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._sharednotes (
+    id smallint,
+    text character varying(39) DEFAULT NULL::character varying,
+    create_user smallint,
+    create_timepoint character varying(19) DEFAULT NULL::character varying,
+    mod_user character varying(1) DEFAULT NULL::character varying,
+    mod_timepoint character varying(1) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._sharednotes OWNER TO rebasedata;
+
+--
+-- Name: _statopratiche; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._statopratiche (
+    id integer,
+    idpratica character varying(4) DEFAULT NULL::character varying,
+    idstato smallint,
+    idutentemodifica smallint,
+    timepoint character varying(19) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._statopratiche OWNER TO rebasedata;
+
+--
+-- Name: _strumenti; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._strumenti (
+    id smallint,
+    name character varying(94) DEFAULT NULL::character varying,
+    marca character varying(19) DEFAULT NULL::character varying,
+    modello character varying(12) DEFAULT NULL::character varying,
+    serial character varying(10) DEFAULT NULL::character varying,
+    inventario character varying(5) DEFAULT NULL::character varying,
+    tipo character varying(30) DEFAULT NULL::character varying,
+    taratura character varying(83) DEFAULT NULL::character varying,
+    note character varying(40) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._strumenti OWNER TO rebasedata;
+
+--
+-- Name: _strumentidellecatene; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._strumentidellecatene (
+    idcatena smallint,
+    idstrumento smallint
+);
+
+
+ALTER TABLE public._strumentidellecatene OWNER TO rebasedata;
+
+--
+-- Name: _studitecnici; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._studitecnici (
+    id smallint,
+    name character varying(36) DEFAULT NULL::character varying,
+    pec character varying(37) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public._studitecnici OWNER TO rebasedata;
+
+--
+-- Name: _utenti; Type: TABLE; Schema: public; Owner: rebasedata
+--
+
+CREATE TABLE public._utenti (
+    id smallint,
+    username character varying(10) DEFAULT NULL::character varying,
+    hash character varying(60) DEFAULT NULL::character varying,
+    name character varying(12) DEFAULT NULL::character varying,
+    surname character varying(11) DEFAULT NULL::character varying,
+    email character varying(30) DEFAULT NULL::character varying,
+    phone character varying(11) DEFAULT NULL::character varying,
+    lastlogin character varying(19) DEFAULT NULL::character varying,
+    userlevel smallint,
+    pareri smallint,
+    correzioni smallint
+);
+
+
+ALTER TABLE public._utenti OWNER TO rebasedata;
+
+--
+-- Name: session; Type: TABLE; Schema: public; Owner: adm
+--
+
+CREATE TABLE public.session (
+    sid character varying(128) NOT NULL,
+    data text,
+    sess character varying,
+    expire timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.session OWNER TO adm;
+
+--
+-- Name: utenti; Type: TABLE; Schema: public; Owner: adm
+--
+
+CREATE TABLE public.utenti (
+    id integer NOT NULL,
+    username character varying(50) DEFAULT NULL::character varying,
+    hash character varying(256) DEFAULT NULL::character varying,
+    name character varying(50) DEFAULT NULL::character varying,
+    surname character varying(50) DEFAULT NULL::character varying,
+    email character varying(50) DEFAULT NULL::character varying,
+    phone character varying(50) DEFAULT NULL::character varying,
+    lastlogin timestamp without time zone DEFAULT now() NOT NULL,
+    userlevel integer,
+    pareri integer,
+    correzioni integer
+);
+
+
+ALTER TABLE public.utenti OWNER TO adm;
+
+--
+-- Name: antenne_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.antenne
+    ADD CONSTRAINT antenne_pk PRIMARY KEY (idant);
+
+
+--
+-- Name: comuni2_pkey; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.comuni
+    ADD CONSTRAINT comuni2_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dec_categorie_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_categorie
+    ADD CONSTRAINT dec_categorie_pk PRIMARY KEY (idcat);
+
+
+--
+-- Name: dec_categorie_uc1; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_categorie
+    ADD CONSTRAINT dec_categorie_uc1 UNIQUE (categoria);
+
+
+--
+-- Name: dec_comuni_all_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_comuni_all
+    ADD CONSTRAINT dec_comuni_all_pk PRIMARY KEY (idcomune);
+
+
+--
+-- Name: dec_comuni_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_comuni
+    ADD CONSTRAINT dec_comuni_pk PRIMARY KEY (idcomune);
+
+
+--
+-- Name: dec_comuni_uc1; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_comuni
+    ADD CONSTRAINT dec_comuni_uc1 UNIQUE (comune);
+
+
+--
+-- Name: dec_polar_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_polar
+    ADD CONSTRAINT dec_polar_pk PRIMARY KEY (idpolar);
+
+
+--
+-- Name: dec_pontiradio_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_pontiradio
+    ADD CONSTRAINT dec_pontiradio_pk PRIMARY KEY (idponte);
+
+
+--
+-- Name: dec_postazioni_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_postazioni
+    ADD CONSTRAINT dec_postazioni_pk PRIMARY KEY (idpost);
+
+
+--
+-- Name: dec_province_all_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_province_all
+    ADD CONSTRAINT dec_province_all_pk PRIMARY KEY (idprov);
+
+
+--
+-- Name: dec_province_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_province
+    ADD CONSTRAINT dec_province_pk PRIMARY KEY (idprov);
+
+
+--
+-- Name: dec_province_uc1; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_province
+    ADD CONSTRAINT dec_province_uc1 UNIQUE (provincia);
+
+
+--
+-- Name: dec_servizi_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_servizi
+    ADD CONSTRAINT dec_servizi_pk PRIMARY KEY (idserv);
+
+
+--
+-- Name: dec_servizi_uc1; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_servizi
+    ADD CONSTRAINT dec_servizi_uc1 UNIQUE (servizio);
+
+
+--
+-- Name: dec_stati_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_stati
+    ADD CONSTRAINT dec_stati_pk PRIMARY KEY (idstato);
+
+
+--
+-- Name: dec_stati_uc1; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_stati
+    ADD CONSTRAINT dec_stati_uc1 UNIQUE (stato);
+
+
+--
+-- Name: diagrammi_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.diagrammi
+    ADD CONSTRAINT diagrammi_pk PRIMARY KEY (iddiag);
+
+
+--
+-- Name: diz_gruppi_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.diz_gruppi
+    ADD CONSTRAINT diz_gruppi_pk PRIMARY KEY (gid);
+
+
+--
+-- Name: diz_utenti_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.diz_utenti
+    ADD CONSTRAINT diz_utenti_pk PRIMARY KEY (userid);
+
+
+--
+-- Name: edifici_pkey; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.edifici
+    ADD CONSTRAINT edifici_pkey PRIMARY KEY (idedi);
+
+
+--
+-- Name: edificiarc_pkey; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.edificiarc
+    ADD CONSTRAINT edificiarc_pkey PRIMARY KEY (idedi);
+
+
+--
+-- Name: entilocali_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.entilocali
+    ADD CONSTRAINT entilocali_pk PRIMARY KEY (cod_istat);
+
+
+--
+-- Name: gestori_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.gestori
+    ADD CONSTRAINT gestori_pk PRIMARY KEY (idgest);
+
+
+--
+-- Name: modelli_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.modelli
+    ADD CONSTRAINT modelli_pk PRIMARY KEY (idmod);
+
+
+--
+-- Name: province_pkey; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.province
+    ADD CONSTRAINT province_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: regione_pkey; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.regione
+    ADD CONSTRAINT regione_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: siti_pkey; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.siti
+    ADD CONSTRAINT siti_pkey PRIMARY KEY (idsito);
+
+
+--
+-- Name: ut_gestori_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.utenze_gestori
+    ADD CONSTRAINT ut_gestori_pk PRIMARY KEY (idresp);
+
+
+--
+-- Name: AAS_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."AAS"
+    ADD CONSTRAINT "AAS_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: AssStatoPraticheIntegrazioni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."AssStatoPraticheIntegrazioni"
+    ADD CONSTRAINT "AssStatoPraticheIntegrazioni_pkey" PRIMARY KEY ("idStato");
+
+
+--
+-- Name: AssStatoPraticheUtenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."AssStatoPraticheUtenti"
+    ADD CONSTRAINT "AssStatoPraticheUtenti_pkey" PRIMARY KEY ("idStato");
+
+
+--
+-- Name: Bookmarks_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Bookmarks"
+    ADD CONSTRAINT "Bookmarks_pkey" PRIMARY KEY (iduser, idurl);
+
+
+--
+-- Name: Calibrazioni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Calibrazioni"
+    ADD CONSTRAINT "Calibrazioni_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Catene_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Catene"
+    ADD CONSTRAINT "Catene_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Comuni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Comuni"
+    ADD CONSTRAINT "Comuni_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: ConstStatoPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."ConstStatoPratiche"
+    ADD CONSTRAINT "ConstStatoPratiche_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: ConstTipoPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."ConstTipoPratiche"
+    ADD CONSTRAINT "ConstTipoPratiche_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Gestori_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Gestori"
+    ADD CONSTRAINT "Gestori_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Integrazioni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Integrazioni"
+    ADD CONSTRAINT "Integrazioni_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: LinkComuni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."LinkComuni"
+    ADD CONSTRAINT "LinkComuni_pkey" PRIMARY KEY (idemittenti);
+
+
+--
+-- Name: LinkMisure_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."LinkMisure"
+    ADD CONSTRAINT "LinkMisure_pkey" PRIMARY KEY ("idMisura");
+
+
+--
+-- Name: LinkSitiPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."LinkSitiPratiche"
+    ADD CONSTRAINT "LinkSitiPratiche_pkey" PRIMARY KEY (idsite);
+
+
+--
+-- Name: LinkUtenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."LinkUtenti"
+    ADD CONSTRAINT "LinkUtenti_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Links_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Links"
+    ADD CONSTRAINT "Links_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Messages_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Messages"
+    ADD CONSTRAINT "Messages_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Pratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Pratiche"
+    ADD CONSTRAINT "Pratiche_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: PrivateMessages_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."PrivateMessages"
+    ADD CONSTRAINT "PrivateMessages_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Province_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Province"
+    ADD CONSTRAINT "Province_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: RegistroStrumenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."RegistroStrumenti"
+    ADD CONSTRAINT "RegistroStrumenti_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Sedi_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Sedi"
+    ADD CONSTRAINT "Sedi_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: SharedNotes_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."SharedNotes"
+    ADD CONSTRAINT "SharedNotes_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: StatoPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."StatoPratiche"
+    ADD CONSTRAINT "StatoPratiche_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: StrumentiDelleCatene_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."StrumentiDelleCatene"
+    ADD CONSTRAINT "StrumentiDelleCatene_pkey" PRIMARY KEY ("idCatena", "idStrumento");
+
+
+--
+-- Name: Strumenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Strumenti"
+    ADD CONSTRAINT "Strumenti_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: StudiTecnici_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."StudiTecnici"
+    ADD CONSTRAINT "StudiTecnici_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Utenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Utenti"
+    ADD CONSTRAINT "Utenti_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: sessions_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche.sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: session_pkey; Type: CONSTRAINT; Schema: public; Owner: adm
+--
+
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_pkey PRIMARY KEY (sid);
+
+
+--
+-- Name: audit_tab_i; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX audit_tab_i ON dbnir.audit_tab USING btree (id);
+
+
+--
+-- Name: diagrammi_idx; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX diagrammi_idx ON dbnir.diagrammi USING btree (idmod, iddiag);
+
+
+--
+-- Name: diagrammi_idx2; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX diagrammi_idx2 ON dbnir.diagrammi USING btree (iddiag, idmod, grado);
+
+
+--
+-- Name: modelli_idx; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX modelli_idx ON dbnir.modelli USING btree (idgest);
+
+
+--
+-- Name: modelli_idx2; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX modelli_idx2 ON dbnir.modelli USING btree (idgest, idresp);
+
+
+--
+-- Name: sidx_antenne_geom; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX sidx_antenne_geom ON dbnir.antenne USING gist (geom);
+
+
+--
+-- Name: sidx_comuni_geom; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX sidx_comuni_geom ON dbnir.comuni USING gist (geom);
+
+
+--
+-- Name: sidx_edifici_geom; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX sidx_edifici_geom ON dbnir.edifici USING gist (geom);
+
+
+--
+-- Name: sidx_edificiarc_geom; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX sidx_edificiarc_geom ON dbnir.edificiarc USING gist (geom);
+
+
+--
+-- Name: sidx_province_geom; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX sidx_province_geom ON dbnir.province USING gist (geom);
+
+
+--
+-- Name: sidx_regione_geom; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX sidx_regione_geom ON dbnir.regione USING gist (geom);
+
+
+--
+-- Name: sidx_siti_geom; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE INDEX sidx_siti_geom ON dbnir.siti USING gist (geom);
+
+
+--
+-- Name: siti_pk; Type: INDEX; Schema: dbnir; Owner: adm
+--
+
+CREATE UNIQUE INDEX siti_pk ON dbnir.siti USING btree (idsito);
+
+
+--
+-- Name: create_user; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX create_user ON jspratiche."SharedNotes" USING btree (create_user);
+
+
+--
+-- Name: id; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX id ON jspratiche."LinkComuni" USING btree (id);
+
+
+--
+-- Name: idCatena; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX "idCatena" ON jspratiche."Calibrazioni" USING btree ("idCatena");
+
+
+--
+-- Name: idComune; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX "idComune" ON jspratiche."Pratiche" USING btree ("idComune");
+
+
+--
+-- Name: idGestore; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX "idGestore" ON jspratiche."Pratiche" USING btree ("idGestore");
+
+
+--
+-- Name: idInteg; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX "idInteg" ON jspratiche."AssStatoPraticheIntegrazioni" USING btree ("idInteg");
+
+
+--
+-- Name: idPratica; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX "idPratica" ON jspratiche."StatoPratiche" USING btree ("idPratica");
+
+
+--
+-- Name: idStato; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX "idStato" ON jspratiche."StatoPratiche" USING btree ("idStato");
+
+
+--
+-- Name: idUtente; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX "idUtente" ON jspratiche."AssStatoPraticheUtenti" USING btree ("idUtente");
+
+
+--
+-- Name: idUtenteModifica; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX "idUtenteModifica" ON jspratiche."StatoPratiche" USING btree ("idUtenteModifica");
+
+
+--
+-- Name: idaas; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX idaas ON jspratiche."Comuni" USING btree (idaas);
+
+
+--
+-- Name: idpratica; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX idpratica ON jspratiche."LinkSitiPratiche" USING btree (idpratica);
+
+
+--
+-- Name: idurl; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX idurl ON jspratiche."Bookmarks" USING btree (idurl);
+
+
+--
+-- Name: mod_user; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX mod_user ON jspratiche."SharedNotes" USING btree (mod_user);
+
+
+--
+-- Name: province; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX province ON jspratiche."Comuni" USING btree (province);
+
+
+--
+-- Name: tipopratica; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX tipopratica ON jspratiche."Pratiche" USING btree (tipopratica);
+
+
+--
+-- Name: userfrom; Type: INDEX; Schema: jspratiche; Owner: adm
+--
+
+CREATE INDEX userfrom ON jspratiche."Messages" USING btree (userfrom);
+
+
+--
+-- Name: tr_antenne; Type: TRIGGER; Schema: dbnir; Owner: adm
+--
+
+CREATE TRIGGER tr_antenne BEFORE INSERT OR DELETE OR UPDATE ON dbnir.antenne FOR EACH ROW EXECUTE PROCEDURE dbnir.tr_antenne();
+
+ALTER TABLE dbnir.antenne DISABLE TRIGGER tr_antenne;
+
+
+--
+-- Name: tr_audit_antenne; Type: TRIGGER; Schema: dbnir; Owner: adm
+--
+
+CREATE TRIGGER tr_audit_antenne AFTER INSERT OR DELETE OR UPDATE ON dbnir.antenne FOR EACH ROW EXECUTE PROCEDURE dbnir.tr_audit_antenne();
+
+ALTER TABLE dbnir.antenne DISABLE TRIGGER tr_audit_antenne;
+
+
+--
+-- Name: tr_audit_modelli; Type: TRIGGER; Schema: dbnir; Owner: adm
+--
+
+CREATE TRIGGER tr_audit_modelli AFTER INSERT OR DELETE OR UPDATE ON dbnir.modelli FOR EACH ROW EXECUTE PROCEDURE dbnir.tr_audit_modelli();
+
+
+--
+-- Name: tr_audit_siti; Type: TRIGGER; Schema: dbnir; Owner: adm
+--
+
+CREATE TRIGGER tr_audit_siti AFTER INSERT OR DELETE OR UPDATE ON dbnir.siti FOR EACH ROW EXECUTE PROCEDURE dbnir.tr_audit_siti();
+
+
+--
+-- Name: tr_siti; Type: TRIGGER; Schema: dbnir; Owner: adm
+--
+
+CREATE TRIGGER tr_siti BEFORE INSERT OR DELETE OR UPDATE ON dbnir.siti FOR EACH ROW EXECUTE PROCEDURE dbnir.tr_siti();
+
+
+--
+-- Name: dec_categorie_dec_servizi_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_servizi
+    ADD CONSTRAINT dec_categorie_dec_servizi_fk1 FOREIGN KEY (idcat) REFERENCES dbnir.dec_categorie(idcat);
+
+
+--
+-- Name: dec_categorie_gestori_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.gestori
+    ADD CONSTRAINT dec_categorie_gestori_fk1 FOREIGN KEY (idcat) REFERENCES dbnir.dec_categorie(idcat);
+
+
+--
+-- Name: dec_comuni_gestori_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.gestori
+    ADD CONSTRAINT dec_comuni_gestori_fk1 FOREIGN KEY (idcomune) REFERENCES dbnir.dec_comuni_all(idcomune);
+
+
+--
+-- Name: dec_comuni_gestori_rl_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.gestori
+    ADD CONSTRAINT dec_comuni_gestori_rl_fk1 FOREIGN KEY (idcomune_rappr_leg) REFERENCES dbnir.dec_comuni_all(idcomune);
+
+
+--
+-- Name: dec_comuni_gestori_so_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.gestori
+    ADD CONSTRAINT dec_comuni_gestori_so_fk1 FOREIGN KEY (idcomune_so) REFERENCES dbnir.dec_comuni_all(idcomune);
+
+
+--
+-- Name: dec_comuni_siti_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.siti
+    ADD CONSTRAINT dec_comuni_siti_fk1 FOREIGN KEY (idcomune) REFERENCES dbnir.dec_comuni(idcomune);
+
+
+--
+-- Name: dec_polar_antenne_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.antenne
+    ADD CONSTRAINT dec_polar_antenne_fk1 FOREIGN KEY (idpolar) REFERENCES dbnir.dec_polar(idpolar);
+
+
+--
+-- Name: dec_polar_modelli_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.modelli
+    ADD CONSTRAINT dec_polar_modelli_fk1 FOREIGN KEY (idpolar) REFERENCES dbnir.dec_polar(idpolar);
+
+
+--
+-- Name: dec_pontiradio_siti_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.siti
+    ADD CONSTRAINT dec_pontiradio_siti_fk1 FOREIGN KEY (idponte) REFERENCES dbnir.dec_pontiradio(idponte);
+
+
+--
+-- Name: dec_postazione_siti_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.siti
+    ADD CONSTRAINT dec_postazione_siti_fk1 FOREIGN KEY (idpost) REFERENCES dbnir.dec_postazioni(idpost);
+
+
+--
+-- Name: dec_province_dec_comuni_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_comuni
+    ADD CONSTRAINT dec_province_dec_comuni_fk1 FOREIGN KEY (provincia) REFERENCES dbnir.dec_province(provincia);
+
+
+--
+-- Name: dec_province_gestori_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.gestori
+    ADD CONSTRAINT dec_province_gestori_fk1 FOREIGN KEY (idprov) REFERENCES dbnir.dec_province_all(idprov);
+
+
+--
+-- Name: dec_province_gestori_rl_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.gestori
+    ADD CONSTRAINT dec_province_gestori_rl_fk1 FOREIGN KEY (idprov_rappr_legale) REFERENCES dbnir.dec_province_all(idprov);
+
+
+--
+-- Name: dec_province_gestori_so_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.gestori
+    ADD CONSTRAINT dec_province_gestori_so_fk1 FOREIGN KEY (idprov_so) REFERENCES dbnir.dec_province_all(idprov);
+
+
+--
+-- Name: dec_province_siti_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.siti
+    ADD CONSTRAINT dec_province_siti_fk1 FOREIGN KEY (idprov) REFERENCES dbnir.dec_province(idprov);
+
+
+--
+-- Name: dec_servizi_antenne_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.antenne
+    ADD CONSTRAINT dec_servizi_antenne_fk1 FOREIGN KEY (idserv) REFERENCES dbnir.dec_servizi(idserv);
+
+
+--
+-- Name: dec_servizi_banda_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.dec_banda
+    ADD CONSTRAINT dec_servizi_banda_fk1 FOREIGN KEY (idserv) REFERENCES dbnir.dec_servizi(idserv);
+
+
+--
+-- Name: dec_stati_siti_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.siti
+    ADD CONSTRAINT dec_stati_siti_fk1 FOREIGN KEY (idstato) REFERENCES dbnir.dec_stati(idstato);
+
+
+--
+-- Name: diz_gruppi_diz_utenti_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.diz_utenti
+    ADD CONSTRAINT diz_gruppi_diz_utenti_fk1 FOREIGN KEY (gid) REFERENCES dbnir.diz_gruppi(gid);
+
+
+--
+-- Name: gestori_siti_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.siti
+    ADD CONSTRAINT gestori_siti_fk1 FOREIGN KEY (idgest) REFERENCES dbnir.gestori(idgest);
+
+
+--
+-- Name: gestori_utenze_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.utenze_gestori
+    ADD CONSTRAINT gestori_utenze_fk1 FOREIGN KEY (idgest) REFERENCES dbnir.gestori(idgest);
+
+
+--
+-- Name: modelli_antenne_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.antenne
+    ADD CONSTRAINT modelli_antenne_fk1 FOREIGN KEY (idmod) REFERENCES dbnir.modelli(idmod);
+
+
+--
+-- Name: modelli_diagrammi_fk1; Type: FK CONSTRAINT; Schema: dbnir; Owner: adm
+--
+
+ALTER TABLE ONLY dbnir.diagrammi
+    ADD CONSTRAINT modelli_diagrammi_fk1 FOREIGN KEY (idmod) REFERENCES dbnir.modelli(idmod) ON DELETE CASCADE;
+
+
+--
+-- Name: AssStatoPraticheIntegrazioni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."AssStatoPraticheIntegrazioni"
+    ADD CONSTRAINT "AssStatoPraticheIntegrazioni_ibfk_1" FOREIGN KEY ("idStato") REFERENCES jspratiche."StatoPratiche"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: AssStatoPraticheIntegrazioni_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."AssStatoPraticheIntegrazioni"
+    ADD CONSTRAINT "AssStatoPraticheIntegrazioni_ibfk_2" FOREIGN KEY ("idInteg") REFERENCES jspratiche."Integrazioni"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: AssStatoPraticheUtenti_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."AssStatoPraticheUtenti"
+    ADD CONSTRAINT "AssStatoPraticheUtenti_ibfk_1" FOREIGN KEY ("idStato") REFERENCES jspratiche."StatoPratiche"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: AssStatoPraticheUtenti_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."AssStatoPraticheUtenti"
+    ADD CONSTRAINT "AssStatoPraticheUtenti_ibfk_2" FOREIGN KEY ("idUtente") REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Bookmarks_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Bookmarks"
+    ADD CONSTRAINT "Bookmarks_ibfk_1" FOREIGN KEY (iduser) REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: Bookmarks_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Bookmarks"
+    ADD CONSTRAINT "Bookmarks_ibfk_2" FOREIGN KEY (idurl) REFERENCES jspratiche."Links"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: Calibrazioni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Calibrazioni"
+    ADD CONSTRAINT "Calibrazioni_ibfk_1" FOREIGN KEY ("idCatena") REFERENCES jspratiche."Catene"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: Comuni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Comuni"
+    ADD CONSTRAINT "Comuni_ibfk_1" FOREIGN KEY (idaas) REFERENCES jspratiche."AAS"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Comuni_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Comuni"
+    ADD CONSTRAINT "Comuni_ibfk_2" FOREIGN KEY (province) REFERENCES jspratiche."Province"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: LinkComuni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."LinkComuni"
+    ADD CONSTRAINT "LinkComuni_ibfk_1" FOREIGN KEY (id) REFERENCES jspratiche."Comuni"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: LinkMisure_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."LinkMisure"
+    ADD CONSTRAINT "LinkMisure_ibfk_1" FOREIGN KEY (idpratica) REFERENCES jspratiche."Pratiche"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: LinkSitiPratiche_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."LinkSitiPratiche"
+    ADD CONSTRAINT "LinkSitiPratiche_ibfk_1" FOREIGN KEY (idpratica) REFERENCES jspratiche."Pratiche"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: LinkUtenti_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."LinkUtenti"
+    ADD CONSTRAINT "LinkUtenti_ibfk_1" FOREIGN KEY (id) REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Messages_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Messages"
+    ADD CONSTRAINT "Messages_ibfk_1" FOREIGN KEY (userfrom) REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Pratiche_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Pratiche"
+    ADD CONSTRAINT "Pratiche_ibfk_1" FOREIGN KEY (tipopratica) REFERENCES jspratiche."ConstTipoPratiche"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Pratiche_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Pratiche"
+    ADD CONSTRAINT "Pratiche_ibfk_2" FOREIGN KEY ("idGestore") REFERENCES jspratiche."Gestori"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Pratiche_ibfk_3; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."Pratiche"
+    ADD CONSTRAINT "Pratiche_ibfk_3" FOREIGN KEY ("idComune") REFERENCES jspratiche."Comuni"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: PrivateMessages_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."PrivateMessages"
+    ADD CONSTRAINT "PrivateMessages_ibfk_1" FOREIGN KEY (userfrom) REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: PrivateMessages_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."PrivateMessages"
+    ADD CONSTRAINT "PrivateMessages_ibfk_2" FOREIGN KEY (userto) REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: RegistroStrumenti_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."RegistroStrumenti"
+    ADD CONSTRAINT "RegistroStrumenti_ibfk_1" FOREIGN KEY ("idCatena") REFERENCES jspratiche."Catene"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: RegistroStrumenti_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."RegistroStrumenti"
+    ADD CONSTRAINT "RegistroStrumenti_ibfk_2" FOREIGN KEY ("idUtente") REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: RegistroStrumenti_ibfk_3; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."RegistroStrumenti"
+    ADD CONSTRAINT "RegistroStrumenti_ibfk_3" FOREIGN KEY ("idSedeTo") REFERENCES jspratiche."Sedi"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: SharedNotes_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."SharedNotes"
+    ADD CONSTRAINT "SharedNotes_ibfk_1" FOREIGN KEY (create_user) REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: SharedNotes_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."SharedNotes"
+    ADD CONSTRAINT "SharedNotes_ibfk_2" FOREIGN KEY (mod_user) REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: StatoPratiche_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."StatoPratiche"
+    ADD CONSTRAINT "StatoPratiche_ibfk_1" FOREIGN KEY ("idPratica") REFERENCES jspratiche."Pratiche"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: StatoPratiche_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."StatoPratiche"
+    ADD CONSTRAINT "StatoPratiche_ibfk_2" FOREIGN KEY ("idStato") REFERENCES jspratiche."ConstStatoPratiche"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: StatoPratiche_ibfk_3; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."StatoPratiche"
+    ADD CONSTRAINT "StatoPratiche_ibfk_3" FOREIGN KEY ("idUtenteModifica") REFERENCES jspratiche."Utenti"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: StrumentiDelleCatene_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."StrumentiDelleCatene"
+    ADD CONSTRAINT "StrumentiDelleCatene_ibfk_1" FOREIGN KEY ("idCatena") REFERENCES jspratiche."Catene"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: StrumentiDelleCatene_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+--
+
+ALTER TABLE ONLY jspratiche."StrumentiDelleCatene"
+    ADD CONSTRAINT "StrumentiDelleCatene_ibfk_2" FOREIGN KEY ("idStrumento") REFERENCES jspratiche."Strumenti"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: SCHEMA dbnir; Type: ACL; Schema: -; Owner: dbnir
+--
+
+REVOKE ALL ON SCHEMA dbnir FROM PUBLIC;
+REVOKE ALL ON SCHEMA dbnir FROM dbnir;
+GRANT ALL ON SCHEMA dbnir TO dbnir;
+GRANT ALL ON SCHEMA dbnir TO nirweb;
+GRANT USAGE ON SCHEMA dbnir TO nirgis;
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- Name: SEQUENCE seq_siti; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_siti FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_siti FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_siti TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_siti TO nirweb;
+GRANT USAGE ON SEQUENCE dbnir.seq_siti TO nirgis;
+
+
+--
+-- Name: TABLE siti; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.siti FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.siti FROM adm;
+GRANT ALL ON TABLE dbnir.siti TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.siti TO nirweb;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.siti TO nirgis;
+GRANT DELETE ON TABLE dbnir.siti TO ngmaster;
+
+
+--
+-- Name: SEQUENCE seq_antenne; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_antenne FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_antenne FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_antenne TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_antenne TO nirweb;
+GRANT USAGE ON SEQUENCE dbnir.seq_antenne TO nirgis;
+
+
+--
+-- Name: TABLE antenne; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.antenne FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.antenne FROM adm;
+GRANT ALL ON TABLE dbnir.antenne TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.antenne TO nirweb;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.antenne TO nirgis;
+GRANT DELETE ON TABLE dbnir.antenne TO ngmaster;
+
+
+--
+-- Name: SEQUENCE seq_audit_tab; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_audit_tab FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_audit_tab FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_audit_tab TO adm;
+GRANT USAGE ON SEQUENCE dbnir.seq_audit_tab TO nirweb;
+GRANT USAGE ON SEQUENCE dbnir.seq_audit_tab TO nirgis;
+
+
+--
+-- Name: TABLE audit_tab; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.audit_tab FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.audit_tab FROM adm;
+GRANT ALL ON TABLE dbnir.audit_tab TO adm;
+GRANT SELECT,INSERT ON TABLE dbnir.audit_tab TO nirweb;
+GRANT SELECT,INSERT ON TABLE dbnir.audit_tab TO nirgis;
+
+
+--
+-- Name: TABLE comuni; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.comuni FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.comuni FROM adm;
+GRANT ALL ON TABLE dbnir.comuni TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.comuni TO nirweb;
+GRANT SELECT ON TABLE dbnir.comuni TO nirgis;
+
+
+--
+-- Name: SEQUENCE seq_bande; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_bande FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_bande FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_bande TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_bande TO nirweb;
+
+
+--
+-- Name: TABLE dec_banda; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_banda FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_banda FROM adm;
+GRANT ALL ON TABLE dbnir.dec_banda TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_banda TO nirweb;
+GRANT SELECT ON TABLE dbnir.dec_banda TO nirgis;
+
+
+--
+-- Name: SEQUENCE seq_categorie; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_categorie FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_categorie FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_categorie TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_categorie TO nirweb;
+
+
+--
+-- Name: TABLE dec_categorie; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_categorie FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_categorie FROM adm;
+GRANT ALL ON TABLE dbnir.dec_categorie TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_categorie TO nirweb;
+
+
+--
+-- Name: TABLE dec_comuni; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_comuni FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_comuni FROM adm;
+GRANT ALL ON TABLE dbnir.dec_comuni TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_comuni TO nirweb;
+
+
+--
+-- Name: TABLE dec_comuni_all; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_comuni_all FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_comuni_all FROM adm;
+GRANT ALL ON TABLE dbnir.dec_comuni_all TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_comuni_all TO nirweb;
+
+
+--
+-- Name: SEQUENCE seq_polar; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_polar FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_polar FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_polar TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_polar TO nirweb;
+
+
+--
+-- Name: TABLE dec_polar; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_polar FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_polar FROM adm;
+GRANT ALL ON TABLE dbnir.dec_polar TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_polar TO nirweb;
+GRANT SELECT ON TABLE dbnir.dec_polar TO nirgis;
+
+
+--
+-- Name: SEQUENCE seq_ponti; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_ponti FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_ponti FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_ponti TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_ponti TO nirweb;
+
+
+--
+-- Name: TABLE dec_pontiradio; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_pontiradio FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_pontiradio FROM adm;
+GRANT ALL ON TABLE dbnir.dec_pontiradio TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_pontiradio TO nirweb;
+GRANT SELECT ON TABLE dbnir.dec_pontiradio TO nirgis;
+
+
+--
+-- Name: SEQUENCE seq_postazione; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_postazione FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_postazione FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_postazione TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_postazione TO nirweb;
+
+
+--
+-- Name: TABLE dec_postazioni; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_postazioni FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_postazioni FROM adm;
+GRANT ALL ON TABLE dbnir.dec_postazioni TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_postazioni TO nirweb;
+GRANT SELECT ON TABLE dbnir.dec_postazioni TO nirgis;
+
+
+--
+-- Name: TABLE dec_province; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_province FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_province FROM adm;
+GRANT ALL ON TABLE dbnir.dec_province TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_province TO nirweb;
+GRANT SELECT ON TABLE dbnir.dec_province TO nirgis;
+
+
+--
+-- Name: TABLE dec_province_all; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_province_all FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_province_all FROM adm;
+GRANT ALL ON TABLE dbnir.dec_province_all TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_province_all TO nirweb;
+
+
+--
+-- Name: SEQUENCE seq_servizi; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_servizi FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_servizi FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_servizi TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_servizi TO nirweb;
+
+
+--
+-- Name: TABLE dec_servizi; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_servizi FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_servizi FROM adm;
+GRANT ALL ON TABLE dbnir.dec_servizi TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_servizi TO nirweb;
+GRANT SELECT ON TABLE dbnir.dec_servizi TO nirgis;
+
+
+--
+-- Name: TABLE dec_stati; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.dec_stati FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.dec_stati FROM adm;
+GRANT ALL ON TABLE dbnir.dec_stati TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.dec_stati TO nirweb;
+GRANT SELECT ON TABLE dbnir.dec_stati TO nirgis;
+
+
+--
+-- Name: SEQUENCE seq_diagrammi; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_diagrammi FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_diagrammi FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_diagrammi TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_diagrammi TO nirweb;
+GRANT USAGE ON SEQUENCE dbnir.seq_diagrammi TO nirgis;
+
+
+--
+-- Name: SEQUENCE seq_modelli; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_modelli FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_modelli FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_modelli TO adm;
+GRANT ALL ON SEQUENCE dbnir.seq_modelli TO nirweb;
+GRANT USAGE ON SEQUENCE dbnir.seq_modelli TO nirgis;
+
+
+--
+-- Name: TABLE diagrammi; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.diagrammi FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.diagrammi FROM adm;
+GRANT ALL ON TABLE dbnir.diagrammi TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.diagrammi TO nirweb;
+GRANT SELECT,INSERT ON TABLE dbnir.diagrammi TO nirgis;
+GRANT DELETE,UPDATE ON TABLE dbnir.diagrammi TO ngmaster;
+
+
+--
+-- Name: SEQUENCE seq_gruppi; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_gruppi FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_gruppi FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_gruppi TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_gruppi TO nirweb;
+
+
+--
+-- Name: TABLE diz_gruppi; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.diz_gruppi FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.diz_gruppi FROM adm;
+GRANT ALL ON TABLE dbnir.diz_gruppi TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.diz_gruppi TO nirweb;
+GRANT SELECT ON TABLE dbnir.diz_gruppi TO nirgis;
+
+
+--
+-- Name: SEQUENCE seq_utenti; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_utenti FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_utenti FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_utenti TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_utenti TO nirweb;
+
+
+--
+-- Name: TABLE diz_utenti; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.diz_utenti FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.diz_utenti FROM adm;
+GRANT ALL ON TABLE dbnir.diz_utenti TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.diz_utenti TO nirweb;
+GRANT SELECT ON TABLE dbnir.diz_utenti TO nirgis;
+
+
+--
+-- Name: TABLE edifici; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.edifici FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.edifici FROM adm;
+GRANT ALL ON TABLE dbnir.edifici TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.edifici TO nirweb;
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE dbnir.edifici TO nirgis;
+
+
+--
+-- Name: SEQUENCE edifici_idedi_seq; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.edifici_idedi_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.edifici_idedi_seq FROM adm;
+GRANT ALL ON SEQUENCE dbnir.edifici_idedi_seq TO adm;
+GRANT USAGE ON SEQUENCE dbnir.edifici_idedi_seq TO nirgis;
+GRANT USAGE ON SEQUENCE dbnir.edifici_idedi_seq TO dbnir;
+
+
+--
+-- Name: SEQUENCE edificiarc_idedi_seq; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.edificiarc_idedi_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.edificiarc_idedi_seq FROM adm;
+GRANT ALL ON SEQUENCE dbnir.edificiarc_idedi_seq TO adm;
+GRANT USAGE ON SEQUENCE dbnir.edificiarc_idedi_seq TO dbnir;
+
+
+--
+-- Name: TABLE entilocali; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.entilocali FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.entilocali FROM adm;
+GRANT ALL ON TABLE dbnir.entilocali TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.entilocali TO nirweb;
+GRANT SELECT ON TABLE dbnir.entilocali TO nirgis;
+
+
+--
+-- Name: SEQUENCE seq_gestori; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_gestori FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_gestori FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_gestori TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_gestori TO nirweb;
+
+
+--
+-- Name: TABLE gestori; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.gestori FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.gestori FROM adm;
+GRANT ALL ON TABLE dbnir.gestori TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.gestori TO nirweb;
+GRANT SELECT ON TABLE dbnir.gestori TO nirgis;
+
+
+--
+-- Name: TABLE modelli; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.modelli FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.modelli FROM adm;
+GRANT ALL ON TABLE dbnir.modelli TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.modelli TO nirweb;
+GRANT DELETE,UPDATE ON TABLE dbnir.modelli TO ngmaster;
+
+
+--
+-- Name: TABLE paramdrupal; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.paramdrupal FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.paramdrupal FROM adm;
+GRANT ALL ON TABLE dbnir.paramdrupal TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.paramdrupal TO nirweb;
+
+
+--
+-- Name: TABLE province; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.province FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.province FROM adm;
+GRANT ALL ON TABLE dbnir.province TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.province TO nirweb;
+GRANT SELECT ON TABLE dbnir.province TO nirgis;
+
+
+--
+-- Name: TABLE regione; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.regione FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.regione FROM adm;
+GRANT ALL ON TABLE dbnir.regione TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.regione TO nirweb;
+GRANT SELECT ON TABLE dbnir.regione TO nirgis;
+
+
+--
+-- Name: SEQUENCE seq_ut_gest; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON SEQUENCE dbnir.seq_ut_gest FROM PUBLIC;
+REVOKE ALL ON SEQUENCE dbnir.seq_ut_gest FROM adm;
+GRANT ALL ON SEQUENCE dbnir.seq_ut_gest TO adm;
+GRANT SELECT,USAGE ON SEQUENCE dbnir.seq_ut_gest TO nirweb;
+
+
+--
+-- Name: TABLE utenze_gestori; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.utenze_gestori FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.utenze_gestori FROM adm;
+GRANT ALL ON TABLE dbnir.utenze_gestori TO adm;
+GRANT SELECT,INSERT,UPDATE ON TABLE dbnir.utenze_gestori TO nirweb;
+GRANT SELECT ON TABLE dbnir.utenze_gestori TO nirgis;
+
+
+--
+-- Name: TABLE v_antenneenti; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.v_antenneenti FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.v_antenneenti FROM adm;
+GRANT ALL ON TABLE dbnir.v_antenneenti TO adm;
+GRANT SELECT ON TABLE dbnir.v_antenneenti TO nirweb;
+GRANT SELECT ON TABLE dbnir.v_antenneenti TO nirgis;
+
+
+--
+-- Name: TABLE v_edifici; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.v_edifici FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.v_edifici FROM adm;
+GRANT ALL ON TABLE dbnir.v_edifici TO adm;
+GRANT ALL ON TABLE dbnir.v_edifici TO dbnir;
+GRANT SELECT ON TABLE dbnir.v_edifici TO nirweb;
+GRANT SELECT ON TABLE dbnir.v_edifici TO nirgis;
+
+
+--
+-- Name: TABLE v_impianti; Type: ACL; Schema: dbnir; Owner: adm
+--
+
+REVOKE ALL ON TABLE dbnir.v_impianti FROM PUBLIC;
+REVOKE ALL ON TABLE dbnir.v_impianti FROM adm;
+GRANT ALL ON TABLE dbnir.v_impianti TO adm;
+GRANT SELECT ON TABLE dbnir.v_impianti TO nirweb;
+GRANT SELECT ON TABLE dbnir.v_impianti TO nirgis;
+
+
+--
+-- Name: TABLE "AAS"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."AAS" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."AAS" FROM adm;
+GRANT ALL ON TABLE jspratiche."AAS" TO adm;
+GRANT ALL ON TABLE jspratiche."AAS" TO nirweb;
+
+
+--
+-- Name: TABLE "AssStatoPraticheIntegrazioni"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."AssStatoPraticheIntegrazioni" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."AssStatoPraticheIntegrazioni" FROM adm;
+GRANT ALL ON TABLE jspratiche."AssStatoPraticheIntegrazioni" TO adm;
+GRANT ALL ON TABLE jspratiche."AssStatoPraticheIntegrazioni" TO nirweb;
+
+
+--
+-- Name: TABLE "AssStatoPraticheUtenti"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."AssStatoPraticheUtenti" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."AssStatoPraticheUtenti" FROM adm;
+GRANT ALL ON TABLE jspratiche."AssStatoPraticheUtenti" TO adm;
+GRANT ALL ON TABLE jspratiche."AssStatoPraticheUtenti" TO nirweb;
+
+
+--
+-- Name: TABLE "Bookmarks"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Bookmarks" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Bookmarks" FROM adm;
+GRANT ALL ON TABLE jspratiche."Bookmarks" TO adm;
+GRANT ALL ON TABLE jspratiche."Bookmarks" TO nirweb;
+
+
+--
+-- Name: TABLE "Calibrazioni"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Calibrazioni" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Calibrazioni" FROM adm;
+GRANT ALL ON TABLE jspratiche."Calibrazioni" TO adm;
+GRANT ALL ON TABLE jspratiche."Calibrazioni" TO nirweb;
+
+
+--
+-- Name: TABLE "Catene"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Catene" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Catene" FROM adm;
+GRANT ALL ON TABLE jspratiche."Catene" TO adm;
+GRANT ALL ON TABLE jspratiche."Catene" TO nirweb;
+
+
+--
+-- Name: TABLE "Comuni"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Comuni" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Comuni" FROM adm;
+GRANT ALL ON TABLE jspratiche."Comuni" TO adm;
+GRANT ALL ON TABLE jspratiche."Comuni" TO nirweb;
+
+
+--
+-- Name: TABLE "ConstStatoPratiche"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."ConstStatoPratiche" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."ConstStatoPratiche" FROM adm;
+GRANT ALL ON TABLE jspratiche."ConstStatoPratiche" TO adm;
+GRANT ALL ON TABLE jspratiche."ConstStatoPratiche" TO nirweb;
+
+
+--
+-- Name: TABLE "ConstTipoPratiche"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."ConstTipoPratiche" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."ConstTipoPratiche" FROM adm;
+GRANT ALL ON TABLE jspratiche."ConstTipoPratiche" TO adm;
+GRANT ALL ON TABLE jspratiche."ConstTipoPratiche" TO nirweb;
+
+
+--
+-- Name: TABLE "Gestori"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Gestori" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Gestori" FROM adm;
+GRANT ALL ON TABLE jspratiche."Gestori" TO adm;
+GRANT ALL ON TABLE jspratiche."Gestori" TO nirweb;
+
+
+--
+-- Name: TABLE "Integrazioni"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Integrazioni" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Integrazioni" FROM adm;
+GRANT ALL ON TABLE jspratiche."Integrazioni" TO adm;
+GRANT ALL ON TABLE jspratiche."Integrazioni" TO nirweb;
+
+
+--
+-- Name: TABLE "LinkComuni"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."LinkComuni" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."LinkComuni" FROM adm;
+GRANT ALL ON TABLE jspratiche."LinkComuni" TO adm;
+GRANT ALL ON TABLE jspratiche."LinkComuni" TO nirweb;
+
+
+--
+-- Name: TABLE "LinkMisure"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."LinkMisure" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."LinkMisure" FROM adm;
+GRANT ALL ON TABLE jspratiche."LinkMisure" TO adm;
+GRANT ALL ON TABLE jspratiche."LinkMisure" TO nirweb;
+
+
+--
+-- Name: TABLE "LinkSitiPratiche"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."LinkSitiPratiche" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."LinkSitiPratiche" FROM adm;
+GRANT ALL ON TABLE jspratiche."LinkSitiPratiche" TO adm;
+GRANT ALL ON TABLE jspratiche."LinkSitiPratiche" TO nirweb;
+
+
+--
+-- Name: TABLE "LinkUtenti"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."LinkUtenti" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."LinkUtenti" FROM adm;
+GRANT ALL ON TABLE jspratiche."LinkUtenti" TO adm;
+GRANT ALL ON TABLE jspratiche."LinkUtenti" TO nirweb;
+
+
+--
+-- Name: TABLE "Links"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Links" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Links" FROM adm;
+GRANT ALL ON TABLE jspratiche."Links" TO adm;
+GRANT ALL ON TABLE jspratiche."Links" TO nirweb;
+
+
+--
+-- Name: TABLE "Messages"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Messages" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Messages" FROM adm;
+GRANT ALL ON TABLE jspratiche."Messages" TO adm;
+GRANT ALL ON TABLE jspratiche."Messages" TO nirweb;
+
+
+--
+-- Name: TABLE "Pratiche"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Pratiche" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Pratiche" FROM adm;
+GRANT ALL ON TABLE jspratiche."Pratiche" TO adm;
+GRANT ALL ON TABLE jspratiche."Pratiche" TO nirweb;
+
+
+--
+-- Name: TABLE "PrivateMessages"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."PrivateMessages" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."PrivateMessages" FROM adm;
+GRANT ALL ON TABLE jspratiche."PrivateMessages" TO adm;
+GRANT ALL ON TABLE jspratiche."PrivateMessages" TO nirweb;
+
+
+--
+-- Name: TABLE "Province"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Province" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Province" FROM adm;
+GRANT ALL ON TABLE jspratiche."Province" TO adm;
+GRANT ALL ON TABLE jspratiche."Province" TO nirweb;
+
+
+--
+-- Name: TABLE "RegistroStrumenti"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."RegistroStrumenti" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."RegistroStrumenti" FROM adm;
+GRANT ALL ON TABLE jspratiche."RegistroStrumenti" TO adm;
+GRANT ALL ON TABLE jspratiche."RegistroStrumenti" TO nirweb;
+
+
+--
+-- Name: TABLE "Sedi"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Sedi" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Sedi" FROM adm;
+GRANT ALL ON TABLE jspratiche."Sedi" TO adm;
+GRANT ALL ON TABLE jspratiche."Sedi" TO nirweb;
+
+
+--
+-- Name: TABLE "SharedNotes"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."SharedNotes" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."SharedNotes" FROM adm;
+GRANT ALL ON TABLE jspratiche."SharedNotes" TO adm;
+GRANT ALL ON TABLE jspratiche."SharedNotes" TO nirweb;
+
+
+--
+-- Name: TABLE "StatoPratiche"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."StatoPratiche" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."StatoPratiche" FROM adm;
+GRANT ALL ON TABLE jspratiche."StatoPratiche" TO adm;
+GRANT ALL ON TABLE jspratiche."StatoPratiche" TO nirweb;
+
+
+--
+-- Name: TABLE "Strumenti"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Strumenti" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Strumenti" FROM adm;
+GRANT ALL ON TABLE jspratiche."Strumenti" TO adm;
+GRANT ALL ON TABLE jspratiche."Strumenti" TO nirweb;
+
+
+--
+-- Name: TABLE "StrumentiDelleCatene"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."StrumentiDelleCatene" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."StrumentiDelleCatene" FROM adm;
+GRANT ALL ON TABLE jspratiche."StrumentiDelleCatene" TO adm;
+GRANT ALL ON TABLE jspratiche."StrumentiDelleCatene" TO nirweb;
+
+
+--
+-- Name: TABLE "StudiTecnici"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."StudiTecnici" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."StudiTecnici" FROM adm;
+GRANT ALL ON TABLE jspratiche."StudiTecnici" TO adm;
+GRANT ALL ON TABLE jspratiche."StudiTecnici" TO nirweb;
+
+
+--
+-- Name: TABLE "Utenti"; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche."Utenti" FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche."Utenti" FROM adm;
+GRANT ALL ON TABLE jspratiche."Utenti" TO adm;
+GRANT ALL ON TABLE jspratiche."Utenti" TO nirweb;
+
+
+--
+-- Name: TABLE sessions; Type: ACL; Schema: jspratiche; Owner: adm
+--
+
+REVOKE ALL ON TABLE jspratiche.sessions FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche.sessions FROM adm;
+GRANT ALL ON TABLE jspratiche.sessions TO adm;
+GRANT ALL ON TABLE jspratiche.sessions TO nirweb;
+
+
+--
+-- Name: TABLE session; Type: ACL; Schema: public; Owner: adm
+--
+
+REVOKE ALL ON TABLE public.session FROM PUBLIC;
+REVOKE ALL ON TABLE public.session FROM adm;
+GRANT ALL ON TABLE public.session TO adm;
+GRANT ALL ON TABLE public.session TO nirweb;
+
+
+--
+-- Name: TABLE utenti; Type: ACL; Schema: public; Owner: adm
+--
+
+REVOKE ALL ON TABLE public.utenti FROM PUBLIC;
+REVOKE ALL ON TABLE public.utenti FROM adm;
+GRANT ALL ON TABLE public.utenti TO adm;
+GRANT ALL ON TABLE public.utenti TO nirweb;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
