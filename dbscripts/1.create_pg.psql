@@ -1952,7 +1952,7 @@ ALTER TABLE jspratiche."StudiTecnici" OWNER TO adm;
 --
 
 CREATE TABLE jspratiche."Utenti" (
-    id integer NOT NULL,
+    id SERIAL,
     username character varying(50) DEFAULT NULL::character varying,
     hash character varying(256) DEFAULT NULL::character varying,
     name character varying(50) DEFAULT NULL::character varying,
@@ -3140,3 +3140,14 @@ GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA jspratiche TO nirweb;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO nirweb;
 
 GRANT ALL PRIVILEGES ON DATABASE dbnir TO nirweb;
+
+
+
+
+
+
+-- FIXTURE
+
+INSERT INTO jspratiche."Utenti"(username,hash,name,surname,email,phone,userlevel,pareri,correzioni) VALUES
+    ('username','hash','name','surname','email','phone',0,1,1);
+
