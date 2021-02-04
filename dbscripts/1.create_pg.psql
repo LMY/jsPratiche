@@ -1982,19 +1982,6 @@ CREATE SEQUENCE jspratiche.aas_seq
 
 ALTER TABLE jspratiche.aas_seq OWNER TO adm;
 
---
--- Name: sessions; Type: TABLE; Schema: jspratiche; Owner: adm
---
-
-CREATE TABLE jspratiche.sessions (
-    id character varying(128) NOT NULL,
-    expires integer NOT NULL,
-    data text
-);
-
-
-ALTER TABLE jspratiche.sessions OWNER TO adm;
-
 
 --
 -- Name: session; Type: TABLE; Schema: public; Owner: adm
@@ -2465,14 +2452,6 @@ ALTER TABLE ONLY jspratiche."StudiTecnici"
 
 ALTER TABLE ONLY jspratiche."Utenti"
     ADD CONSTRAINT "Utenti_pkey" PRIMARY KEY (id);
-
-
---
--- Name: sessions_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
---
-
-ALTER TABLE ONLY jspratiche.sessions
-    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
 
 
 --
@@ -3941,16 +3920,6 @@ REVOKE ALL ON TABLE jspratiche."Utenti" FROM PUBLIC;
 REVOKE ALL ON TABLE jspratiche."Utenti" FROM adm;
 GRANT ALL ON TABLE jspratiche."Utenti" TO adm;
 GRANT ALL ON TABLE jspratiche."Utenti" TO nirweb;
-
-
---
--- Name: TABLE sessions; Type: ACL; Schema: jspratiche; Owner: adm
---
-
-REVOKE ALL ON TABLE jspratiche.sessions FROM PUBLIC;
-REVOKE ALL ON TABLE jspratiche.sessions FROM adm;
-GRANT ALL ON TABLE jspratiche.sessions TO adm;
-GRANT ALL ON TABLE jspratiche.sessions TO nirweb;
 
 
 --
