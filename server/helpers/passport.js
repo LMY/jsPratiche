@@ -59,10 +59,10 @@ module.exports = function(passport) {
 			if (!bCrypt.compareSync(password, results.rows[0].hash)) {
 
 				// because sometimes you forget your hashes
-				console.log('Invalid Password');
-				console.log("results[0].hash: "+results.rows[0].hash);
-				console.log("password given: "+password);
-				calculatehash(password);
+				// console.log('Invalid Password');
+				// console.log("results[0].hash: "+results.rows[0].hash);
+				// console.log("password given: "+password);
+				// calculatehash(password);
 
 				return done(null, false, req.flash('message', 'Invalid Password'));
 			}

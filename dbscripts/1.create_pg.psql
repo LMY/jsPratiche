@@ -3145,9 +3145,13 @@ GRANT ALL PRIVILEGES ON DATABASE dbnir TO nirweb;
 
 
 
-
--- FIXTURE
+-- FIXTURE for login
 
 INSERT INTO jspratiche."Utenti"(username,hash,name,surname,email,phone,userlevel,pareri,correzioni) VALUES
-    ('username','hash','name','surname','email','phone',0,1,1);
+    ('y','hash','name','surname','email','phone',0,1,1);
+
+
+-- LATER EXECUTE THIS with appropriate hash,
+-- commenting "because sometimes you forget your hashes" in helpers/passport.js
+UPDATE jspratiche."Utenti" set hash='hash' WHERE username='y';
 
