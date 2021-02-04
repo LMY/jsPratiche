@@ -1973,7 +1973,7 @@ ALTER TABLE jspratiche."Utenti" OWNER TO adm;
 -- Name: session; Type: TABLE; Schema: public; Owner: adm
 --
 
-CREATE TABLE public.session (
+CREATE TABLE jspratiche.session (
     sid character varying(128) NOT NULL,
     data text,
     sess character varying,
@@ -1981,7 +1981,7 @@ CREATE TABLE public.session (
 );
 
 
-ALTER TABLE public.session OWNER TO adm;
+ALTER TABLE jspratiche.session OWNER TO adm;
 
 
 --
@@ -2444,7 +2444,7 @@ ALTER TABLE ONLY jspratiche."Utenti"
 -- Name: session_pkey; Type: CONSTRAINT; Schema: public; Owner: adm
 --
 
-ALTER TABLE ONLY public.session
+ALTER TABLE ONLY jspratiche.session
     ADD CONSTRAINT session_pkey PRIMARY KEY (sid);
 
 
@@ -3912,10 +3912,10 @@ GRANT ALL ON TABLE jspratiche."Utenti" TO nirweb;
 -- Name: TABLE session; Type: ACL; Schema: public; Owner: adm
 --
 
-REVOKE ALL ON TABLE public.session FROM PUBLIC;
-REVOKE ALL ON TABLE public.session FROM adm;
-GRANT ALL ON TABLE public.session TO adm;
-GRANT ALL ON TABLE public.session TO nirweb;
+REVOKE ALL ON TABLE jspratiche.session FROM PUBLIC;
+REVOKE ALL ON TABLE jspratiche.session FROM adm;
+GRANT ALL ON TABLE jspratiche.session TO adm;
+GRANT ALL ON TABLE jspratiche.session TO nirweb;
 
 --
 -- PostgreSQL database dump complete
