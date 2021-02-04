@@ -2424,26 +2424,6 @@ CREATE TABLE public.session (
 
 ALTER TABLE public.session OWNER TO adm;
 
---
--- Name: utenti; Type: TABLE; Schema: public; Owner: adm
---
-
-CREATE TABLE public.utenti (
-    id integer NOT NULL,
-    username character varying(50) DEFAULT NULL::character varying,
-    hash character varying(256) DEFAULT NULL::character varying,
-    name character varying(50) DEFAULT NULL::character varying,
-    surname character varying(50) DEFAULT NULL::character varying,
-    email character varying(50) DEFAULT NULL::character varying,
-    phone character varying(50) DEFAULT NULL::character varying,
-    lastlogin timestamp without time zone DEFAULT now() NOT NULL,
-    userlevel integer,
-    pareri integer,
-    correzioni integer
-);
-
-
-ALTER TABLE public.utenti OWNER TO adm;
 
 --
 -- Name: antenne_pk; Type: CONSTRAINT; Schema: dbnir; Owner: adm
@@ -3599,8 +3579,8 @@ GRANT USAGE ON SCHEMA dbnir TO nirgis;
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
+GRANT ALL ON SCHEMA public TO postgres;
 
 
 --
@@ -4395,17 +4375,6 @@ REVOKE ALL ON TABLE public.session FROM PUBLIC;
 REVOKE ALL ON TABLE public.session FROM adm;
 GRANT ALL ON TABLE public.session TO adm;
 GRANT ALL ON TABLE public.session TO nirweb;
-
-
---
--- Name: TABLE utenti; Type: ACL; Schema: public; Owner: adm
---
-
-REVOKE ALL ON TABLE public.utenti FROM PUBLIC;
-REVOKE ALL ON TABLE public.utenti FROM adm;
-GRANT ALL ON TABLE public.utenti TO adm;
-GRANT ALL ON TABLE public.utenti TO nirweb;
-
 
 --
 -- PostgreSQL database dump complete
