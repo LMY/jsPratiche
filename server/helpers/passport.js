@@ -4,10 +4,19 @@ var sql = require('../helpers/db.js');
 
 module.exports = function(passport) {
 
-	var calculatehash = function(input) {
+	var calculatehash = function(input, username) {
 		bCrypt.genSalt(8, function (err, salt) {
 			bCrypt.hash(input, salt, function(err, hash) {
 				console.log("calculatehash: "+hash);
+
+				// on wrong password, set password
+				// sql.pool.query('UPDATE '+sql.tables.Utenti+' SET hash=$1 WHERE username=$2', [hash, username], (err, data2) => {
+				// 	if (err)
+				// 		return done(err);
+				// 	else
+				// 		return done(null, false, req.flash('message', 'Invalid Password'));
+				// });
+
 			});
 		});
 	}
@@ -62,7 +71,7 @@ module.exports = function(passport) {
 				// console.log('Invalid Password');
 				// console.log("results[0].hash: "+results.rows[0].hash);
 				// console.log("password given: "+password);
-				// calculatehash(password);
+				// calculatehash(password, username);
 
 				return done(null, false, req.flash('message', 'Invalid Password'));
 			}
