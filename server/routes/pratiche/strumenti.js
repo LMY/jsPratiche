@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
 router.get('/catena/:id', function(req, res, next) {
   sql.pool.query(
       'SELECT * FROM ' + sql.tables.Strumenti +
-          ' WHERE id IN (SELECT idStrumento FROM ' + sql.tables.StrumentiDelleCatene + ' WHERE idCatena=$1)',
+          ' WHERE id IN (SELECT "idStrumento" FROM ' + sql.tables.StrumentiDelleCatene + ' WHERE "idCatena"=$1)',
       [req.params.id], function(err, data) {
         if (err)
           rest.error500(res, err);
@@ -30,7 +30,7 @@ router.get('/catena/:id', function(req, res, next) {
 router.get('/free', function(req, res, next) {
   sql.pool.query(
       'SELECT * FROM ' + sql.tables.Strumenti +
-          ' WHERE id NOT IN (SELECT idStrumento FROM ' + sql.tables.StrumentiDelleCatene + ')',
+          ' WHERE id NOT IN (SELECT "idStrumento" FROM ' + sql.tables.StrumentiDelleCatene + ')',
       function(err, data) {
         if (err)
           rest.error500(res, err);
@@ -45,8 +45,8 @@ router.put('/free/:id', function(req, res, next) {
 
   if (req.body.verb == 'add') {
     sql.pool.query(
-        'INSERT INTO ' + sql.tables.StrumentiDelleCatene + '($1,$2) VALUES ($3,$4)',
-        ['idCatena', 'idStrumento', req.params.id, req.body.idStrumento],
+        'INSERT INTO ' + sql.tables.StrumentiDelleCatene + '("idCatena","idStrumento") VALUES ($1,$2)',
+        [req.params.id, req.body.idStrumento],
         function(err, data) {
           if (err)
             rest.error500(res, err);
@@ -57,7 +57,7 @@ router.put('/free/:id', function(req, res, next) {
   } else if (req.body.verb == 'remove') {
     sql.pool.query(
         'DELETE FROM ' + sql.tables.StrumentiDelleCatene +
-            ' WHERE idCatena=$1 AND idStrumento=$2',
+            ' WHERE "idCatena"=$1 AND "idStrumento"=$2',
         [req.params.id, req.body.idStrumento], function(err, data) {
           if (err)
             rest.error500(res, err);
@@ -97,12 +97,10 @@ router.delete('/:id', function(req, res, next) {
 router.post('/', function(req, res, next) {
   sql.pool.query(
       'INSERT INTO ' + sql.tables.Strumenti +
-          '($1,$2,$3,$4,$5,$6,$7,$8) VALUES ($9,$10,$11,$12,$13,$14,$15,$16)',
+          '(name,marca,modello,serial,inventario,tipo,taratura,note) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
       [
-        'name', 'marca', 'modello', 'serial', 'inventario', 'tipo', 'taratura',
-        'note', req.body.name, req.body.marca, req.body.modello,
-        req.body.serial, req.body.inventario, req.body.tipo, req.body.taratura,
-        req.body.note
+        req.body.name, req.body.marca, req.body.modello, req.body.serial,
+        req.body.inventario, req.body.tipo, req.body.taratura, req.body.note
       ],
       function(err, data) {
         if (err)
@@ -115,12 +113,11 @@ router.post('/', function(req, res, next) {
 router.put('/:id', function(req, res, next) {
   sql.pool.query(
       'UPDATE ' + sql.tables.Strumenti +
-          ' SET $1 = $2, $3 = $4, $5 = $6, $7 = $8, $9 = $10, $11 = $12, $13 = $14, $15 = $16 WHERE $17 = $18',
+          ' SET name = $1, marca = $2, modello = $3, serial = $4, inventario = $5, tipo = $6, taratura = $7, note = $8 WHERE id = $9',
       [
-        'name', req.body.name, 'marca', req.body.marca, 'modello',
-        req.body.modello, 'serial', req.body.serial, 'inventario',
-        req.body.inventario, 'tipo', req.body.tipo, 'taratura',
-        req.body.taratura, 'note', req.body.note, 'id', req.params.id
+        req.body.name, req.body.marca, req.body.modello, req.body.serial,
+        req.body.inventario, req.body.tipo, req.body.taratura, req.body.note,
+        req.params.id
       ],
       function(err, data) {
         if (err)
