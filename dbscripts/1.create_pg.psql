@@ -64,7 +64,7 @@ COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial
 
 
 --
--- Name: AAS; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: AAS; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."AAS" (
@@ -74,10 +74,10 @@ CREATE TABLE jspratiche."AAS" (
 );
 
 
-ALTER TABLE jspratiche."AAS" OWNER TO adm;
+ALTER TABLE jspratiche."AAS" OWNER TO nirweb;
 
 --
--- Name: AssStatoPraticheIntegrazioni; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: AssStatoPraticheIntegrazioni; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."AssStatoPraticheIntegrazioni" (
@@ -86,10 +86,10 @@ CREATE TABLE jspratiche."AssStatoPraticheIntegrazioni" (
 );
 
 
-ALTER TABLE jspratiche."AssStatoPraticheIntegrazioni" OWNER TO adm;
+ALTER TABLE jspratiche."AssStatoPraticheIntegrazioni" OWNER TO nirweb;
 
 --
--- Name: AssStatoPraticheUtenti; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: AssStatoPraticheUtenti; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."AssStatoPraticheUtenti" (
@@ -98,10 +98,10 @@ CREATE TABLE jspratiche."AssStatoPraticheUtenti" (
 );
 
 
-ALTER TABLE jspratiche."AssStatoPraticheUtenti" OWNER TO adm;
+ALTER TABLE jspratiche."AssStatoPraticheUtenti" OWNER TO nirweb;
 
 --
--- Name: Bookmarks; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Bookmarks; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Bookmarks" (
@@ -110,10 +110,10 @@ CREATE TABLE jspratiche."Bookmarks" (
 );
 
 
-ALTER TABLE jspratiche."Bookmarks" OWNER TO adm;
+ALTER TABLE jspratiche."Bookmarks" OWNER TO nirweb;
 
 --
--- Name: Calibrazioni; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Calibrazioni; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Calibrazioni" (
@@ -127,10 +127,10 @@ CREATE TABLE jspratiche."Calibrazioni" (
 );
 
 
-ALTER TABLE jspratiche."Calibrazioni" OWNER TO adm;
+ALTER TABLE jspratiche."Calibrazioni" OWNER TO nirweb;
 
 --
--- Name: Catene; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Catene; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Catene" (
@@ -140,10 +140,10 @@ CREATE TABLE jspratiche."Catene" (
 );
 
 
-ALTER TABLE jspratiche."Catene" OWNER TO adm;
+ALTER TABLE jspratiche."Catene" OWNER TO nirweb;
 
 --
--- Name: Comuni; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Comuni; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Comuni" (
@@ -155,10 +155,10 @@ CREATE TABLE jspratiche."Comuni" (
 );
 
 
-ALTER TABLE jspratiche."Comuni" OWNER TO adm;
+ALTER TABLE jspratiche."Comuni" OWNER TO nirweb;
 
 --
--- Name: ConstStatoPratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: ConstStatoPratiche; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."ConstStatoPratiche" (
@@ -168,10 +168,10 @@ CREATE TABLE jspratiche."ConstStatoPratiche" (
 );
 
 
-ALTER TABLE jspratiche."ConstStatoPratiche" OWNER TO adm;
+ALTER TABLE jspratiche."ConstStatoPratiche" OWNER TO nirweb;
 
 --
--- Name: ConstTipoPratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: ConstTipoPratiche; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."ConstTipoPratiche" (
@@ -180,10 +180,10 @@ CREATE TABLE jspratiche."ConstTipoPratiche" (
 );
 
 
-ALTER TABLE jspratiche."ConstTipoPratiche" OWNER TO adm;
+ALTER TABLE jspratiche."ConstTipoPratiche" OWNER TO nirweb;
 
 --
--- Name: Gestori; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Gestori; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Gestori" (
@@ -193,10 +193,10 @@ CREATE TABLE jspratiche."Gestori" (
 );
 
 
-ALTER TABLE jspratiche."Gestori" OWNER TO adm;
+ALTER TABLE jspratiche."Gestori" OWNER TO nirweb;
 
 --
--- Name: Integrazioni; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Integrazioni; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Integrazioni" (
@@ -210,10 +210,10 @@ CREATE TABLE jspratiche."Integrazioni" (
 );
 
 
-ALTER TABLE jspratiche."Integrazioni" OWNER TO adm;
+ALTER TABLE jspratiche."Integrazioni" OWNER TO nirweb;
 
 --
--- Name: LinkComuni; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: LinkComuni; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."LinkComuni" (
@@ -222,10 +222,10 @@ CREATE TABLE jspratiche."LinkComuni" (
 );
 
 
-ALTER TABLE jspratiche."LinkComuni" OWNER TO adm;
+ALTER TABLE jspratiche."LinkComuni" OWNER TO nirweb;
 
 --
--- Name: LinkMisure; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: LinkMisure; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."LinkMisure" (
@@ -234,10 +234,10 @@ CREATE TABLE jspratiche."LinkMisure" (
 );
 
 
-ALTER TABLE jspratiche."LinkMisure" OWNER TO adm;
+ALTER TABLE jspratiche."LinkMisure" OWNER TO nirweb;
 
 --
--- Name: LinkSitiPratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: LinkSitiPratiche; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."LinkSitiPratiche" (
@@ -250,10 +250,10 @@ CREATE TABLE jspratiche."LinkSitiPratiche" (
 );
 
 
-ALTER TABLE jspratiche."LinkSitiPratiche" OWNER TO adm;
+ALTER TABLE jspratiche."LinkSitiPratiche" OWNER TO nirweb;
 
 --
--- Name: LinkUtenti; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: LinkUtenti; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."LinkUtenti" (
@@ -262,10 +262,10 @@ CREATE TABLE jspratiche."LinkUtenti" (
 );
 
 
-ALTER TABLE jspratiche."LinkUtenti" OWNER TO adm;
+ALTER TABLE jspratiche."LinkUtenti" OWNER TO nirweb;
 
 --
--- Name: Links; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Links; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Links" (
@@ -274,10 +274,10 @@ CREATE TABLE jspratiche."Links" (
 );
 
 
-ALTER TABLE jspratiche."Links" OWNER TO adm;
+ALTER TABLE jspratiche."Links" OWNER TO nirweb;
 
 --
--- Name: Messages; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Messages; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Messages" (
@@ -288,10 +288,10 @@ CREATE TABLE jspratiche."Messages" (
 );
 
 
-ALTER TABLE jspratiche."Messages" OWNER TO adm;
+ALTER TABLE jspratiche."Messages" OWNER TO nirweb;
 
 --
--- Name: Pratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Pratiche; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Pratiche" (
@@ -309,10 +309,10 @@ CREATE TABLE jspratiche."Pratiche" (
 );
 
 
-ALTER TABLE jspratiche."Pratiche" OWNER TO adm;
+ALTER TABLE jspratiche."Pratiche" OWNER TO nirweb;
 
 --
--- Name: PrivateMessages; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: PrivateMessages; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."PrivateMessages" (
@@ -325,10 +325,10 @@ CREATE TABLE jspratiche."PrivateMessages" (
 );
 
 
-ALTER TABLE jspratiche."PrivateMessages" OWNER TO adm;
+ALTER TABLE jspratiche."PrivateMessages" OWNER TO nirweb;
 
 --
--- Name: Province; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Province; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Province" (
@@ -337,10 +337,10 @@ CREATE TABLE jspratiche."Province" (
 );
 
 
-ALTER TABLE jspratiche."Province" OWNER TO adm;
+ALTER TABLE jspratiche."Province" OWNER TO nirweb;
 
 --
--- Name: RegistroStrumenti; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: RegistroStrumenti; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."RegistroStrumenti" (
@@ -353,10 +353,10 @@ CREATE TABLE jspratiche."RegistroStrumenti" (
 );
 
 
-ALTER TABLE jspratiche."RegistroStrumenti" OWNER TO adm;
+ALTER TABLE jspratiche."RegistroStrumenti" OWNER TO nirweb;
 
 --
--- Name: Sedi; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Sedi; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Sedi" (
@@ -367,10 +367,10 @@ CREATE TABLE jspratiche."Sedi" (
 );
 
 
-ALTER TABLE jspratiche."Sedi" OWNER TO adm;
+ALTER TABLE jspratiche."Sedi" OWNER TO nirweb;
 
 --
--- Name: SharedNotes; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: SharedNotes; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."SharedNotes" (
@@ -383,10 +383,10 @@ CREATE TABLE jspratiche."SharedNotes" (
 );
 
 
-ALTER TABLE jspratiche."SharedNotes" OWNER TO adm;
+ALTER TABLE jspratiche."SharedNotes" OWNER TO nirweb;
 
 --
--- Name: StatoPratiche; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: StatoPratiche; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."StatoPratiche" (
@@ -398,10 +398,10 @@ CREATE TABLE jspratiche."StatoPratiche" (
 );
 
 
-ALTER TABLE jspratiche."StatoPratiche" OWNER TO adm;
+ALTER TABLE jspratiche."StatoPratiche" OWNER TO nirweb;
 
 --
--- Name: Strumenti; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Strumenti; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Strumenti" (
@@ -417,10 +417,10 @@ CREATE TABLE jspratiche."Strumenti" (
 );
 
 
-ALTER TABLE jspratiche."Strumenti" OWNER TO adm;
+ALTER TABLE jspratiche."Strumenti" OWNER TO nirweb;
 
 --
--- Name: StrumentiDelleCatene; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: StrumentiDelleCatene; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."StrumentiDelleCatene" (
@@ -429,10 +429,10 @@ CREATE TABLE jspratiche."StrumentiDelleCatene" (
 );
 
 
-ALTER TABLE jspratiche."StrumentiDelleCatene" OWNER TO adm;
+ALTER TABLE jspratiche."StrumentiDelleCatene" OWNER TO nirweb;
 
 --
--- Name: StudiTecnici; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: StudiTecnici; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."StudiTecnici" (
@@ -442,10 +442,10 @@ CREATE TABLE jspratiche."StudiTecnici" (
 );
 
 
-ALTER TABLE jspratiche."StudiTecnici" OWNER TO adm;
+ALTER TABLE jspratiche."StudiTecnici" OWNER TO nirweb;
 
 --
--- Name: Utenti; Type: TABLE; Schema: jspratiche; Owner: adm
+-- Name: Utenti; Type: TABLE; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE TABLE jspratiche."Utenti" (
@@ -463,11 +463,11 @@ CREATE TABLE jspratiche."Utenti" (
 );
 
 
-ALTER TABLE jspratiche."Utenti" OWNER TO adm;
+ALTER TABLE jspratiche."Utenti" OWNER TO nirweb;
 
 
 --
--- Name: session; Type: TABLE; Schema: public; Owner: adm
+-- Name: session; Type: TABLE; Schema: public; Owner: nirweb
 --
 
 CREATE TABLE jspratiche.session (
@@ -478,11 +478,11 @@ expire timestamp(6) without time zone NOT NULL DEFAULT now()
 );
 
 
-ALTER TABLE jspratiche.session OWNER TO adm;
+ALTER TABLE jspratiche.session OWNER TO nirweb;
 
 
 --
--- Name: AAS_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: AAS_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."AAS"
@@ -490,7 +490,7 @@ ALTER TABLE ONLY jspratiche."AAS"
 
 
 --
--- Name: AssStatoPraticheIntegrazioni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: AssStatoPraticheIntegrazioni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."AssStatoPraticheIntegrazioni"
@@ -498,7 +498,7 @@ ALTER TABLE ONLY jspratiche."AssStatoPraticheIntegrazioni"
 
 
 --
--- Name: AssStatoPraticheUtenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: AssStatoPraticheUtenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."AssStatoPraticheUtenti"
@@ -506,7 +506,7 @@ ALTER TABLE ONLY jspratiche."AssStatoPraticheUtenti"
 
 
 --
--- Name: Bookmarks_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Bookmarks_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Bookmarks"
@@ -514,7 +514,7 @@ ALTER TABLE ONLY jspratiche."Bookmarks"
 
 
 --
--- Name: Calibrazioni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Calibrazioni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Calibrazioni"
@@ -522,7 +522,7 @@ ALTER TABLE ONLY jspratiche."Calibrazioni"
 
 
 --
--- Name: Catene_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Catene_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Catene"
@@ -530,7 +530,7 @@ ALTER TABLE ONLY jspratiche."Catene"
 
 
 --
--- Name: Comuni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Comuni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Comuni"
@@ -538,7 +538,7 @@ ALTER TABLE ONLY jspratiche."Comuni"
 
 
 --
--- Name: ConstStatoPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: ConstStatoPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."ConstStatoPratiche"
@@ -546,7 +546,7 @@ ALTER TABLE ONLY jspratiche."ConstStatoPratiche"
 
 
 --
--- Name: ConstTipoPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: ConstTipoPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."ConstTipoPratiche"
@@ -554,7 +554,7 @@ ALTER TABLE ONLY jspratiche."ConstTipoPratiche"
 
 
 --
--- Name: Gestori_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Gestori_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Gestori"
@@ -562,7 +562,7 @@ ALTER TABLE ONLY jspratiche."Gestori"
 
 
 --
--- Name: Integrazioni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Integrazioni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Integrazioni"
@@ -570,7 +570,7 @@ ALTER TABLE ONLY jspratiche."Integrazioni"
 
 
 --
--- Name: LinkComuni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: LinkComuni_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."LinkComuni"
@@ -578,7 +578,7 @@ ALTER TABLE ONLY jspratiche."LinkComuni"
 
 
 --
--- Name: LinkMisure_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: LinkMisure_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."LinkMisure"
@@ -586,7 +586,7 @@ ALTER TABLE ONLY jspratiche."LinkMisure"
 
 
 --
--- Name: LinkSitiPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: LinkSitiPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."LinkSitiPratiche"
@@ -594,7 +594,7 @@ ALTER TABLE ONLY jspratiche."LinkSitiPratiche"
 
 
 --
--- Name: LinkUtenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: LinkUtenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."LinkUtenti"
@@ -602,7 +602,7 @@ ALTER TABLE ONLY jspratiche."LinkUtenti"
 
 
 --
--- Name: Links_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Links_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Links"
@@ -610,7 +610,7 @@ ALTER TABLE ONLY jspratiche."Links"
 
 
 --
--- Name: Messages_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Messages_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Messages"
@@ -618,7 +618,7 @@ ALTER TABLE ONLY jspratiche."Messages"
 
 
 --
--- Name: Pratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Pratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Pratiche"
@@ -626,7 +626,7 @@ ALTER TABLE ONLY jspratiche."Pratiche"
 
 
 --
--- Name: PrivateMessages_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: PrivateMessages_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."PrivateMessages"
@@ -634,7 +634,7 @@ ALTER TABLE ONLY jspratiche."PrivateMessages"
 
 
 --
--- Name: Province_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Province_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Province"
@@ -642,7 +642,7 @@ ALTER TABLE ONLY jspratiche."Province"
 
 
 --
--- Name: RegistroStrumenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: RegistroStrumenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."RegistroStrumenti"
@@ -650,7 +650,7 @@ ALTER TABLE ONLY jspratiche."RegistroStrumenti"
 
 
 --
--- Name: Sedi_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Sedi_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Sedi"
@@ -658,7 +658,7 @@ ALTER TABLE ONLY jspratiche."Sedi"
 
 
 --
--- Name: SharedNotes_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: SharedNotes_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."SharedNotes"
@@ -666,7 +666,7 @@ ALTER TABLE ONLY jspratiche."SharedNotes"
 
 
 --
--- Name: StatoPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: StatoPratiche_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."StatoPratiche"
@@ -674,7 +674,7 @@ ALTER TABLE ONLY jspratiche."StatoPratiche"
 
 
 --
--- Name: StrumentiDelleCatene_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: StrumentiDelleCatene_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."StrumentiDelleCatene"
@@ -682,7 +682,7 @@ ALTER TABLE ONLY jspratiche."StrumentiDelleCatene"
 
 
 --
--- Name: Strumenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Strumenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Strumenti"
@@ -690,7 +690,7 @@ ALTER TABLE ONLY jspratiche."Strumenti"
 
 
 --
--- Name: StudiTecnici_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: StudiTecnici_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."StudiTecnici"
@@ -698,7 +698,7 @@ ALTER TABLE ONLY jspratiche."StudiTecnici"
 
 
 --
--- Name: Utenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Utenti_pkey; Type: CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Utenti"
@@ -706,7 +706,7 @@ ALTER TABLE ONLY jspratiche."Utenti"
 
 
 --
--- Name: session_pkey; Type: CONSTRAINT; Schema: public; Owner: adm
+-- Name: session_pkey; Type: CONSTRAINT; Schema: public; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche.session
@@ -714,125 +714,125 @@ ALTER TABLE ONLY jspratiche.session
 
 
 --
--- Name: create_user; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: create_user; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX create_user ON jspratiche."SharedNotes" USING btree (create_user);
 
 
 --
--- Name: id; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: id; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX id ON jspratiche."LinkComuni" USING btree (id);
 
 
 --
--- Name: idCatena; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idCatena; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX "idCatena" ON jspratiche."Calibrazioni" USING btree ("idCatena");
 
 
 --
--- Name: idComune; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idComune; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX "idComune" ON jspratiche."Pratiche" USING btree ("idComune");
 
 
 --
--- Name: idGestore; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idGestore; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX "idGestore" ON jspratiche."Pratiche" USING btree ("idGestore");
 
 
 --
--- Name: idInteg; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idInteg; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX "idInteg" ON jspratiche."AssStatoPraticheIntegrazioni" USING btree ("idInteg");
 
 
 --
--- Name: idPratica; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idPratica; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX "idPratica" ON jspratiche."StatoPratiche" USING btree ("idPratica");
 
 
 --
--- Name: idStato; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idStato; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX "idStato" ON jspratiche."StatoPratiche" USING btree ("idStato");
 
 
 --
--- Name: idUtente; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idUtente; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX "idUtente" ON jspratiche."AssStatoPraticheUtenti" USING btree ("idUtente");
 
 
 --
--- Name: idUtenteModifica; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idUtenteModifica; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX "idUtenteModifica" ON jspratiche."StatoPratiche" USING btree ("idUtenteModifica");
 
 
 --
--- Name: idaas; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idaas; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX idaas ON jspratiche."Comuni" USING btree (idaas);
 
 
 --
--- Name: idpratica; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idpratica; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX idpratica ON jspratiche."LinkSitiPratiche" USING btree (idpratica);
 
 
 --
--- Name: idurl; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: idurl; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX idurl ON jspratiche."Bookmarks" USING btree (idurl);
 
 
 --
--- Name: mod_user; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: mod_user; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX mod_user ON jspratiche."SharedNotes" USING btree (mod_user);
 
 
 --
--- Name: province; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: province; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX province ON jspratiche."Comuni" USING btree (province);
 
 
 --
--- Name: tipopratica; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: tipopratica; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX tipopratica ON jspratiche."Pratiche" USING btree (tipopratica);
 
 
 --
--- Name: userfrom; Type: INDEX; Schema: jspratiche; Owner: adm
+-- Name: userfrom; Type: INDEX; Schema: jspratiche; Owner: nirweb
 --
 
 CREATE INDEX userfrom ON jspratiche."Messages" USING btree (userfrom);
 
 --
--- Name: AssStatoPraticheIntegrazioni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: AssStatoPraticheIntegrazioni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."AssStatoPraticheIntegrazioni"
@@ -840,7 +840,7 @@ ALTER TABLE ONLY jspratiche."AssStatoPraticheIntegrazioni"
 
 
 --
--- Name: AssStatoPraticheIntegrazioni_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: AssStatoPraticheIntegrazioni_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."AssStatoPraticheIntegrazioni"
@@ -848,7 +848,7 @@ ALTER TABLE ONLY jspratiche."AssStatoPraticheIntegrazioni"
 
 
 --
--- Name: AssStatoPraticheUtenti_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: AssStatoPraticheUtenti_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."AssStatoPraticheUtenti"
@@ -856,7 +856,7 @@ ALTER TABLE ONLY jspratiche."AssStatoPraticheUtenti"
 
 
 --
--- Name: AssStatoPraticheUtenti_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: AssStatoPraticheUtenti_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."AssStatoPraticheUtenti"
@@ -864,7 +864,7 @@ ALTER TABLE ONLY jspratiche."AssStatoPraticheUtenti"
 
 
 --
--- Name: Bookmarks_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Bookmarks_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Bookmarks"
@@ -872,7 +872,7 @@ ALTER TABLE ONLY jspratiche."Bookmarks"
 
 
 --
--- Name: Bookmarks_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Bookmarks_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Bookmarks"
@@ -880,7 +880,7 @@ ALTER TABLE ONLY jspratiche."Bookmarks"
 
 
 --
--- Name: Calibrazioni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Calibrazioni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Calibrazioni"
@@ -888,7 +888,7 @@ ALTER TABLE ONLY jspratiche."Calibrazioni"
 
 
 --
--- Name: Comuni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Comuni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Comuni"
@@ -896,7 +896,7 @@ ALTER TABLE ONLY jspratiche."Comuni"
 
 
 --
--- Name: Comuni_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Comuni_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Comuni"
@@ -904,7 +904,7 @@ ALTER TABLE ONLY jspratiche."Comuni"
 
 
 --
--- Name: LinkComuni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: LinkComuni_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."LinkComuni"
@@ -912,7 +912,7 @@ ALTER TABLE ONLY jspratiche."LinkComuni"
 
 
 --
--- Name: LinkMisure_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: LinkMisure_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."LinkMisure"
@@ -920,7 +920,7 @@ ALTER TABLE ONLY jspratiche."LinkMisure"
 
 
 --
--- Name: LinkSitiPratiche_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: LinkSitiPratiche_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."LinkSitiPratiche"
@@ -928,7 +928,7 @@ ALTER TABLE ONLY jspratiche."LinkSitiPratiche"
 
 
 --
--- Name: LinkUtenti_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: LinkUtenti_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."LinkUtenti"
@@ -936,7 +936,7 @@ ALTER TABLE ONLY jspratiche."LinkUtenti"
 
 
 --
--- Name: Messages_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Messages_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Messages"
@@ -944,7 +944,7 @@ ALTER TABLE ONLY jspratiche."Messages"
 
 
 --
--- Name: Pratiche_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Pratiche_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Pratiche"
@@ -952,7 +952,7 @@ ALTER TABLE ONLY jspratiche."Pratiche"
 
 
 --
--- Name: Pratiche_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Pratiche_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Pratiche"
@@ -960,7 +960,7 @@ ALTER TABLE ONLY jspratiche."Pratiche"
 
 
 --
--- Name: Pratiche_ibfk_3; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: Pratiche_ibfk_3; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."Pratiche"
@@ -968,7 +968,7 @@ ALTER TABLE ONLY jspratiche."Pratiche"
 
 
 --
--- Name: PrivateMessages_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: PrivateMessages_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."PrivateMessages"
@@ -976,7 +976,7 @@ ALTER TABLE ONLY jspratiche."PrivateMessages"
 
 
 --
--- Name: PrivateMessages_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: PrivateMessages_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."PrivateMessages"
@@ -984,7 +984,7 @@ ALTER TABLE ONLY jspratiche."PrivateMessages"
 
 
 --
--- Name: RegistroStrumenti_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: RegistroStrumenti_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."RegistroStrumenti"
@@ -992,7 +992,7 @@ ALTER TABLE ONLY jspratiche."RegistroStrumenti"
 
 
 --
--- Name: RegistroStrumenti_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: RegistroStrumenti_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."RegistroStrumenti"
@@ -1000,7 +1000,7 @@ ALTER TABLE ONLY jspratiche."RegistroStrumenti"
 
 
 --
--- Name: RegistroStrumenti_ibfk_3; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: RegistroStrumenti_ibfk_3; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."RegistroStrumenti"
@@ -1008,7 +1008,7 @@ ALTER TABLE ONLY jspratiche."RegistroStrumenti"
 
 
 --
--- Name: SharedNotes_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: SharedNotes_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."SharedNotes"
@@ -1016,7 +1016,7 @@ ALTER TABLE ONLY jspratiche."SharedNotes"
 
 
 --
--- Name: SharedNotes_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: SharedNotes_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."SharedNotes"
@@ -1024,7 +1024,7 @@ ALTER TABLE ONLY jspratiche."SharedNotes"
 
 
 --
--- Name: StatoPratiche_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: StatoPratiche_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."StatoPratiche"
@@ -1032,7 +1032,7 @@ ALTER TABLE ONLY jspratiche."StatoPratiche"
 
 
 --
--- Name: StatoPratiche_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: StatoPratiche_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."StatoPratiche"
@@ -1040,7 +1040,7 @@ ALTER TABLE ONLY jspratiche."StatoPratiche"
 
 
 --
--- Name: StatoPratiche_ibfk_3; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: StatoPratiche_ibfk_3; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."StatoPratiche"
@@ -1048,7 +1048,7 @@ ALTER TABLE ONLY jspratiche."StatoPratiche"
 
 
 --
--- Name: StrumentiDelleCatene_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: StrumentiDelleCatene_ibfk_1; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."StrumentiDelleCatene"
@@ -1056,7 +1056,7 @@ ALTER TABLE ONLY jspratiche."StrumentiDelleCatene"
 
 
 --
--- Name: StrumentiDelleCatene_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: adm
+-- Name: StrumentiDelleCatene_ibfk_2; Type: FK CONSTRAINT; Schema: jspratiche; Owner: nirweb
 --
 
 ALTER TABLE ONLY jspratiche."StrumentiDelleCatene"

@@ -9,3 +9,33 @@ INSERT INTO jspratiche."Utenti"(username,hash,name,surname,email,phone,userlevel
 -- commenting "because sometimes you forget your hashes" in helpers/passport.js
 UPDATE jspratiche."Utenti" set hash='hash' WHERE username='y';
 
+
+
+
+INSERT INTO jspratiche."Province"(id,name) VALUES
+    ('GO','Gorizia'),
+    ('PN','Pordenone'),
+    ('TS','Trieste'),
+    ('UD','Udine');
+
+INSERT INTO jspratiche."Gestori"(id,name,pec) VALUES
+    (1,'gestore1','gestore.pec1'),
+    (2,'gestore2','gestore.pec2'),
+    (3,'gestore3','gestore.pec3');
+
+
+
+INSERT INTO jspratiche."StudiTecnici"(id,name,pec) VALUES
+    (1,'studio1','studio.pec1'),
+    (2,'studio2','studio.pec2'),
+    (3,'studio3','studio.pec3');
+
+INSERT INTO jspratiche."AAS"(id,name,pec) VALUES
+    (1,'aas1','aas.pec1'),
+    (2,'aas2','aas.pec2'),
+    (3,'aas3','aas.pec3');
+
+INSERT INTO jspratiche."Comuni"(id,name,pec,idaas,province) VALUES
+    (1,'comune1','comune.pec1', 1, 'UD'),
+    (2,'comune2','comune.pec2', 2, 'PN');
+
