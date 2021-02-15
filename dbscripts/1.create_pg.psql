@@ -117,7 +117,7 @@ ALTER TABLE jspratiche."Bookmarks" OWNER TO nirweb;
 --
 
 CREATE TABLE jspratiche."Calibrazioni" (
-    id integer NOT NULL,
+    id SERIAL,
     "idCatena" integer NOT NULL,
     lab character varying(256) DEFAULT NULL::character varying,
     certn character varying(256) DEFAULT NULL::character varying,
@@ -134,7 +134,7 @@ ALTER TABLE jspratiche."Calibrazioni" OWNER TO nirweb;
 --
 
 CREATE TABLE jspratiche."Catene" (
-    id integer NOT NULL,
+    id SERIAL,
     name character varying(50) DEFAULT NULL::character varying,
     note character varying(256) DEFAULT NULL::character varying
 );
@@ -200,7 +200,7 @@ ALTER TABLE jspratiche."Gestori" OWNER TO nirweb;
 --
 
 CREATE TABLE jspratiche."Integrazioni" (
-    id integer NOT NULL,
+    id SERIAL,
     "dateOUT" date,
     "dateIN" date,
     "protoOUT" character varying(50) DEFAULT NULL::character varying,
@@ -344,7 +344,7 @@ ALTER TABLE jspratiche."Province" OWNER TO nirweb;
 --
 
 CREATE TABLE jspratiche."RegistroStrumenti" (
-    id integer NOT NULL,
+    id SERIAL,
     "idCatena" integer NOT NULL,
     "idUtente" integer,
     "timePointFrom" timestamp(0) without time zone DEFAULT now() NOT NULL,
@@ -379,7 +379,7 @@ CREATE TABLE jspratiche."SharedNotes" (
     create_user integer,
     "create_timePoint" timestamp(0) without time zone NOT NULL,
     mod_user integer,
-    "mod_timePoint" timestamp(0) without time zone NOT NULL
+    "mod_timePoint" timestamp(0) without time zone
 );
 
 
@@ -390,7 +390,7 @@ ALTER TABLE jspratiche."SharedNotes" OWNER TO nirweb;
 --
 
 CREATE TABLE jspratiche."StatoPratiche" (
-    id integer NOT NULL,
+    id SERIAL,
     "idPratica" integer,
     "idStato" integer,
     "idUtenteModifica" integer,
