@@ -456,10 +456,10 @@ CREATE TABLE jspratiche."Utenti" (
     surname character varying(50) DEFAULT NULL::character varying,
     email character varying(50) DEFAULT NULL::character varying,
     phone character varying(50) DEFAULT NULL::character varying,
-    lastlogin timestamp without time zone DEFAULT now() NOT NULL,
+    lastlogin timestamp without time zone DEFAULT now(),
     userlevel integer,
-    pareri integer,
-    correzioni integer
+    pareri integer DEFAULT 1,
+    correzioni integer DEFAULT 1
 );
 
 
