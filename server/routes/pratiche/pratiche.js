@@ -87,39 +87,30 @@ router.get('/:id', function(req, res, next) {
 	});
 });
 
-router.post('/', function(req, res, next) {
+router.post(
+    '/', function(req, res, next) {
+      sql.pool.query(
+          'INSERT INTO ' + sql.tables.Pratiche +
+              '("idGestore", "idComune", address, sitecode, tipopratica, "protoIN", "dateIN", "protoOUT", "dateOUT", note) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
+          [
+            req.body.idGestore, req.body.idComune, req.body.address,
+            req.body.sitecode, req.body.tipopratica, req.body.protoIN,
+            req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note
+          ],
+          function(err, data) {
+            if (err)
+              rest.error500(res, err);
+            else
+              sql.pool.query(
+                  'INSERT INTO ' + sql.tables.StatoPratiche +
+                      '("idPratica","idUtenteModifica","idStato") VALUES ($1,$2,$3)',
+                  [data.rows[0].id, req.user.id, 1], function(err, data) {
 
-    sql.connect(function (err, connection) {
-		connection.query('START TRANSACTION;', function(err, data) {
-			if (err) rest.error500(res, err);
-			else {
-				var query = sql.format('INSERT INTO ??("idGestore", "idComune", address, sitecode, tipopratica, "protoIN", "dateIN", "protoOUT", "dateOUT", note) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [sql.tables.Pratiche, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note ]);
-
-				connection.query(query, function(err, data) {
-					if (err) rest.error500(res, err);
-					else
-						connection.query("SELECT LAST_INSERT_ID() AS id;", function(err, datares) {
-							if (err) rest.error500(res, err);
-							else {
-								var lastid = datares[0].id;
-								var query2 = sql.format('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idUtenteModifica","idStato") VALUES (?,?,?)', [lastid, req.user.id, 1]);
-
-								connection.query(query2, function(err, datares2) {
-									if (err) rest.error500(res, err);
-									else {
-										connection.query('COMMIT;', function(err, data) {
-											if (err) rest.error500(res, err);
-											rest.created(res, datares[0]);
-										});
-									}
-								});
-							}
-						});
-				});
-			}
-		});
+                    if (err) rest.error500(res, err);
+                    rest.created(res, data.rows);
+                  });
+          });
     });
-});
 
 var setProtoOutOnDBEmittenti = function(connection, id, protoOUT, dateOUT, userid, res) {
 	shared.translatePraticaToSites(id, connection, function(err, idsites) {
@@ -142,20 +133,28 @@ var setProtoOutOnDBEmittenti = function(connection, id, protoOUT, dateOUT, useri
 };
 
 router.put('/:id', function(req, res, next) {
-	var query = sql.format('UPDATE ?? SET "idGestore" = ?, idComune = ?, address = ?, sitecode = ?, tipopratica = ?, protoIN = ?, dateIN = ?, protoOUT = ?, dateOUT = ?, note = ? WHERE id = ?', [sql.tables.Pratiche, req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note, req.params.id]);
-
-	sql.connect(function (err, connection) {
-		connection.query(query, function(err, data) {
-			if (err) rest.error500(res, err);
-			else {
-				// if set proto out, update on db_emittenti
-				if (req.body.protoOUT && req.body.dateOUT)
-					setProtoOutOnDBEmittenti(connection, req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id, res);
-				else
-					rest.updated(res, data.rows);
-			}
-		});
-	});
+  sql.pool.query(
+      'UPDATE ' + sql.tables.Pratiche +
+          ' SET "idGestore" = $1, "idComune" = $2, address = $3, sitecode = $4, tipopratica = $5, "protoIN" = $6, "dateIN" = $7, "protoOUT" = $8, "dateOUT" = $9, note = $10 WHERE id = $11',
+      [
+        req.body.idGestore, req.body.idComune, req.body.address,
+        req.body.sitecode, req.body.tipopratica, req.body.protoIN,
+        req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note,
+        req.params.id
+      ],
+      function(err, data) {
+        if (err)
+          rest.error500(res, err);
+        else {
+          // if set proto out, update on db_emittenti
+          if (req.body.protoOUT && req.body.dateOUT)
+            setProtoOutOnDBEmittenti(
+                connection, req.params.id, req.body.protoOUT, req.body.dateOUT,
+                req.user.id, res);
+          else
+            rest.updated(res, data.rows);
+        }
+      });
 });
 
 /* PUT /pratiche/protoout/:id */
