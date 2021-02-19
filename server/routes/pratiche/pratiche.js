@@ -52,7 +52,7 @@ router.get('/all', function(req, res, next) {
 				dateType = "dateOUT";
 		}
 
-		sql.pool.query(query + ' WHERE $1 BETWEEN $2 AND $3', [ dateType, req.query.dateFrom, req.query.dateTo ], function(err, data) {
+		sql.pool.query(query + ' WHERE '+dateType+' BETWEEN $1 AND $2', [ req.query.dateFrom, req.query.dateTo ], function(err, data) {
 			if (err) rest.error500(res, err);
 			else res.json(data.rows);
 		});
@@ -148,9 +148,7 @@ router.put('/:id', function(req, res, next) {
         else {
           // if set proto out, update on db_emittenti
           if (req.body.protoOUT && req.body.dateOUT)
-            setProtoOutOnDBEmittenti(
-                connection, req.params.id, req.body.protoOUT, req.body.dateOUT,
-                req.user.id, res);
+            setProtoOutOnDBEmittenti(req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id, res);
           else
             rest.updated(res, data.rows);
         }
@@ -158,30 +156,21 @@ router.put('/:id', function(req, res, next) {
 });
 
 /* PUT /pratiche/protoout/:id */
-router.put('/protoout/:id', function(req, res, next) {
-	sql.connect(function (err, connection) {
-		connection.query('START TRANSACTION;', function(err, data) {
-			if (err) rest.error500(res, err);
-			else
-				connection.query(sql.format('UPDATE ?? SET "protoOUT" = ?, "dateOUT" = ? WHERE id = ?', [sql.tables.Pratiche, req.body.protoOUT, req.body.dateOUT, req.params.id]), function(err, data) {
-					if (err) rest.error500(res, err);
-					else
-						connection.query(sql.format('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idStato","idUtenteModifica") VALUES (?,?,?)', [ req.params.id, 12, req.user.id ]), function(err, datares2) {
-							if (err) rest.error500(res, err);
-							else {
-								connection.query('COMMIT;', function(err, data) {
-									if (err) rest.error500(res, err);
-									else {
-										// update db_emittenti
-										setProtoOutOnDBEmittenti(connection, req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id, res);
-									}
-								});
-							}
-						});
-				});
-		});
+router.put('/protoout/:id', function(req, res, next)
+{
+	sql.pool.query('UPDATE '+sql.tables.Pratiche+' SET "protoOUT" = $1, "dateOUT" = $2 WHERE id = $3', [req.body.protoOUT, req.body.dateOUT, req.params.id], function(err, data) {
+		if (err) rest.error500(res, err);
+		else
+			sql.pool.query('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idStato","idUtenteModifica") VALUES ($1,$2,$3)', [ req.params.id, 12, req.user.id ], function(err, datares2) {
+				if (err) rest.error500(res, err);
+				else {
+					// update db_emittenti
+					setProtoOutOnDBEmittenti(req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id, res);
+				}
+			});
 	});
 });
+
 
 router.delete('/:id', function(req, res, next) {
 	sql.pool.query('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idStato","idUtenteModifica") VALUES ($1,$2,$3)', [ req.params.id, 10, req.user.id ], function(err, data) {
