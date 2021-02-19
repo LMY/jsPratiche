@@ -5,12 +5,24 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
+
+  var text = 'SELECT ' + sql.tables.Catene +
+  '.*, t2.lab, t2.certn, t2."dateCal", t2.note as "noteCalib", t2.scadenza FROM ' +
+  sql.tables.Catene + ' LEFT JOIN (SELECT * From ' +
+  sql.tables.Calibrazioni +
+  ' WHERE id IN (SELECT id FROM (SELECT id,"idCatena",MAX("dateCal") FROM ' +
+  sql.tables.Calibrazioni + ' GROUP BY "idCatena") AS T1)) AS t2 ON ' +
+  sql.tables.Catene + '.id = t2."idCatena"';
+
+  console.log(text);
+
+
   sql.pool.query(
       'SELECT ' + sql.tables.Catene +
           '.*, t2.lab, t2.certn, t2."dateCal", t2.note as "noteCalib", t2.scadenza FROM ' +
           sql.tables.Catene + ' LEFT JOIN (SELECT * From ' +
           sql.tables.Calibrazioni +
-          ' WHERE id IN (SELECT id FROM (SELECT id,idCatena,MAX("dateCal") FROM ' +
+          ' WHERE id IN (SELECT id FROM (SELECT id,"idCatena",MAX("dateCal") FROM ' +
           sql.tables.Calibrazioni + ' GROUP BY "idCatena") AS T1)) AS t2 ON ' +
           sql.tables.Catene + '.id = t2."idCatena"',
       function(err, data) {
@@ -27,7 +39,7 @@ router.get('/:id', function(req, res, next) {
           '.*, t2.lab, t2.certn, t2."dateCal", t2.note as "noteCalib", t2.scadenza FROM ' +
           sql.tables.Catene + ' LEFT JOIN (SELECT * FROM ' +
           sql.tables.Calibrazioni +
-          ' WHERE id IN (SELECT id FROM (SELECT id,"idCatena",MAX(dateCal) FROM ' +
+          ' WHERE id IN (SELECT id FROM (SELECT id,"idCatena",MAX("dateCal") FROM ' +
           sql.tables.Calibrazioni + ' GROUP BY "idCatena") AS T1)) AS t2 ON ' +
           sql.tables.Catene + '.id = t2."idCatena" WHERE ' + sql.tables.Catene +
           '.id=$1',
