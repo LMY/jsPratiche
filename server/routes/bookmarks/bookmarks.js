@@ -38,7 +38,7 @@ router.post('/', function(req, res, next) {
 					});
 				}
 				else {
-					connection.query(sql.format('INSERT INTO '+sql.tables.Links+'(url) VALUES ($1); SELECT LAST_INSERT_ID() AS id', [req.body.url]), function(res, data2) {
+					connection.query(sql.format('INSERT INTO '+sql.tables.Links+'(url) VALUES ($1) RETURNING id', [req.body.url]), function(res, data2) {
 						if (err) rest.error500(res, err);
 						else {
 							connection.query(sql.format('INSERT INTO '+sql.tables.Bookmarks+'(idurl,isuser) VALUES ($1,$2)', [data2[0].id, req.user.id]), function(res, data) {
