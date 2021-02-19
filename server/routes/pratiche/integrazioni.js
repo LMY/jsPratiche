@@ -27,12 +27,8 @@ router.delete('/:id', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
   sql.pool.query(
-      'INSERT INTO '+sql.tables.Integrazioni+'($1,$2,$3,$4,$5,$6) VALUES ($7,$8,$9,$10,$11,$12)',
-      [
-        'dateOUT', 'dateIN', 'protoOUT', 'protoIN', 'ostativi', 'note',
-        req.body.dateOUT, req.body.dateIN, req.body.protoOUT, req.body.protoIN,
-        req.body.ostativi, req.body.note
-      ],
+      'INSERT INTO '+sql.tables.Integrazioni+'("dateOUT", "dateIN","protoOUT", "protoIN", "ostativi", "note") VALUES ($1,$2,$3,$4,$5,$6)',
+      [ req.body.dateOUT, req.body.dateIN, req.body.protoOUT, req.body.protoIN, req.body.ostativi, req.body.note ],
       function(err, data) {
         if (err)
           rest.error500(res, err);
@@ -43,12 +39,8 @@ router.post('/', function(req, res, next) {
 
 router.put('/:id', function(req, res, next) {
   sql.pool.query(
-      'UPDATE '+sql.tables.Integrazioni+' SET $1 = $2, $3 = $4, $5 = $6, $7 = $8, $9 = $10, $11 = $12 WHERE $13 = $14',
-      [
-        'dateOUT', req.body.dateOUT, 'dateIN', req.body.dateIN, 'protoOUT',
-        req.body.protoOUT, 'protoIN', req.body.protoIN, 'ostativi',
-        req.body.ostativi, 'note', req.body.note, 'id', req.params.id
-      ],
+      'UPDATE '+sql.tables.Integrazioni+' SET "dateOUT" = $1, "dateIN" = $2, "protoOUT" = $3, "protoIN" = $4, "ostativi" = $5, "note" = $6 WHERE "id" = $7',
+      [ req.body.dateOUT, req.body.dateIN, req.body.protoOUT, req.body.protoIN, req.body.ostativi, req.body.note, req.params.id ],
       function(err, data) {
         if (err)
           rest.error500(res, err);
