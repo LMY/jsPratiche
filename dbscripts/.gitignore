@@ -1,1 +1,4 @@
 *.dump
+table*
+4.fixture.psql
+
