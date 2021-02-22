@@ -41,15 +41,12 @@ router.get('/count', function(req, res, next) {
 router.get('/all', function(req, res, next) {
 	var query = daBigQuery;
 	
-	console.log('GET ALL');
-	console.log(query);
-
 	if (req.query.dateFrom && req.query.dateTo) {
-		var dateType = "dateIN";
+		var dateType = "\"dateIN\"";
 
 		if (req.query.dateType) {
 			if (req.query.dateType == "dateOUT" || req.query.dateType == "out")
-				dateType = "dateOUT";
+				dateType = "\"dateOUT\"";
 		}
 
 		sql.pool.query(query + ' WHERE '+dateType+' BETWEEN $1 AND $2', [ req.query.dateFrom, req.query.dateTo ], function(err, data) {
