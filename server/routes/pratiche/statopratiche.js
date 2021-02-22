@@ -27,28 +27,16 @@ router.get('/tipi', function(req, res, next) {
 
 router.get('/history/:id', function(req, res, next) {
 
-console.log('SELECT '+sql.tables.StatoPratiche+'.*, '+sql.tables.ConstStatoPratiche+'.descrizione as "descStato", A.username as "usernameAss", B.username as usernameMod, '+
-	sql.tables.Integrazioni+'.id as "integID", '+ sql.tables.Integrazioni+'."dateOUT", '+sql.tables.Integrazioni+'."dateIN", '+sql.tables.Integrazioni+'."protoOUT", '+sql.tables.Integrazioni+'."protoIN", '+sql.tables.Integrazioni+'.note as "noteInteg" FROM '+
-	''+sql.tables.StatoPratiche+' LEFT JOIN '+sql.tables.ConstStatoPratiche+' on '+sql.tables.StatoPratiche+'."idStato"='+sql.tables.ConstStatoPratiche+'.id LEFT JOIN '+
-	''+sql.tables.AssStatoPraticheUtenti+' on '+sql.tables.StatoPratiche+'.id = '+sql.tables.AssStatoPraticheUtenti+'."idStato" LEFT JOIN '+
-	sql.tables.Utenti+' AS A on "idUtente"=A.id LEFT JOIN '+sql.tables.Utenti+' AS B on "idUtenteModifica"=B.id '+
-	'LEFT JOIN '+sql.tables.AssStatoPraticheIntegrazioni+' ON '+sql.tables.StatoPratiche+'.id = '+sql.tables.AssStatoPraticheIntegrazioni+'."idStato" LEFT JOIN '+
-	sql.tables.Integrazioni+' ON '+sql.tables.AssStatoPraticheIntegrazioni+'."idInteg" = '+sql.tables.Integrazioni+'.id WHERE "idPratica"='+req.params.id);
-
-
-
-
-
 	sql.pool.query('SELECT '+sql.tables.StatoPratiche+'.*, '+sql.tables.ConstStatoPratiche+'.descrizione as "descStato", A.username as "usernameAss", B.username as usernameMod, '+
-	sql.tables.Integrazioni+'.id as "integID", '+ sql.tables.Integrazioni+'."dateOUT", '+sql.tables.Integrazioni+'."dateIN", '+sql.tables.Integrazioni+'."protoOUT", '+sql.tables.Integrazioni+'."protoIN", '+sql.tables.Integrazioni+'.note as "noteInteg" FROM '+
-	''+sql.tables.StatoPratiche+' LEFT JOIN '+sql.tables.ConstStatoPratiche+' on '+sql.tables.StatoPratiche+'."idStato"='+sql.tables.ConstStatoPratiche+'.id LEFT JOIN '+
-	''+sql.tables.AssStatoPraticheUtenti+' on '+sql.tables.StatoPratiche+'.id = '+sql.tables.AssStatoPraticheUtenti+'."idStato" LEFT JOIN '+
-	sql.tables.Utenti+' AS A on "idUtente"=A.id LEFT JOIN '+sql.tables.Utenti+' AS B on "idUtenteModifica"=B.id '+
-	'LEFT JOIN '+sql.tables.AssStatoPraticheIntegrazioni+' ON '+sql.tables.StatoPratiche+'.id = '+sql.tables.AssStatoPraticheIntegrazioni+'."idStato" LEFT JOIN '+
-	sql.tables.Integrazioni+' ON '+sql.tables.AssStatoPraticheIntegrazioni+'."idInteg" = '+sql.tables.Integrazioni+'.id WHERE "idPratica"=$1', [req.params.id], function(err, data) {
-		if (err) rest.error500(res, err);
-		else res.json(data.rows);
-	});
+				sql.tables.Integrazioni+'.id as "integID", '+ sql.tables.Integrazioni+'."dateOUT", '+sql.tables.Integrazioni+'."dateIN", '+sql.tables.Integrazioni+'."protoOUT", '+sql.tables.Integrazioni+'."protoIN", '+sql.tables.Integrazioni+'.note as "noteInteg" FROM '+
+				sql.tables.StatoPratiche+' LEFT JOIN '+sql.tables.ConstStatoPratiche+' on '+sql.tables.StatoPratiche+'."idStato"='+sql.tables.ConstStatoPratiche+'.id LEFT JOIN '+
+				sql.tables.AssStatoPraticheUtenti+' on '+sql.tables.StatoPratiche+'.id = '+sql.tables.AssStatoPraticheUtenti+'."idStato" LEFT JOIN '+
+				sql.tables.Utenti+' AS A on "idUtente"=A.id LEFT JOIN '+sql.tables.Utenti+' AS B on "idUtenteModifica"=B.id '+
+				'LEFT JOIN '+sql.tables.AssStatoPraticheIntegrazioni+' ON '+sql.tables.StatoPratiche+'.id = '+sql.tables.AssStatoPraticheIntegrazioni+'."idStato" LEFT JOIN '+
+				sql.tables.Integrazioni+' ON '+sql.tables.AssStatoPraticheIntegrazioni+'."idInteg" = '+sql.tables.Integrazioni+'.id WHERE "idPratica"=$1', [req.params.id], function(err, data) {
+					if (err) rest.error500(res, err);
+					else res.json(data.rows);
+				});
 });
 
 router.get('/:id', function(req, res, next) {
