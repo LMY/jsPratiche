@@ -112,25 +112,6 @@ router.post(
           });
     });
 
-var setProtoOutOnDBEmittenti = function(connection, id, protoOUT, dateOUT, userid, res) {
-	shared.translatePraticaToSites(id, connection, function(err, idsites) {
-		if (err) rest.error500(res, err);
-		else {
-			function doSetProtoOUT(i, data) {
-				if (i == data.rows.length)
-					rest.updated(res, null); // null, otherwise Expected response to contain an object but got an array
-				else {
-					shared.setProtoParere(userid, idsites[i], connection, protoOUT, dateOUT, function(err) {
-						if (err) rest.error500(res, err);
-						else doSetProtoOUT(i+1, data.rows);
-					});
-				}
-			}
-
-			doSetProtoOUT(0, idsites);
-		}
-	});
-};
 
 router.put('/:id', function(req, res, next) {
   sql.pool.query(
@@ -143,15 +124,8 @@ router.put('/:id', function(req, res, next) {
         req.params.id
       ],
       function(err, data) {
-        if (err)
-          rest.error500(res, err);
-        else {
-          // if set proto out, update on db_emittenti
-          if (req.body.protoOUT && req.body.dateOUT)
-            setProtoOutOnDBEmittenti(req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id, res);
-          else
-            rest.updated(res, data.rows);
-        }
+        if (err) rest.error500(res, err);
+        else 	 rest.updated(res, data.rows);
       });
 });
 
@@ -161,12 +135,11 @@ router.put('/protoout/:id', function(req, res, next)
 	sql.pool.query('UPDATE '+sql.tables.Pratiche+' SET "protoOUT" = $1, "dateOUT" = $2 WHERE id = $3', [req.body.protoOUT, req.body.dateOUT, req.params.id], function(err, data) {
 		if (err) rest.error500(res, err);
 		else
-			sql.pool.query('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idStato","idUtenteModifica") VALUES ($1,$2,$3)', [ req.params.id, 12, req.user.id ], function(err, datares2) {
+			sql.pool.query('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idStato","idUtenteModifica") VALUES ($1,$2,$3)', [ req.params.id, 12, req.user.id ], function(err, data2) {
 				if (err) rest.error500(res, err);
-				else {
-					// update db_emittenti
-					setProtoOutOnDBEmittenti(req.params.id, req.body.protoOUT, req.body.dateOUT, req.user.id, res);
-				}
+				else
+					// check if "data" or "data2"
+					rest.updated(res, data.rows);
 			});
 	});
 });
