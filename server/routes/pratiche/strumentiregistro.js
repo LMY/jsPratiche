@@ -21,16 +21,16 @@ router.get('/latest', function(req, res, next) {
 router.put('/latest/:id', function(req, res, next) {
 
 	if (req.body.verb == 'open') {
-		sql.pool.query('INSERT INTO '+tableName+'("idCatena", "idUtente", "timePointFrom") VALUES ($1,$2,$3)', [req.params.id, req.body.idUtente, req.body.timePointFrom ], function(err, data) {
+		sql.pool.query('INSERT INTO '+sql.tables.RegistroStrumenti+'("idCatena", "idUtente", "timePointFrom") VALUES ($1,$2,$3)', [req.params.id, req.body.idUtente, req.body.timePointFrom ], function(err, data) {
 			if (err) rest.error500(res, err);
 			else res.json(data.rows);
 		});
 	}
 	else if (req.body.verb == 'close') {
-		sql.pool.query('SELECT MAX(id) as id FROM '+tableName+' WHERE "idCatena" = $1', [req.params.id], function(err, data) {
+		sql.pool.query('SELECT MAX(id) as id FROM '+sql.tables.RegistroStrumenti+' WHERE "idCatena" = $1', [req.params.id], function(err, data) {
 			if (err) rest.error500(res, err);
 			else
-				sql.pool.query('UPDATE '+tableName+' SET timePointFrom = timePointFrom, "timePointTo" = $1, "idSedeTo" = $2  WHERE id=$3',
+				sql.pool.query('UPDATE '+sql.tables.RegistroStrumenti+' SET "timePointFrom" = "timePointFrom", "timePointTo" = $1, "idSedeTo" = $2  WHERE id=$3',
 				[req.body.timePointTo, req.body.idSedeTo, data[0].id], function(err, data2) {
 					if (err) rest.error500(res, err);
 					else res.json(data2.rows);
@@ -45,10 +45,10 @@ router.put('/latest/:id', function(req, res, next) {
 
 router.get('/', function(req, res, next) {
   sql.pool.query(
-	  	'SELECT '+tableName+'.*, '+sql.tables.Utenti+'.username, '+sql.tables.Sedi+'.nome as sede, ' + sql.tables.Catene +'.name as catena' +
-	  	' FROM '+tableName+' LEFT JOIN '+sql.tables.Utenti+' ON '+tableName+'."idUtente" = '+sql.tables.Utenti+'.id LEFT' +
-		' JOIN '+sql.tables.Sedi+' on '+tableName+'.idSedeTo = '+sql.tables.Sedi+'.id LEFT JOIN ' +sql.tables.Catene +
-		' ON  '+tableName+'."idCatena" = ' + sql.tables.Catene + '.id',
+	  	'SELECT '+sql.tables.RegistroStrumenti+'.*, '+sql.tables.Utenti+'.username, '+sql.tables.Sedi+'.nome as sede, ' + sql.tables.Catene +'.name as catena' +
+	  	' FROM '+sql.tables.RegistroStrumenti+' LEFT JOIN '+sql.tables.Utenti+' ON '+sql.tables.RegistroStrumenti+'."idUtente" = '+sql.tables.Utenti+'.id LEFT' +
+		' JOIN '+sql.tables.Sedi+' on '+sql.tables.RegistroStrumenti+'.idSedeTo = '+sql.tables.Sedi+'.id LEFT JOIN ' +sql.tables.Catene +
+		' ON  '+sql.tables.RegistroStrumenti+'."idCatena" = ' + sql.tables.Catene + '.id',
       function(err, data) {
         if (err)
           rest.error500(res, err);
