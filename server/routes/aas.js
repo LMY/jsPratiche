@@ -4,11 +4,11 @@ var sql = require('../helpers/db.js');
 var express = require('express');
 var router = express.Router();
 
-router.get('/', function(req, res, next) {
-    sql.pool.query('SELECT * FROM '+sql.tables.AAS, function(err, data) {
-		if (err) rest.error500(res, err);
-		else res.json(data.rows);
-	});
+router.get('/', function(req, res, next)
+{
+  sql.pool.query('SELECT * FROM ' + sql.tables.AAS)
+      .then(data => res.json(data.rows))
+      .catch(err => rest.error500(res, err));
 });
 
 router.get('/:id', function(req, res, next) {
