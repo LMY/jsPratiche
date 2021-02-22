@@ -20,6 +20,16 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/count', function(req, res, next) {
+
+console.log('SELECT ' + sql.tables.StatoPratiche + '."idGestore" as id,' +
+sql.tables.Gestori + '.name,COUNT("idGestore") as count FROM ' +
+sql.tables.StatoLinkSitiPratiche + ' JOIN ' + sql.tables.StatoPratiche +
+' on ' + sql.tables.StatoLinkSitiPratiche + '."idPratica" = ' +
+sql.tables.StatoPratiche + '.id JOIN ' + sql.tables.Gestori + ' on ' +
+sql.tables.StatoPratiche + '."idGestore" = ' + sql.tables.Gestori +
+'.id WHERE "dateOUT" > \'2016-12-31\' GROUP BY ' +
+sql.tables.StatoPratiche + '."idGestore",' + sql.tables.Gestori + '.name');
+
   sql.pool.query(
       'SELECT ' + sql.tables.StatoPratiche + '."idGestore" as id,' +
           sql.tables.Gestori + '.name,COUNT("idGestore") as count FROM ' +
