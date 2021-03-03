@@ -10,25 +10,22 @@ const daBigQuery = 'SELECT P.*, Q.*, csp.descrizione as "stringStato", '+ sql.ta
 
 
 /* GET /pratiche in corso listing. */
-router.get('/', function(req, res, next) {
-	var query = daBigQuery+" WHERE final=0 OR FINAL IS NULL";
-
-	sql.pool.query(query, function(err, data) {
-		if (err) rest.error500(res, err);
-		else res.json(data.rows);
-	});
+router.get('/', (req, res, next) => {
+	sql.pool.query(daBigQuery+' WHERE final=0 OR FINAL IS NULL')
+    .then(data => res.json(data.rows))
+    .catch(err => rest.error500(res, err));
 });
 
-router.get('/count', function(req, res, next) {
+router.get('/count', (req, res, next) => {
 
-console.log('SELECT ' + sql.tables.StatoPratiche + '."idGestore" as id,' +
-sql.tables.Gestori + '.name,COUNT("idGestore") as count FROM ' +
-sql.tables.StatoLinkSitiPratiche + ' JOIN ' + sql.tables.StatoPratiche +
-' on ' + sql.tables.StatoLinkSitiPratiche + '."idPratica" = ' +
-sql.tables.StatoPratiche + '.id JOIN ' + sql.tables.Gestori + ' on ' +
-sql.tables.StatoPratiche + '."idGestore" = ' + sql.tables.Gestori +
-'.id WHERE "dateOUT" > \'2016-12-31\' GROUP BY ' +
-sql.tables.StatoPratiche + '."idGestore",' + sql.tables.Gestori + '.name');
+// console.log('SELECT ' + sql.tables.StatoPratiche + '."idGestore" as id,' +
+// sql.tables.Gestori + '.name,COUNT("idGestore") as count FROM ' +
+// sql.tables.StatoLinkSitiPratiche + ' JOIN ' + sql.tables.StatoPratiche +
+// ' on ' + sql.tables.StatoLinkSitiPratiche + '."idPratica" = ' +
+// sql.tables.StatoPratiche + '.id JOIN ' + sql.tables.Gestori + ' on ' +
+// sql.tables.StatoPratiche + '."idGestore" = ' + sql.tables.Gestori +
+// '.id WHERE "dateOUT" > \'2016-12-31\' GROUP BY ' +
+// sql.tables.StatoPratiche + '."idGestore",' + sql.tables.Gestori + '.name');
 
   sql.pool.query(
       'SELECT ' + sql.tables.StatoPratiche + '."idGestore" as id,' +
@@ -38,17 +35,13 @@ sql.tables.StatoPratiche + '."idGestore",' + sql.tables.Gestori + '.name');
           sql.tables.StatoPratiche + '.id JOIN ' + sql.tables.Gestori + ' on ' +
           sql.tables.StatoPratiche + '."idGestore" = ' + sql.tables.Gestori +
           '.id WHERE "dateOUT" > \'2016-12-31\' GROUP BY ' +
-          sql.tables.StatoPratiche + '."idGestore",' + sql.tables.Gestori + '.name',
-      function(err, data) {
-        if (err)
-          rest.error500(res, err);
-        else
-          res.json(data.rows);
-      });
+          sql.tables.StatoPratiche + '."idGestore",' + sql.tables.Gestori + '.name')
+    .then(data => res.json(data.rows))
+    .catch(err => rest.error500(res, err));
 });
 
 /* GET /pratiche storico listing. */
-router.get('/all', function(req, res, next) {
+router.get('/all', (req, res, next) => {
 	var query = daBigQuery;
 	
 	if (req.query.dateFrom && req.query.dateTo) {
@@ -59,68 +52,49 @@ router.get('/all', function(req, res, next) {
 				dateType = "\"dateOUT\"";
 		}
 
-		sql.pool.query(query + ' WHERE '+dateType+' BETWEEN $1 AND $2', [ req.query.dateFrom, req.query.dateTo ], function(err, data) {
-			if (err) rest.error500(res, err);
-			else res.json(data.rows);
-		});
+		sql.pool.query(query + ' WHERE '+dateType+' BETWEEN $1 AND $2', [ req.query.dateFrom, req.query.dateTo ])
+      .then(data => res.json(data.rows))
+      .catch(err => rest.error500(res, err));
 	}
 	else
-		sql.pool.query(query, function(err, data) {
-			if (err) rest.error500(res, err);
-			else res.json(data.rows);
-		});
+		sql.pool.query(query)
+      .then(data => res.json(data.rows))
+      .catch(err => rest.error500(res, err));
 });
 
 /* GET /pratiche/correggere in correzione listing. */
-router.get('/correggere', function(req, res, next) {
-	sql.pool.query(daBigQuery + ' WHERE "idStato" = 4 OR "idStato" = 5', function(err, data) {
-		if (err) rest.error500(res, err);
-		else res.json(data.rows);
-	});
+router.get('/correggere', (req, res, next) => {
+	sql.pool.query(daBigQuery + ' WHERE "idStato" = 4 OR "idStato" = 5')
+    .then(data => res.json(data.rows))
+    .catch(err => rest.error500(res, err));
 });
 
 /* GET /pratiche/protocollare in uscita ma senza protocollo listing. */
-router.get('/protocollare', function(req, res, next) {
-	sql.pool.query(daBigQuery + ' WHERE "idStato" = 6', function(err, data) {
-		if (err) rest.error500(res, err);
-		else res.json(data.rows);
-	});
+router.get('/protocollare', (req, res, next) => {
+	sql.pool.query(daBigQuery + ' WHERE "idStato" = 6')
+    .then(data => res.json(data.rows))
+    .catch(err => rest.error500(res, err));
 });
 
-router.get('/:id', function(req, res, next) {
-	sql.pool.query(daBigQuery+' WHERE P.id=$1', [req.params.id], function(err, data) {
-		if (err) rest.error500(res, err);
-		else res.json(data.rows.length == 1 ? data.rows[0] : []);
-	});
+router.get('/:id', (req, res, next) => {
+	sql.pool.query(daBigQuery+' WHERE P.id=$1', [req.params.id])
+    .then(data => res.json(data.rows.length == 1 ? data.rows[0] : []))
+    .catch(err => rest.error500(res, err));
 });
 
-router.post(
-    '/', function(req, res, next) {
-      sql.pool.query(
-          'INSERT INTO ' + sql.tables.Pratiche +
-              '("idGestore", "idComune", address, sitecode, tipopratica, "protoIN", "dateIN", "protoOUT", "dateOUT", note) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
-          [
-            req.body.idGestore, req.body.idComune, req.body.address,
-            req.body.sitecode, req.body.tipopratica, req.body.protoIN,
-            req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note
-          ],
-          function(err, data) {
-            if (err)
-              rest.error500(res, err);
-            else
-              sql.pool.query(
-                  'INSERT INTO ' + sql.tables.StatoPratiche +
-                      '("idPratica","idUtenteModifica","idStato") VALUES ($1,$2,$3)',
-                  [data.rows[0].id, req.user.id, 1], function(err, data) {
+router.post('/', (req, res, next) => {
+  sql.pool.query('INSERT INTO ' + sql.tables.Pratiche + '("idGestore", "idComune", address, sitecode, tipopratica, "protoIN", "dateIN", "protoOUT", "dateOUT", note) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
+                [ req.body.idGestore, req.body.idComune, req.body.address, req.body.sitecode, req.body.tipopratica, req.body.protoIN, req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note ])
+      .then(data => 
+        sql.pool.query('INSERT INTO ' + sql.tables.StatoPratiche + '("idPratica","idUtenteModifica","idStato") VALUES ($1,$2,$3)',
+          [data.rows[0].id, req.user.id, 1])
+          .then(data => rest.created(res, data.rows))
+          /*.catch(err => rest.error500(res, err))*/
+        )
+      .catch(err => rest.error500(res, err));
+});
 
-                    if (err) rest.error500(res, err);
-                    rest.created(res, data.rows);
-                  });
-          });
-    });
-
-
-router.put('/:id', function(req, res, next) {
+router.put('/:id', (req, res, next) => {
   sql.pool.query(
       'UPDATE ' + sql.tables.Pratiche +
           ' SET "idGestore" = $1, "idComune" = $2, address = $3, sitecode = $4, tipopratica = $5, "protoIN" = $6, "dateIN" = $7, "protoOUT" = $8, "dateOUT" = $9, note = $10 WHERE id = $11',
@@ -129,34 +103,25 @@ router.put('/:id', function(req, res, next) {
         req.body.sitecode, req.body.tipopratica, req.body.protoIN,
         req.body.dateIN, req.body.protoOUT, req.body.dateOUT, req.body.note,
         req.params.id
-      ],
-      function(err, data) {
-        if (err) rest.error500(res, err);
-        else 	 rest.updated(res, data.rows);
-      });
+      ])
+      .then(data => rest.updated(res, data.rows))
+      .catch(err => rest.error500(res, err));
 });
 
 /* PUT /pratiche/protoout/:id */
-router.put('/protoout/:id', function(req, res, next)
-{
-	sql.pool.query('UPDATE '+sql.tables.Pratiche+' SET "protoOUT" = $1, "dateOUT" = $2 WHERE id = $3', [req.body.protoOUT, req.body.dateOUT, req.params.id], function(err, data) {
-		if (err) rest.error500(res, err);
-		else
-			sql.pool.query('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idStato","idUtenteModifica") VALUES ($1,$2,$3)', [ req.params.id, 12, req.user.id ], function(err, data2) {
-				if (err) rest.error500(res, err);
-				else
-					// check if "data" or "data2"
-					rest.updated(res, data.rows);
-			});
-	});
+router.put('/protoout/:id', (req, res, next) => {
+	sql.pool.query('UPDATE '+sql.tables.Pratiche+' SET "protoOUT" = $1, "dateOUT" = $2 WHERE id = $3', [req.body.protoOUT, req.body.dateOUT, req.params.id])
+  .then(data => 
+    sql.pool.query('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idStato","idUtenteModifica") VALUES ($1,$2,$3)', [ req.params.id, 12, req.user.id ])
+    .then(data2 => rest.updated(res, data.rows))
+  )
+  .catch(err => rest.error500(res, err));
 });
 
-
-router.delete('/:id', function(req, res, next) {
-	sql.pool.query('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idStato","idUtenteModifica") VALUES ($1,$2,$3)', [ req.params.id, 10, req.user.id ], function(err, data) {
-		if (err) rest.error500(res, err);
-		else rest.deleted(res, data.rows);
-	});
+router.delete('/:id', (req, res, next) => {
+	sql.pool.query('INSERT INTO '+sql.tables.StatoPratiche+'("idPratica","idStato","idUtenteModifica") VALUES ($1,$2,$3)', [ req.params.id, 10, req.user.id ])
+    .then(data => rest.deleted(res, data.rows))
+    .catch(err => rest.error500(res, err));
 });
 
 module.exports = router;

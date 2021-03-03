@@ -48,9 +48,9 @@ module.exports = function(passport) {
 	passport.deserializeUser(function(id, done) {
 
 		sql.pool.query('SELECT id,username,userlevel,pareri,correzioni FROM '+sql.tables.Utenti+' WHERE id=$1', [id], (err, user) => {
-			if (err)
-				return done(err, "");
-			else
+			// if (err)
+			// 	return done(err, "");
+			// else
 				done(err, user.rows[0]);
 		});
 	});
