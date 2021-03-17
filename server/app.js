@@ -58,8 +58,8 @@ require('./helpers/passport')(passport);
 
 app.use(morgan('dev'));
 app.use(morgan(':date[iso] :method :url :status :response-time ms - :res[content-length]'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 // app.use(favicon(path.join(__dirname, 'client', 'imgs', 'favicon.ico')));
 app.use(favicon(path.join(__dirname, '..', 'dist', 'imgs', 'favicon.ico')));
