@@ -26,14 +26,14 @@ module.exports = {
 	
 	
 	created: function(res, data) {
-		res.status(201).json(data);
+		res.status(201).json({});
 	},
 	
 	updated: function(res, data) {
-		res.status(202).json(data);
+		res.status(202).json({});
 	},
 	
 	deleted: function(res, data) {
-		res.status(202).json(data);
+		res.status(202).json({});
 	},	
 }
