@@ -329,6 +329,7 @@ angular.module('app')
 			if (x.dateOUT) x.dateOUT = x.dateOUT.substring(0, 10);
 
 			$scope.title = x.stringGestore + '-' +x.sitecode + ' / ' + x.stringComune + ' - ' + x.address;
+			$scope.note = x.note;
 		});
 
 		$scope.history = StoricoStatoPratiche.get({id: $routeParams.id}, function() {
