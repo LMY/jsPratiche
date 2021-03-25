@@ -18,6 +18,7 @@
 				<th class="text-center"><a ng-click="orderByField='stringUser'; reverseSort=!reverseSort">Utente <span ng-show="orderByField=='stringUser'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='scadenza'; reverseSort=!reverseSort">Scadenza <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField='scadenzaData'; reverseSort=!reverseSort">Scadenza Data<span ng-show="orderByField=='scadenzaData'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text"><a ng-click="orderByField='note'; reverseSort=!reverseSort">Note <span ng-show="orderByField=='scadenza'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -35,6 +36,8 @@
 				<td class="text-center">{{x.stringUser}}</td>
 				<td class="text-center {{x.scadenzaType}}">{{x.scadenza}}</td>
 				<td class="text-center {{x.scadenzaType}}">{{x.scadenzaData}}</td>
+
+				<td class="text">{{x.note}}</td>
 			</tr>
 		</tbody>
 	</table>
