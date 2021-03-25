@@ -355,7 +355,8 @@ angular.module('app')
 						$scope.history[i].descStato +=  " - " + "PROTO NON SPECIFICATO";
 				}
 
-				$scope.history[i].timePoint += " - "+$scope.history[i].usernameMod;
+				if ($scope.history[i].idStato !=  2)	// do not show dato in carico
+					$scope.history[i].timePoint += " - "+$scope.history[i].usernameMod;
 			}
 		});
 
