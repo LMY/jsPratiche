@@ -9,6 +9,8 @@
 			<th class="text-center"><a ng-click="orderByField='id'; reverseSort=!reverseSort">ID <span ng-show="orderByField=='id'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			<th class="text-center"><a ng-click="orderByField='name'; reverseSort=!reverseSort">Name <span ng-show="orderByField=='name'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			<th class="text-center"><a ng-click="orderByField='pec'; reverseSort=!reverseSort">PEC <span ng-show="orderByField=='pec'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='piva'; reverseSort=!reverseSort">p.IVA <span ng-show="orderByField=='piva'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+			<th class="text-center"><a ng-click="orderByField='address'; reverseSort=!reverseSort">Indirizzo <span ng-show="orderByField=='address'"><span ng-show="!reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -16,6 +18,8 @@
 			<td class="text-center">{{x.id}}</td>
 			<td class="text-center">{{x.name}}</td>
 			<td class="text-center">{{x.pec}}</td>
+			<td class="text-center">{{x.piva}}</td>
+			<td class="text-center">{{x.address}}</td>
 		</tr>
 	</tbody>
 </table>

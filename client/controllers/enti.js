@@ -216,7 +216,7 @@ angular.module('app')
 				if (!$scope.data.name || $scope.data.name.length < 1) { alert('Specificare nome!'); return; }
 				if (!$scope.data.pec || $scope.data.pec.length < 1) { alert('Specificare PEC!'); return; }
 
-				var gestore = new Gestori({ name: $scope.data.name, PMcount, pec: $scope.data.pec });
+				var gestore = new Gestori({ name: $scope.data.name, PMcount, pec: $scope.data.pec, piva: $scope.data.piva, address: $scope.data.address });
 				gestore.$save(function(){
 					$location.url('gestori');
 				});

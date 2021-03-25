@@ -189,7 +189,9 @@ ALTER TABLE jspratiche."ConstTipoPratiche" OWNER TO nirweb;
 CREATE TABLE jspratiche."Gestori" (
     id SERIAL,
     name character varying(50) DEFAULT NULL::character varying,
-    pec character varying(50) DEFAULT NULL::character varying
+    pec character varying(50) DEFAULT NULL::character varying,
+    piva character varying(50) DEFAULT NULL::character varying,
+    address character varying(50) DEFAULT NULL::character varying
 );
 
 
