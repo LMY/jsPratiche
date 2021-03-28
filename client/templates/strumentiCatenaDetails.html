@@ -77,8 +77,8 @@
 				<th class="text-center"><a ng-click="orderByField3='lab'; reverseSort3=!reverseSort3">Laboratorio <span ng-show="orderByField3=='lab'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField3='certn'; reverseSort3=!reverseSort3">#certificato <span ng-show="orderByField3=='certn'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField3='dateCal'; reverseSort3=!reverseSort3">Data Calibrazione <span ng-show="orderByField3=='dateCal'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
-				<th class="text-center"><a ng-click="orderByField3='note'; reverseSort3=!reverseSort3">Note <span ng-show="orderByField3=='note'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 				<th class="text-center"><a ng-click="orderByField3='scadenza'; reverseSort3=!reverseSort3">Scadenza <span ng-show="orderByField3=='scadenza'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
+				<th class="text-center"><a ng-click="orderByField3='note'; reverseSort3=!reverseSort3">Note Calibrazione<span ng-show="orderByField3=='note'"><span ng-show="!reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-up"></span></span><span ng-show="reverseSort3"><span class="glyphicon glyphicon glyphicon-chevron-down"></span></span></span></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -86,8 +86,8 @@
 				<td class="text-center">{{calibrazione.lab}}</td>
 				<td class="text-center">{{calibrazione.certn}}</td>
 				<td class="text-center">{{calibrazione.dateCal}}</td>
-				<td class="text-center">{{calibrazione.note}}</td>
 				<td class="text-center">{{calibrazione.scadenza}}</td>
+				<td class="text-center">{{calibrazione.note}}</td>
 			</tr>
 		</tbody>
 	</table>
