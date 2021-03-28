@@ -415,6 +415,7 @@ CREATE TABLE jspratiche."Strumenti" (
     inventario character varying(50) DEFAULT NULL::character varying,
     tipo character varying(50) DEFAULT NULL::character varying,
     taratura character varying(256) DEFAULT NULL::character varying,
+    caratteristiche character varying(256) DEFAULT NULL::character varying,
     note character varying(256) DEFAULT NULL::character varying
 );
 

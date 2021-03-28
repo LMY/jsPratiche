@@ -75,7 +75,7 @@ angular.module('app')
 			if ($scope.isnew) {
 				if (!$scope.estrumento || $scope.estrumento.length < 1) return;
 
-				var strumento = new Strumenti({ name: $scope.estrumento.name, PMcount, marca: $scope.estrumento.marca, modello: $scope.estrumento.modello, serial: $scope.estrumento.serial, inventario: $scope.estrumento.inventario, tipo: $scope.estrumento.tipo, taratura: $scope.estrumento.taratura, note: $scope.estrumento.note });
+				var strumento = new Strumenti({ name: $scope.estrumento.name, PMcount, marca: $scope.estrumento.marca, modello: $scope.estrumento.modello, serial: $scope.estrumento.serial, inventario: $scope.estrumento.inventario, tipo: $scope.estrumento.tipo, taratura: $scope.estrumento.taratura, caratteristiche: $scope.estrumento.caratteristiche, note: $scope.estrumento.note });
 				strumento.$save(function(){
 					$location.url('strumenti-strumenti');
 				});

@@ -66,10 +66,10 @@ router.delete('/:id', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
   sql.pool.query(
-      'INSERT INTO ' + sql.tables.Strumenti + '(name,marca,modello,serial,inventario,tipo,taratura,note) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+      'INSERT INTO ' + sql.tables.Strumenti + '(name,marca,modello,serial,inventario,tipo,taratura,caratteristiche,note) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
       [
         req.body.name, req.body.marca, req.body.modello, req.body.serial,
-        req.body.inventario, req.body.tipo, req.body.taratura, req.body.note
+        req.body.inventario, req.body.tipo, req.body.taratura, req.body.caratteristiche, req.body.note
       ])
       .then(data => rest.created(res, data.rows))
       .catch(err => rest.error500(res, err));
@@ -78,10 +78,10 @@ router.post('/', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   sql.pool.query(
       'UPDATE ' + sql.tables.Strumenti +
-      ' SET name = $1, marca = $2, modello = $3, serial = $4, inventario = $5, tipo = $6, taratura = $7, note = $8 WHERE id = $9',
+      ' SET name = $1, marca = $2, modello = $3, serial = $4, inventario = $5, tipo = $6, taratura = $7, caratteristiche = $8, note = $9 WHERE id = $10',
       [
         req.body.name, req.body.marca, req.body.modello, req.body.serial,
-        req.body.inventario, req.body.tipo, req.body.taratura, req.body.note,
+        req.body.inventario, req.body.tipo, req.body.taratura, req.body.caratteristiche, req.body.note,
         req.params.id
       ])
       .then(data => rest.updated(res, data.rows))
