@@ -31,7 +31,7 @@ router.delete('/:id', (req, res, next) => {
 router.post('/', (req, res, next) => {
 	sql.pool.query('INSERT INTO ' + sql.tables.Calibrazioni + '("idCatena", "lab", "certn", "dateCal", "note", "scadenza") VALUES ($1,$2,$3,$4,$5,$6)', [req.body.idCatena, req.body.lab, req.body.certn, req.body.dateCal, req.body.note, req.body.scadenza])
 		.then(data => rest.created(res, data.rows))
-		.catch(err => rest.error500(res, err));st.created(res, data.rows);
+		.catch(err => rest.error500(res, err));
 });
 
 router.put('/:id', (req, res, next) => {
