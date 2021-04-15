@@ -108,8 +108,10 @@ angular.module('app')
 	.factory('ConstStatiPratiche', ['$resource', function($resource){
 		return $resource('/pratiche/statopratiche/stati', null);
 	}])
-	.factory('ConstTipiPratiche', ['$resource', function($resource){
-		return $resource('/pratiche/statopratiche/tipi', null);
+	.factory('ConstTipoPratiche', ['$resource', function($resource){
+		return $resource('/pratiche/consttipopratiche/:id', null, {
+			'update': { method:'PUT' }
+		});
 	}])
 	.factory('StoricoStatoPratiche', ['$resource', function($resource){
 		return $resource('/pratiche/statopratiche/:id', null, {
@@ -122,6 +124,60 @@ angular.module('app')
 			'get' : { method:'GET', url:'/pratiche/integrazioni/:id', isArray:true },
 			'update': { method:'PUT' }
 		});
+	}])
+
+
+
+	.controller('ConstTipoPraticheController', ['$scope', 'Me', 'PMcount','ConstTipoPratiche', '$location', function($scope, Me, PMcount, ConstTipoPratiche, $location) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
+		$scope.orderByField = 'id';
+		$scope.reverseSort = false;
+		$scope.anagrafiche = ConstTipoPratiche.query();
+
+		$scope.new = function() {
+			$location.url('consttipopratiche/new');
+		}
+		$scope.show = function(id) {
+			$location.url('consttipopratiche/'+id);
+		}
+	}])
+	.controller('ConstTipoPraticheDetailController', ['$scope', '$routeParams', 'Me', 'PMcount', 'ConstTipoPratiche', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, ConstTipoPratiche, $location, ModalService) {
+		$scope.me = Me.get();
+		$scope.pmcount = PMcount.query();
+
+		$scope.isnew = ($routeParams.id === "new");
+		$scope.data = $scope.isnew ? {} : ConstTipoPratiche.get({id: $routeParams.id });
+		$scope.title = $scope.isnew ? "Nuov tipo pratica" : "Tipo "+$routeParams.id;
+
+		$scope.update = function( ){
+			if ($scope.isnew) {
+				if (!$scope.data) return;
+				if (!$scope.data.descrizione || $scope.data.descrizione.length < 1) { alert('Specificare descrizione!'); return; }
+
+				var newdata = new ConstTipoPratiche({ id: $scope.data.id, descrizione: $scope.data.descrizione });
+				newdata.$save(function(){
+					$location.url('consttipopratiche');
+				});
+			}
+			else
+				ConstTipoPratiche.update({id: $scope.data.id}, $scope.data, function() {
+						$location.url('consttipopratiche');
+					});
+		}
+
+		$scope.remove = function() {
+			askconfirm(ModalService, function() {
+				ConstTipoPratiche.remove({id: $scope.data.id}, function() {
+					$location.url('consttipopratiche');
+				});
+			}, "Sei sicuro di voler rimovere "+$scope.data.descrizione+"?");
+		}
+
+		$scope.cancel = function() {
+			$location.url('consttipopratiche');
+		}
 	}])
 
 
@@ -255,7 +311,7 @@ angular.module('app')
 			});
 		}
 	}])
-	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Me', 'PMcount','Comuni', 'Gestori', 'ConstStatiPratiche', 'ConstTipiPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Me, PMcount, Comuni, Gestori, ConstStatiPratiche, ConstTipiPratiche, $location, ModalService) {
+	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Me', 'PMcount','Comuni', 'Gestori', 'ConstStatiPratiche', 'ConstTipoPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Me, PMcount, Comuni, Gestori, ConstStatiPratiche, ConstTipoPratiche, $location, ModalService) {
 
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
@@ -272,7 +328,7 @@ angular.module('app')
 		$scope.title = $scope.isnew ? "Nuova Pratica" : "Pratica "+$routeParams.id;
 
 		$scope.conststatipratiche = ConstStatiPratiche.query();
-		$scope.consttipipratiche = ConstTipiPratiche.query();
+		$scope.consttipopratiche = ConstTipoPratiche.query();
 
 		$scope.update = function( ){
 			if ($scope.isnew) {

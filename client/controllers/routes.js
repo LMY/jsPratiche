@@ -47,6 +47,15 @@ angular.module('app')
 				controller: 'StudiTecniciDetailCtrl'
 			})
 			
+			.when('/consttipopratiche', {
+				templateUrl: '/consttipopratiche.html',
+				controller: 'ConstTipoPraticheController'
+			})
+			.when('/consttipopratiche/:id', {
+				templateUrl: '/consttipopraticheDetails.html',
+				controller: 'ConstTipoPraticheDetailController'
+			})
+
 			.when('/pratiche', {
 				templateUrl: '/pratiche.html',
 				controller: 'PraticheController'
