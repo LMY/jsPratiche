@@ -22,7 +22,7 @@ angular.module('app')
 		$scope.me = Me.get(function() { 
 			$scope.newmsg = new ChatPM({ msg: "", userto: $scope.me.id });
 		});
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'timePoint';
 		$scope.reverseSort = true;
@@ -43,7 +43,7 @@ angular.module('app')
 	}])
 	.controller('ChatBoardCtrl', ['$scope', 'Me', 'PMcount', 'ChatBoard', '$route', function($scope, Me, PMcount, ChatBoard, $route) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'timePoint';
 		$scope.reverseSort = true;

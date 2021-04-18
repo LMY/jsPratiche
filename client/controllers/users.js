@@ -10,7 +10,7 @@ angular.module('app')
 
 	.controller('UtentiController', ['$scope', 'Me', 'PMcount','Utenti', '$location', function($scope, Me, PMcount, Utenti, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -26,7 +26,7 @@ angular.module('app')
 	}])
 	.controller('UtenteDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Utenti', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Utenti, $location, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.eutente = $scope.isnew ? {} : Utenti.get({id: $routeParams.id });
@@ -66,7 +66,7 @@ angular.module('app')
 	}])
 	.controller('UtentePassCtrl', ['$scope', '$http', '$routeParams', 'Me', 'PMcount','Utenti', '$location', function($scope, $http, $routeParams, Me, PMcount, Utenti, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.eutente = Utenti.get({id: $routeParams.id });
 		$scope.title = "Utente "+$routeParams.id;

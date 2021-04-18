@@ -130,7 +130,7 @@ angular.module('app')
 
 	.controller('ConstTipoPraticheController', ['$scope', 'Me', 'PMcount','ConstTipoPratiche', '$location', function($scope, Me, PMcount, ConstTipoPratiche, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -145,7 +145,7 @@ angular.module('app')
 	}])
 	.controller('ConstTipoPraticheDetailController', ['$scope', '$routeParams', 'Me', 'PMcount', 'ConstTipoPratiche', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, ConstTipoPratiche, $location, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.data = $scope.isnew ? {} : ConstTipoPratiche.get({id: $routeParams.id });
@@ -197,7 +197,7 @@ angular.module('app')
 
 	.controller('IntegrazioneCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Integrazioni', '$window', function($scope, $routeParams, Me, PMcount, Integrazioni, $window) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.eintegrazione = Integrazioni.get({id: $routeParams.id }, function(x) {
 			x.dateIN = x.dateIN ? moment(x.dateIN.substring(0, 10)).format("YYYY-MM-DD") : null;
@@ -218,7 +218,7 @@ angular.module('app')
 
 	.controller('PraticheController', ['$scope', 'Me', 'PMcount','Pratiche', '$location', function($scope, Me, PMcount, Pratiche, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
@@ -236,7 +236,7 @@ angular.module('app')
 	}])
 	.controller('PraticheAllController', ['$scope', 'Me', 'PMcount', 'PraticheAll', '$location', function($scope, Me, PMcount, PraticheAll, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.dateFrom = moment().subtract(30, 'day').set('date', 1).format("YYYY-MM-DD");
 		$scope.dateTo = moment().format("YYYY-MM-DD");
@@ -259,7 +259,7 @@ angular.module('app')
 	}])
 	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PMcount','PraticheCorreggere', '$location', function($scope, Me, PMcount, PraticheCorreggere, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
@@ -272,7 +272,7 @@ angular.module('app')
 	}])
 	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PMcount','PraticheProtocollare', 'PraticheProtoOUT', '$route', "ModalService", function($scope, Me, PMcount, PraticheProtocollare, PraticheProtoOUT, $route, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
@@ -314,7 +314,7 @@ angular.module('app')
 	.controller('PraticaDetailController', ['$scope', '$routeParams', 'Pratiche', 'Me', 'PMcount','Comuni', 'Gestori', 'ConstStatiPratiche', 'ConstTipoPratiche', '$location', 'ModalService', function($scope, $routeParams, Pratiche, Me, PMcount, Comuni, Gestori, ConstStatiPratiche, ConstTipoPratiche, $location, ModalService) {
 
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.epratica = $scope.isnew ? {} : Pratiche.get({id: $routeParams.id }, function(x) {
@@ -367,7 +367,7 @@ angular.module('app')
 		$scope.me = Me.get(function(x) {
 			$scope.selectedUser = $scope.me.id
 		});
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.info = PraticheInfo.get({id: $routeParams.id }, function(x) {
 			for (var i=0; i<x.length; i++) {
@@ -482,7 +482,7 @@ angular.module('app')
 	}])
 	.controller('PraticheFatturazione', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'PraticheInfo', 'PraticheCount', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, PraticheInfo, PraticheCount, Utenti, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.dateFrom = moment().subtract(1, 'month').set('date', 1).format("YYYY-MM-DD");	// day 1 of prev month
 		$scope.dateTo = moment().set('date', 1).format("YYYY-MM-DD");							// day 1 of current month
@@ -632,7 +632,7 @@ angular.module('app')
 	}])
 	.controller('PraticheStatistiche', ['$scope', 'Me', 'PMcount','PraticheAll', 'Utenti', '$location', function($scope, Me, PMcount, PraticheAll, Utenti, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 		$scope.users = Utenti.query();
 
 		$scope.dateFrom = moment().subtract(1, 'month').set('date', 1).format("YYYY-MM-DD");	// day 1 of prev month

@@ -49,7 +49,7 @@ angular.module('app')
 
 	.controller('StrumentiController', ['$scope', 'Me', 'PMcount','Strumenti', '$location', function($scope, Me, PMcount, Strumenti, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -65,7 +65,7 @@ angular.module('app')
 
 	.controller('StrumentoDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Strumenti', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Strumenti, $location, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.estrumento = $scope.isnew ? {} : Strumenti.get({id: $routeParams.id });
@@ -101,7 +101,7 @@ angular.module('app')
 
 	.controller('CateneController', ['$scope', 'Me', 'PMcount','Catene', '$location', function($scope, Me, PMcount, Catene, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -137,7 +137,7 @@ angular.module('app')
 	}])
 	.controller('CatenaDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Catene', 'StrumentiCatena', 'StrumentiFree', 'CalibrazioniCatena', '$location', '$route', 'ModalService', function($scope, $routeParams, Me, PMcount, Catene, StrumentiCatena, StrumentiFree, CalibrazioniCatena, $location, $route, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecatena = $scope.isnew ? {} : Catene.get({ id: $routeParams.id });
@@ -207,7 +207,7 @@ angular.module('app')
 	}])
 	.controller('CalibrazioneDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount','Catene', 'Calibrazioni', '$window', 'ModalService', function($scope, $routeParams, Me, PMcount, Catene, Calibrazioni, $window, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.ecalibrazione = $scope.isnew ? {} : Calibrazioni.get({id: $routeParams.id });
@@ -243,7 +243,7 @@ angular.module('app')
 	}])
 	.controller('StrumentiStoricoCtrl', ['$scope', 'Me', 'PMcount','RegistroStrumenti', '$location', function($scope, Me, PMcount, RegistroStrumenti, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -255,7 +255,7 @@ angular.module('app')
 	}])
 	.controller('StrumentiRegistroCtrl', ['$scope', 'Me', 'PMcount','RegistroStrumentiLatest', 'Sedi', '$location', '$route', function($scope, Me, PMcount, RegistroStrumentiLatest, Sedi, $location, $route) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;

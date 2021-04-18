@@ -27,7 +27,7 @@ angular.module('app')
 
 	.controller('ComuneController', ['$scope', 'Me', 'PMcount','Comuni', '$location', function($scope, Me, PMcount, Comuni, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -42,7 +42,7 @@ angular.module('app')
 	}])
 	.controller('ComuneDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount', 'Comuni', 'AAS', 'Province', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Comuni, AAS, Province, $location, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.data = $scope.isnew ? {} : Comuni.get({id: $routeParams.id });
@@ -83,7 +83,7 @@ angular.module('app')
 
 	.controller('ProvinceController', ['$scope', 'Me', 'PMcount','Province', '$location', function($scope, Me, PMcount, Province, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -98,7 +98,7 @@ angular.module('app')
 	}])
 	.controller('ProvinceDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount', 'Province', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Province, $location, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.data = $scope.isnew ? {} : Province.get({id: $routeParams.id });
@@ -135,7 +135,7 @@ angular.module('app')
 	}])
 	.controller('AASController', ['$scope', 'Me', 'PMcount','AAS', '$location', function($scope, Me, PMcount, AAS, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -150,7 +150,7 @@ angular.module('app')
 	}])
 	.controller('AASDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount', 'AAS', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, AAS, $location, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.data = $scope.isnew ? {} : AAS.get({id: $routeParams.id });
@@ -188,7 +188,7 @@ angular.module('app')
 
 	.controller('GestoriController', ['$scope', 'Me', 'PMcount', 'Gestori', '$location', function($scope, Me, PMcount, Gestori, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -204,7 +204,7 @@ angular.module('app')
 	}])
 	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount', 'Gestori', 'ConstTipoPratiche', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Gestori, ConstTipoPratiche, $location, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.data = $scope.isnew ? {} : Gestori.get({id: $routeParams.id });
@@ -245,7 +245,7 @@ angular.module('app')
 	
 	.controller('StudiTecniciController', ['$scope', 'Me', 'PMcount', 'StudiTecnici', '$location', function($scope, Me, PMcount, StudiTecnici, $location) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'id';
 		$scope.reverseSort = false;
@@ -261,7 +261,7 @@ angular.module('app')
 	}])
 	.controller('StudiTecniciDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount', 'StudiTecnici', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, StudiTecnici, $location, ModalService) {
 		$scope.me = Me.get();
-		$scope.pmcount = PMcount.query();
+		$scope.pmcount = PMcount.get();
 
 		$scope.isnew = ($routeParams.id === "new");
 		$scope.data = $scope.isnew ? {} : StudiTecnici.get({id: $routeParams.id });
