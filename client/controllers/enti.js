@@ -202,7 +202,7 @@ angular.module('app')
 			$location.url('gestori/'+id);
 		}
 	}])
-	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount', 'Gestori', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Gestori, $location, ModalService) {
+	.controller('GestoreDetailCtrl', ['$scope', '$routeParams', 'Me', 'PMcount', 'Gestori', 'ConstTipoPratiche', '$location', 'ModalService', function($scope, $routeParams, Me, PMcount, Gestori, ConstTipoPratiche, $location, ModalService) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.query();
 
@@ -210,13 +210,16 @@ angular.module('app')
 		$scope.data = $scope.isnew ? {} : Gestori.get({id: $routeParams.id });
 		$scope.title = $scope.isnew ? "Nuovo Gestore" : "Gestore "+$routeParams.id;
 
+		$scope.consttipopratiche = ConstTipoPratiche.query();
+
 		$scope.update = function( ){
 			if ($scope.isnew) {
 				if (!$scope.data || $scope.data.length < 1) return;
 				if (!$scope.data.name || $scope.data.name.length < 1) { alert('Specificare nome!'); return; }
 				if (!$scope.data.pec || $scope.data.pec.length < 1) { alert('Specificare PEC!'); return; }
+				if (!$scope.data.tipopratica) { alert('Specificare il tipo!'); return; }
 
-				var gestore = new Gestori({ name: $scope.data.name, PMcount, pec: $scope.data.pec, piva: $scope.data.piva, address: $scope.data.address });
+				var gestore = new Gestori({ name: $scope.data.name, tipopratica: $scope.epratica.tipopratica, pec: $scope.data.pec, piva: $scope.data.piva, address: $scope.data.address });
 				gestore.$save(function(){
 					$location.url('gestori');
 				});
@@ -270,7 +273,7 @@ angular.module('app')
 				if (!$scope.data.name || $scope.data.name.length < 1) { alert('Specificare nome!'); return; }
 				if (!$scope.data.pec || $scope.data.pec.length < 1) { alert('Specificare PEC!'); return; }
 
-				var gestore = new StudiTecnici({ name: $scope.data.name, PMcount, pec: $scope.data.pec });
+				var gestore = new StudiTecnici({ name: $scope.data.name, pec: $scope.data.pec });
 				gestore.$save(function(){
 					$location.url('studitecnici');
 				});

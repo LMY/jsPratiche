@@ -191,7 +191,8 @@ CREATE TABLE jspratiche."Gestori" (
     name character varying(50) DEFAULT NULL::character varying,
     pec character varying(50) DEFAULT NULL::character varying,
     piva character varying(50) DEFAULT NULL::character varying,
-    address character varying(50) DEFAULT NULL::character varying
+    address character varying(50) DEFAULT NULL::character varying,
+    tipopratica integer
 );
 
 

@@ -23,13 +23,13 @@ router.delete('/:id', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-	sql.pool.query('INSERT INTO '+sql.tables.Gestori+'("name", "pec", "piva", "address") VALUES ($1,$2,$3,$4)', [req.body.name, req.body.pec, req.body.piva, req.body.address ])
+	sql.pool.query('INSERT INTO '+sql.tables.Gestori+'("name", "pec", "piva", "address", "tipopratica") VALUES ($1,$2,$3,$4,$5)', [req.body.name, req.body.pec, req.body.piva, req.body.address, req.body.tipopratica ])
 		.then(data => rest.created(res, data.rows))
 		.catch(err => rest.error500(res, err));
 });
 
 router.put('/:id', (req, res, next) => {
-	sql.pool.query('UPDATE '+sql.tables.Gestori+' SET "name" = $1, "pec" = $2, "piva" = $3, "address" = $4 WHERE "id" = $5', [req.body.name, req.body.pec, req.body.piva, req.body.address, req.params.id])
+	sql.pool.query('UPDATE '+sql.tables.Gestori+' SET "name" = $1, "pec" = $2, "piva" = $3, "address" = $4, "tipopratica" = $5 WHERE "id" = $6', [req.body.name, req.body.pec, req.body.piva, req.body.address, req.body.tipopratica, req.params.id])
 		.then(data => rest.updated(res, data.rows))
 		.catch(err => rest.error500(res, err));	
 });
