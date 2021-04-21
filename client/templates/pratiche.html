@@ -1,4 +1,10 @@
 <div class="form-group">
+	<label class="control-label col-sm-6" for="selectTipopratica">Tipo Pratica:</label>
+	<div class="col-sm-6">
+		<select data-ng-options="g.id as g.descrizione for g in consttipopratiche" data-ng-model="selectTipopratica"></select>
+	</div>
+</div>
+<div class="form-group">
 		<div class="span7 text-center">
 			<button class="btn btn-primary" ng-click="new()">Nuova Pratica</button>
 		</div>

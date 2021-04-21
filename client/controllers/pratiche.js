@@ -216,12 +216,13 @@ angular.module('app')
 		}
 	}])
 
-	.controller('PraticheController', ['$scope', 'Me', 'PMcount','Pratiche', '$location', function($scope, Me, PMcount, Pratiche, $location) {
+	.controller('PraticheController', ['$scope', 'Me', 'PMcount','Pratiche', 'ConstTipoPratiche', '$location', function($scope, Me, PMcount, Pratiche, ConstTipoPratiche, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
+		$scope.consttipopratiche = ConstTipoPratiche.query();
 
 		$scope.pratiche = Pratiche.query(function() {
 			adjustPratica($scope.pratiche);
@@ -234,7 +235,7 @@ angular.module('app')
 			$location.url('pratiche/'+id);
 		}
 	}])
-	.controller('PraticheAllController', ['$scope', 'Me', 'PMcount', 'PraticheAll', '$location', function($scope, Me, PMcount, PraticheAll, $location) {
+	.controller('PraticheAllController', ['$scope', 'Me', 'PMcount', 'PraticheAll', 'ConstTipoPratiche', '$location', function($scope, Me, PMcount, PraticheAll, ConstTipoPratiche, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.get();
 
@@ -245,6 +246,7 @@ angular.module('app')
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
+		$scope.consttipopratiche = ConstTipoPratiche.query();
 
 		$scope.show = function(id) {
 			$location.url('pratiche/'+id);
@@ -257,12 +259,14 @@ angular.module('app')
 		}
 		$scope.requery($scope.dateFrom, $scope.dateTo, $scope.dateType);	// GET $scope.pratiche
 	}])
-	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PMcount','PraticheCorreggere', '$location', function($scope, Me, PMcount, PraticheCorreggere, $location) {
+	.controller('PraticheCorreggereController', ['$scope', 'Me', 'PMcount', 'PraticheCorreggere', 'ConstTipoPratiche', '$location', function($scope, Me, PMcount, PraticheCorreggere, ConstTipoPratiche, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
+		$scope.consttipopratiche = ConstTipoPratiche.query();
+
 		$scope.pratiche = PraticheCorreggere.query(function() {
 			adjustPratica($scope.pratiche);
 		});
@@ -270,12 +274,13 @@ angular.module('app')
 			$location.url('pratiche/'+id);
 		}
 	}])
-	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PMcount','PraticheProtocollare', 'PraticheProtoOUT', '$route', "ModalService", function($scope, Me, PMcount, PraticheProtocollare, PraticheProtoOUT, $route, ModalService) {
+	.controller('PraticheProtocollareController', ['$scope', 'Me', 'PMcount','PraticheProtocollare', 'PraticheProtoOUT', 'ConstTipoPratiche', '$route', "ModalService", function($scope, Me, PMcount, PraticheProtocollare, PraticheProtoOUT, ConstTipoPratiche, $route, ModalService) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.get();
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
+		$scope.consttipopratiche = ConstTipoPratiche.query();
 
 		$scope.pratiche = PraticheProtocollare.query(function() {
 			adjustPratica($scope.pratiche);
@@ -480,7 +485,7 @@ angular.module('app')
 			siteinfo.isupdated = false;
 		}
 	}])
-	.controller('PraticheFatturazione', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'PraticheInfo', 'PraticheCount', 'Utenti', '$location', function($scope, Me, PMcount, PraticheFatturazione, PraticheInfo, PraticheCount, Utenti, $location) {
+	.controller('PraticheFatturazione', ['$scope', 'Me', 'PMcount','PraticheFatturazione', 'PraticheInfo', 'PraticheCount', 'Utenti', 'ConstTipoPratiche', '$location', function($scope, Me, PMcount, PraticheFatturazione, PraticheInfo, PraticheCount, Utenti, ConstTipoPratiche, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.get();
 
@@ -489,6 +494,7 @@ angular.module('app')
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
+		$scope.consttipopratiche = ConstTipoPratiche.query();
 
 		$scope.show = function(id) {
 			if (id)	// if defined
@@ -630,7 +636,7 @@ angular.module('app')
 			});
 		}
 	}])
-	.controller('PraticheStatistiche', ['$scope', 'Me', 'PMcount','PraticheAll', 'Utenti', '$location', function($scope, Me, PMcount, PraticheAll, Utenti, $location) {
+	.controller('PraticheStatistiche', ['$scope', 'Me', 'PMcount','PraticheAll', 'Utenti', 'ConstTipoPratiche', '$location', function($scope, Me, PMcount, PraticheAll, Utenti, ConstTipoPratiche, $location) {
 		$scope.me = Me.get();
 		$scope.pmcount = PMcount.get();
 		$scope.users = Utenti.query();
@@ -642,6 +648,7 @@ angular.module('app')
 
 		$scope.orderByField = 'dateIN';
 		$scope.reverseSort = false;
+		$scope.consttipopratiche = ConstTipoPratiche.query();
 
 		$scope.requery = function(from, to, type) {
 
