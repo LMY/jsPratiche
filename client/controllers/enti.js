@@ -219,7 +219,7 @@ angular.module('app')
 				if (!$scope.data.pec || $scope.data.pec.length < 1) { alert('Specificare PEC!'); return; }
 				if (!$scope.data.tipopratica) { alert('Specificare il tipo!'); return; }
 
-				var gestore = new Gestori({ name: $scope.data.name, tipopratica: $scope.epratica.tipopratica, pec: $scope.data.pec, piva: $scope.data.piva, address: $scope.data.address });
+				var gestore = new Gestori({ name: $scope.data.name, tipopratica: $scope.data.tipopratica, pec: $scope.data.pec, piva: $scope.data.piva, address: $scope.data.address });
 				gestore.$save(function(){
 					$location.url('gestori');
 				});
