@@ -175,7 +175,7 @@ ALTER TABLE jspratiche."ConstStatoPratiche" OWNER TO nirweb;
 --
 
 CREATE TABLE jspratiche."ConstTipoPratiche" (
-    id integer NOT NULL,
+    id SERIAL,
     descrizione character varying(50) DEFAULT NULL::character varying
 );
 

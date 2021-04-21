@@ -156,7 +156,7 @@ angular.module('app')
 				if (!$scope.data) return;
 				if (!$scope.data.descrizione || $scope.data.descrizione.length < 1) { alert('Specificare descrizione!'); return; }
 
-				var newdata = new ConstTipoPratiche({ id: $scope.data.id, descrizione: $scope.data.descrizione });
+				var newdata = new ConstTipoPratiche({ descrizione: $scope.data.descrizione });
 				newdata.$save(function(){
 					$location.url('consttipopratiche');
 				});
